@@ -1,4 +1,4 @@
-# Battleships_Game
+# Hungarian Battleships
 
 ## Installation Instructions
 
