@@ -1,0 +1,8 @@
+- After each shot, you get a mark for shot ship, that you can place.
+    - 3 lies, you have 3 lies each time to tell if a shot is missed or hit.
+- Longer ships, Small ships?
+- Move ships
+- Pirates, that capture ships, attack someone - Random extra shot for easy implementation.
+- Guess the shot, get sth.
+- One board with overlapping ships? - Mirror shot for easy implementation.
+- Turtles, wizards, ice?
