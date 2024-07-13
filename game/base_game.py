@@ -9,6 +9,7 @@ class BaseGame():
 
     def __init__(self):
         self.board = Board()
+        self.taken_coordinates = set()
         self.ships = [
             Ship(1),
             Ship(1),
@@ -40,14 +41,22 @@ class BaseGame():
 
                 if ship.is_in_board(self.board) and not self.check_overlap(ship):
                     placed = True
+                    self.take_coordinates_from_placement(ship)
+
+    def take_coordinates_from_placement(self, ship):
+        adjacent_offsets = [
+            (dx, dy)
+            for dx in (-1, 0, 1) # Change to 0 only to allow adjacency
+            for dy in (-1, 0, 1)
+        ]
+
+        for coord in ship.coordinates:
+            for dx, dy in adjacent_offsets:
+                adj_coord = (coord[0] + dx, coord[1] + dy)
+                self.taken_coordinates.add(adj_coord)
 
     def check_overlap(self, new_ship):
-        for ship in self.ships:
-            if ship == new_ship:
-                continue
-            if any(coord in ship.coordinates for coord in new_ship.coordinates):
-                return True
-        return False
+        return any(coord in self.taken_coordinates for coord in new_ship.coordinates)
 
     def __repr__(self):
 
@@ -59,7 +68,7 @@ class BaseGame():
 
         for ship in self.ships:
             for row, col in ship.coordinates:
-                board_representation[row][col] = 'x'
+                board_representation[row][col] = str(ship.ship_length)
 
         for row in board_representation:
             repr_str += ' '.join(row) + '\n'
