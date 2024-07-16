@@ -1,15 +1,15 @@
 import random
 from collections import defaultdict
-import pygame
 
-from board import Board
 from ship import Ship
 
 
-class BaseGame():
+class BaseBoard():
+    BOARD_ROWS = BOARD_COLS = 10
 
-    def __init__(self):
-        self.board = Board()
+    def __init__(self, rows_count = 10, columns_count = 10):
+        self.rows_count = rows_count
+        self.columns_count = columns_count
         self.taken_coordinates = set()
         self.ships_map = defaultdict(list)
         self.unplaced_ships = self.get_base_game_ships()
@@ -37,9 +37,9 @@ class BaseGame():
             while not placed:
                 is_horizontal = random.choice([True, False])
                 row = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.board.BOARD_ROWS)
+                    ship.ship_length, is_horizontal, self.rows_count)
                 col = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.board.BOARD_COLS)
+                    ship.ship_length, is_horizontal, self.columns_count)
 
                 ship.move(row, col, is_horizontal)
 
@@ -48,7 +48,11 @@ class BaseGame():
                     self.place_ship(ship)
 
     def is_ship_placement_valid(self, ship):
-        return ship.is_in_board(self.board) and not self.check_overlap(ship)
+        return self.is_ship_in_board(ship) and not self.check_overlap(ship)
+
+    def is_ship_in_board(self, ship):
+        return all(0 <= row < self.rows_count and 0 <= col < self.columns_count for row, col in ship.coordinates)
+
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
@@ -115,7 +119,7 @@ class BaseGame():
 
 # Example usage:
 if __name__ == "__main__":
-    game = BaseGame()
+    game = BaseBoard()
     game.random_shuffle_ships()
     print(game)
 

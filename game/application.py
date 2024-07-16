@@ -1,7 +1,7 @@
 import pygame
 
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
-from board import Board
+from visual_board import VisualBoard
 
 FPS = 60
 
@@ -12,14 +12,14 @@ class Application:
         pygame.display.set_caption(APPLICATION_TITLE)
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
-        self.board = Board(0, 0)
+        self.board = VisualBoard(10, 40)
 
     def run(self):
         running = True
 
         while running:
             self.clock.tick(FPS)
-            self.board.drawBoard(self.screen)
+            self.board.drawTiles(self.screen)
             pygame.display.update()
 
             for event in pygame.event.get():

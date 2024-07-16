@@ -1,9 +1,4 @@
-from board import Board
-import pygame
-from pygame.sprite import Sprite
-
-
-class Ship(Sprite):
+class Ship():
     def __init__(self, ship_length, row=None, col=None, is_horizontal=True):
         super().__init__()
         self.ship_length = ship_length
@@ -16,9 +11,6 @@ class Ship(Sprite):
 
         self.coordinates = [(self.row + tile * (not self.is_horizontal), self.col + tile *
                              self.is_horizontal) for tile in range(self.ship_length)]
-
-    def is_in_board(self, board):
-        return all(0 <= row < board.BOARD_ROWS and 0 <= col < board.BOARD_COLS for row, col in self.coordinates)
 
     def flip(self):
         self.is_horizontal = not self.is_horizontal
@@ -39,5 +31,4 @@ class Ship(Sprite):
 
 s = Ship(5, 10, 1, False)
 s.fill_coordinates()
-print(s.is_in_board(Board(1, 1)))
 print(s)

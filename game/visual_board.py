@@ -2,9 +2,10 @@ import pygame
 from pygame.sprite import Sprite
 
 from constants import RESOLUTION
+from base_board import BaseBoard
 
 
-class Tile(Sprite):
+class VisualTile(Sprite):
     TILE_SIZE = 60
 
     def __init__(self, x, y):
@@ -12,10 +13,6 @@ class Tile(Sprite):
         self.x = x
         self.y = y
         self.size = self.TILE_SIZE * RESOLUTION
-        self.shot_count = 0
-
-    def increaseShotCount(self):
-        self.shot_count += 1
 
     def drawTile(self, window):
         tile_position = (self.x,
@@ -27,8 +24,7 @@ class Tile(Sprite):
         return f"<Tile at {self.x}, {self.y}>"
 
 
-class Board(Sprite):
-    BOARD_ROWS = BOARD_COLS = 10 * RESOLUTION
+class VisualBoard(Sprite, BaseBoard):
 
     def __init__(self, x = 0, y = 0):
         super().__init__()
@@ -38,13 +34,13 @@ class Board(Sprite):
         self.populateWithTiles()
 
     def getTileScreenPlacement(self, row, col):
-        return (self.x + col * Tile.TILE_SIZE, self.y + row * Tile.TILE_SIZE)
+        return (self.x + col * VisualTile.TILE_SIZE, self.y + row * VisualTile.TILE_SIZE)
 
     def populateWithTiles(self):
-        self.tiles = [[Tile(*self.getTileScreenPlacement(row, col))
+        self.tiles = [[VisualTile(*self.getTileScreenPlacement(row, col))
                        for col in range(self.BOARD_COLS)] for row in range(self.BOARD_ROWS)]
 
-    def drawBoard(self, window):
+    def drawTiles(self, window):
         for row in range(self.BOARD_ROWS):
             for col in range(self.BOARD_COLS):
                 tile = self.tiles[row][col]
@@ -52,5 +48,5 @@ class Board(Sprite):
 
 
 
-b = Board(10, 10)
+b = VisualBoard(10, 10)
 print(b.tiles)
