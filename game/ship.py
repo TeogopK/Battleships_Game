@@ -3,6 +3,20 @@ class Ship():
         super().__init__()
         self.ship_length = ship_length
         self.move(row, col, is_horizontal)
+        self.is_alive = True
+        self.sunk_coordinates = set()
+
+    def sunk_coordinate(self, row, col):
+        self.sunk_coordinates.add((row, col))
+
+    def repair_coordinate(self, row, col):
+        self.sunk_coordinates.discard((row, col)) # Use remove to throw exception
+    
+    def is_ship_sunk(self):
+        return len(self.sunk_coordinates) == self.ship_length
+    
+    def is_coordinate_part_of_ship(self, row, col):
+        return (row, col) in self.coordinates
 
     def fill_coordinates(self):
         if self.row == None and self.col == None:
@@ -26,9 +40,14 @@ class Ship():
         pass
 
     def __repr__(self):
-        return f"<Ship with length {self.ship_length}, {self.is_horizontal} at {self.coordinates}>"
+        return f"<Ship with length {self.ship_length}, is horizontal {self.is_horizontal} at {self.coordinates} with sunk {self.sunk_coordinates}>"
 
 
-s = Ship(5, 10, 1, False)
+s = Ship(3, 10, 1, False)
 s.fill_coordinates()
+print(s.is_coordinate_part_of_ship(1,1))
+print(s.is_coordinate_part_of_ship(1,11))
+s.sunk_coordinate(1,1)
+s.sunk_coordinate(2,1)
+s.sunk_coordinate(3,1)
 print(s)
