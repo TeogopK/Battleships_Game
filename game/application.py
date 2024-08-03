@@ -28,7 +28,9 @@ class Application:
                     pygame.quit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    pass
+                    pos = pygame.mouse.get_pos()
+                    row, col = self.board.get_row_col_by_mouse(pos)
+                    print(row, col)
 
 
 def main():
