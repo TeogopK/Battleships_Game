@@ -16,10 +16,12 @@ class Application:
 
     def run(self):
         running = True
+        print(self.board)
 
         while running:
             self.clock.tick(FPS)
-            self.board.drawTiles(self.screen)
+            self.screen.fill((241, 250, 238))
+            self.board.draw(self.screen)
             pygame.display.update()
 
             for event in pygame.event.get():

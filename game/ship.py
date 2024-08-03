@@ -10,11 +10,12 @@ class Ship():
         self.sunk_coordinates.add((row, col))
 
     def repair_coordinate(self, row, col):
-        self.sunk_coordinates.discard((row, col)) # Use remove to throw exception
-    
+        # Use remove to throw exception
+        self.sunk_coordinates.discard((row, col))
+
     def is_ship_sunk(self):
         return len(self.sunk_coordinates) == self.ship_length
-    
+
     def is_coordinate_part_of_ship(self, row, col):
         return (row, col) in self.coordinates
 
@@ -45,9 +46,9 @@ class Ship():
 
 s = Ship(3, 10, 1, False)
 s.fill_coordinates()
-print(s.is_coordinate_part_of_ship(1,1))
-print(s.is_coordinate_part_of_ship(1,11))
-s.sunk_coordinate(1,1)
-s.sunk_coordinate(2,1)
-s.sunk_coordinate(3,1)
+print(s.is_coordinate_part_of_ship(1, 1))
+print(s.is_coordinate_part_of_ship(1, 11))
+s.sunk_coordinate(1, 1)
+s.sunk_coordinate(2, 1)
+s.sunk_coordinate(3, 1)
 print(s)
