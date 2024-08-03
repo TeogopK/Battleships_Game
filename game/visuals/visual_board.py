@@ -1,9 +1,9 @@
 import pygame
 from pygame.sprite import Sprite
 
-from constants import RESOLUTION
-from base_board import BaseBoard
-from visual_ship import Visual_Ship
+from game.visuals.utils.constants import RESOLUTION
+from game.interface.base_board import BaseBoard
+from game.visuals.visual_ship import Visual_Ship
 
 
 class VisualTile(Sprite):

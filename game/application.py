@@ -1,7 +1,6 @@
 import pygame
-
-from constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
-from visual_board import VisualBoard
+from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
+from game.visuals.visual_board import VisualBoard
 
 FPS = 60
 

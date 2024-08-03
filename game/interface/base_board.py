@@ -1,13 +1,13 @@
 import random
 from collections import defaultdict
 
-from ship import Ship
+from game.interface.ship import Ship
 
 
 class BaseBoard():
     BOARD_ROWS = BOARD_COLS = 10
 
-    def __init__(self, rows_count = 10, columns_count = 10):
+    def __init__(self, rows_count=10, columns_count=10):
         self.rows_count = rows_count
         self.columns_count = columns_count
         self.taken_coordinates = set()
@@ -53,7 +53,6 @@ class BaseBoard():
     def is_ship_in_board(self, ship):
         return all(0 <= row < self.rows_count and 0 <= col < self.columns_count for row, col in ship.coordinates)
 
-
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
         self.unplaced_ships.add(ship)
@@ -97,6 +96,11 @@ class BaseBoard():
 
     def check_overlap(self, new_ship):
         return any(coord in self.taken_coordinates for coord in new_ship.coordinates)
+
+    def remove_all_ships(self):
+        self.taken_coordinates = set()
+        self.ships_map = defaultdict(list)
+        self.unplaced_ships = self.get_base_game_ships()
 
     def __repr__(self):
 

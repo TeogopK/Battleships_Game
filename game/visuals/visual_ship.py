@@ -1,8 +1,8 @@
 import pygame
 from pygame.sprite import Sprite
 
-from constants import RESOLUTION
-from base_board import Ship
+from game.visuals.utils.constants import RESOLUTION
+from game.interface.base_board import Ship
 
 
 class Visual_Ship(Sprite, Ship):
