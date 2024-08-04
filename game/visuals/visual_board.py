@@ -40,11 +40,14 @@ class VisualBoard(Sprite, BaseBoard):
 
         self.initialize_visual_ships()
         self.random_shuffle_ships()
-        self.update_ships_visual_position()
 
     def initialize_visual_ships(self):
         self.unplaced_ships = {Visual_Ship(
             ship.ship_length, self.get_tile_size()) for ship in self.unplaced_ships}
+
+    def random_shuffle_ships(self):
+        BaseBoard.random_shuffle_ships(self)
+        self.update_ships_visual_position()
 
     def update_ships_visual_position(self):
         for (row, col), ship_list in self.ships_map.items():
@@ -84,9 +87,6 @@ class VisualBoard(Sprite, BaseBoard):
         return self.x <= pos_x <= self.get_right_border() and self.y <= pos_y <= self.get_bottom_border()
 
     def get_row_col_by_mouse(self, pos):
-        if not self.is_position_in_board(pos):
-            raise ValueError(f"Invalid pos {pos}")
-
         pos_x, pos_y = pos
         tile_size = self.get_tile_size()
         row = (pos_x - self.x) // tile_size

@@ -1,6 +1,8 @@
 import pygame
 from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
 from game.visuals.visual_board import VisualBoard
+from game.visuals.utils.buttons import ShuffleButton
+from time import sleep
 
 FPS = 60
 
@@ -12,6 +14,7 @@ class Application:
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
         self.board = VisualBoard(10, 40)
+        self.shuffle_button = ShuffleButton(x=700, y=300)
 
     def run(self):
         running = True
@@ -21,6 +24,11 @@ class Application:
             self.clock.tick(FPS)
             self.screen.fill((241, 250, 238))
             self.board.draw(self.screen)
+
+            if self.shuffle_button.is_active(self.screen):
+                self.board.random_shuffle_ships()
+                self.board.draw(self.screen)
+
             pygame.display.update()
 
             for event in pygame.event.get():
@@ -30,8 +38,9 @@ class Application:
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
-                    row, col = self.board.get_row_col_by_mouse(pos)
-                    print(row, col)
+                    if self.board.is_position_in_board(pos):
+                        row, col = self.board.get_row_col_by_mouse(pos)
+                        print(row, col)
 
 
 def main():

@@ -31,6 +31,8 @@ class BaseBoard():
         return random.randint(0, board_border - 1 - is_horizontal * ship_length)
 
     def random_shuffle_ships(self):
+        self.remove_all_ships()
+
         for ship in sorted(list(self.unplaced_ships), key=lambda ship: -ship.ship_length):
             placed = False
 
@@ -55,12 +57,12 @@ class BaseBoard():
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
-        self.unplaced_ships.add(ship)
+        self.unplaced_ships.remove(ship)
         self.occupy_coordinates_from_placement(ship)
 
     def remove_ship(self, ship):
         self.ships_map[ship.row, ship.col].remove(ship)
-        self.unplaced_ships.remove(ship)
+        self.unplaced_ships.add(ship)
         self.occupy_coordinates_from_placement(ship, True)
 
     def move_ship(self, ship, new_row, new_col, new_is_horizontal):
@@ -98,9 +100,9 @@ class BaseBoard():
         return any(coord in self.taken_coordinates for coord in new_ship.coordinates)
 
     def remove_all_ships(self):
-        self.taken_coordinates = set()
-        self.ships_map = defaultdict(list)
-        self.unplaced_ships = self.get_base_game_ships()
+        for ship_list in self.ships_map.values():
+            for ship in ship_list:
+                self.remove_ship(ship)
 
     def __repr__(self):
 
