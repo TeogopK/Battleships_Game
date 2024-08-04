@@ -89,8 +89,8 @@ class VisualBoard(Sprite, BaseBoard):
     def get_row_col_by_mouse(self, pos):
         pos_x, pos_y = pos
         tile_size = self.get_tile_size()
-        row = (pos_x - self.x) // tile_size
-        col = (pos_y - self.y) // tile_size
+        row = (pos_y - self.y) // tile_size
+        col = (pos_x - self.x) // tile_size
         return row, col
 
     def draw(self, window):
@@ -101,5 +101,5 @@ class VisualBoard(Sprite, BaseBoard):
         return BaseBoard.__repr__(self)
 
 
-b = VisualBoard(10, 10)
-print(b.tiles)
+# b = VisualBoard(10, 10)
+# print(b.tiles)

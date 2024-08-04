@@ -56,6 +56,5 @@ class Button:
 
 class ShuffleButton(Button):
     def __init__(self, x, y):
-        # Define specific parameters for ShuffleButton
         super().__init__(x, y, text="Shuffle", font_size=30, text_color=WHITE,
                          bg_color=BLUE, hover_color=LIGHT_BLUE, padding=20, border_radius=10)

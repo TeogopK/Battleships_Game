@@ -37,18 +37,17 @@ class Ship():
         self.is_horizontal = is_horizontal
         self.fill_coordinates()
 
-    def draw_ship(self, board):
-        pass
-
     def __repr__(self):
         return f"<Ship with length {self.ship_length}, is horizontal {self.is_horizontal} at {self.coordinates} with sunk {self.sunk_coordinates}>"
 
 
-s = Ship(3, 10, 1, False)
-s.fill_coordinates()
-print(s.is_coordinate_part_of_ship(1, 1))
-print(s.is_coordinate_part_of_ship(1, 11))
-s.sunk_coordinate(1, 1)
-s.sunk_coordinate(2, 1)
-s.sunk_coordinate(3, 1)
-print(s)
+# s = Ship(3, 10, 1, False)
+# s.fill_coordinates()
+# print(s.is_coordinate_part_of_ship(1, 1))
+# print(s.is_coordinate_part_of_ship(1, 11))
+# s.sunk_coordinate(1, 1)
+# s.sunk_coordinate(2, 1)
+# s.sunk_coordinate(3, 1)
+# print(s)
+
+# print(s.is_coordinate_part_of_ship(10, 1))

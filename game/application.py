@@ -42,6 +42,14 @@ class Application:
                         row, col = self.board.get_row_col_by_mouse(pos)
                         print(row, col)
 
+                        ship = self.board.get_ship_on_coord(row, col)
+                        print(ship)
+
+                        if ship and event.button == 3:
+                            print(self.board)
+                            self.board.flip_ship(ship)
+                            print(self.board)
+
 
 def main():
     app = Application()

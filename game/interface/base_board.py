@@ -10,7 +10,7 @@ class BaseBoard():
     def __init__(self, rows_count=10, columns_count=10):
         self.rows_count = rows_count
         self.columns_count = columns_count
-        self.taken_coordinates = set()
+        self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
         self.unplaced_ships = self.get_base_game_ships()
 
@@ -50,10 +50,10 @@ class BaseBoard():
                     self.place_ship(ship)
 
     def is_ship_placement_valid(self, ship):
-        return self.is_ship_in_board(ship) and not self.check_overlap(ship)
+        return self.is_ship_in_board(ship) and not self.does_ship_overlap(ship)
 
     def is_ship_in_board(self, ship):
-        return all(0 <= row < self.rows_count and 0 <= col < self.columns_count for row, col in ship.coordinates)
+        return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
@@ -74,12 +74,16 @@ class BaseBoard():
         if not self.is_ship_placement_valid(ship):
             ship.move(old_row, old_col, old_is_horizontal)
             self.place_ship(ship)
-            raise ValueError("Can not move ship")
+            print("Can not move ship!")
+            return
 
         self.place_ship(ship)
 
     def flip_ship(self, ship):
         self.move_ship(ship, ship.row, ship.col, not ship.is_horizontal)
+
+    def is_coordinate_in_board(self, row, col):
+        return 0 <= row < self.BOARD_ROWS and 0 <= col < self.BOARD_COLS
 
     def occupy_coordinates_from_placement(self, ship, reverse=False):
         adjacent_offsets = [
@@ -88,29 +92,49 @@ class BaseBoard():
             for dy in (-1, 0, 1)
         ]
 
-        function_string = 'add' if not reverse else 'discard'
-        function = self.taken_coordinates.__getattribute__(function_string)
+        counter = 1 if not reverse else -1
 
         for coord in ship.coordinates:
             for dx, dy in adjacent_offsets:
                 adj_coord = (coord[0] + dx, coord[1] + dy)
-                function(adj_coord)
+                print(dx, dy, "###", adj_coord)
+                if self.is_coordinate_in_board(*adj_coord):
+                    self.taken_coordinates[adj_coord] += counter
 
-    def check_overlap(self, new_ship):
-        return any(coord in self.taken_coordinates for coord in new_ship.coordinates)
+    def does_ship_overlap(self, new_ship):
+        return any(self.taken_coordinates[coord] > 0 for coord in new_ship.coordinates)
 
     def remove_all_ships(self):
         for ship_list in self.ships_map.values():
             for ship in ship_list:
                 self.remove_ship(ship)
 
-    def __repr__(self):
+    def is_there_a_ship_on_coord(self, row, col):
+        for ship_list in self.ships_map.items():
+            for ship in ship_list:
+                if ship.is_coordinate_part_of_ship(row, col):
+                    return True
 
+        return False
+
+    def get_ship_on_coord(self, row, col):
+        for ship_list in self.ships_map.values():
+            for ship in ship_list:
+                if ship.is_coordinate_part_of_ship(row, col):
+                    return ship
+
+        return None
+
+    def __repr__(self):
         repr_str = ""
         for ship in self.ships_map.values():
             repr_str += str(ship) + '\n'
 
         board_representation = [['-' for _ in range(10)] for _ in range(10)]
+
+        for (row, col), value in self.taken_coordinates.items():
+            if value:
+                board_representation[row][col] = '+'
 
         for ship_list in self.ships_map.values():
             for ship in ship_list:
@@ -123,14 +147,16 @@ class BaseBoard():
         return repr_str
 
 
-# Example usage:
-if __name__ == "__main__":
-    game = BaseBoard()
-    game.random_shuffle_ships()
-    print(game)
+game = BaseBoard()
+ship = Ship(2, 0, 0, True)
+game.unplaced_ships.add(ship)
+game.place_ship(ship)
 
-    for ship in list(game.ships_map.values())[0]:
-        print("Flipping ship", ship)
-        game.flip_ship(ship)
-        print(game)
-        break
+ship2 = Ship(2, 2, 1, True)
+game.unplaced_ships.add(ship2)
+game.place_ship(ship2)
+
+game.flip_ship(ship)
+
+print(game)
+print(game.taken_coordinates.items())
