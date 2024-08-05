@@ -18,7 +18,7 @@ class VisualTile(Sprite):
     def get_size(self):
         return self.size
 
-    def drawTile(self, window):
+    def draw_tile(self, window):
         tile_position = (self.x,
                          self.y, self.size, self.size)
         pygame.draw.rect(window, (168, 218, 220), tile_position)
@@ -36,7 +36,7 @@ class VisualBoard(Sprite, BaseBoard):
         self.x = x
         self.y = y
         self.tiles = []
-        self.populateWithTiles()
+        self.populate_with_tiles()
 
         self.initialize_visual_ships()
         self.random_shuffle_ships()
@@ -52,26 +52,33 @@ class VisualBoard(Sprite, BaseBoard):
     def update_ships_visual_position(self):
         for (row, col), ship_list in self.ships_map.items():
             for ship in ship_list:
-                new_x, new_y = self.getTileScreenPlacement(row, col)
+                new_x, new_y = self.get_tile_screen_placement(row, col)
                 ship.update_visual_position(new_x, new_y)
+
+    def update_individual_ship_visual_position(self, ship):
+        new_x, new_y = self.get_tile_screen_placement(ship.row, ship.col)
+        ship.update_visual_position(new_x, new_y)
 
     def draw_ships(self, window):
         for _, ship_list in self.ships_map.items():
             for ship in ship_list:
                 ship.draw(window)
 
-    def getTileScreenPlacement(self, row, col):
+        for ship in self.unplaced_ships:
+            ship.draw(window)
+
+    def get_tile_screen_placement(self, row, col):
         return (self.x + col * VisualTile.TILE_SIZE, self.y + row * VisualTile.TILE_SIZE)
 
-    def populateWithTiles(self):
-        self.tiles = [[VisualTile(*self.getTileScreenPlacement(row, col))
+    def populate_with_tiles(self):
+        self.tiles = [[VisualTile(*self.get_tile_screen_placement(row, col))
                        for col in range(self.BOARD_COLS)] for row in range(self.BOARD_ROWS)]
 
     def draw_tiles(self, window):
         for row in range(self.BOARD_ROWS):
             for col in range(self.BOARD_COLS):
                 tile = self.tiles[row][col]
-                tile.drawTile(window)
+                tile.draw_tile(window)
 
     def get_tile_size(self):
         return self.tiles[0][0].get_size()
@@ -96,6 +103,14 @@ class VisualBoard(Sprite, BaseBoard):
     def draw(self, window):
         self.draw_tiles(window)
         self.draw_ships(window)
+
+    def move_ship(self, ship, new_row, new_col, new_is_horizontal):
+        BaseBoard.move_ship(self, ship, new_row, new_col, new_is_horizontal)
+        self.update_individual_ship_visual_position(ship)
+
+    def place_ship(self, ship):
+        BaseBoard.place_ship(self, ship)
+        self.update_individual_ship_visual_position(ship)
 
     def __repr__(self):
         return BaseBoard.__repr__(self)

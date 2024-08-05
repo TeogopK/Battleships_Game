@@ -57,7 +57,7 @@ class BaseBoard():
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
-        self.unplaced_ships.remove(ship)
+        self.unplaced_ships.discard(ship)
         self.occupy_coordinates_from_placement(ship)
 
     def remove_ship(self, ship):
@@ -97,7 +97,6 @@ class BaseBoard():
         for coord in ship.coordinates:
             for dx, dy in adjacent_offsets:
                 adj_coord = (coord[0] + dx, coord[1] + dy)
-                print(dx, dy, "###", adj_coord)
                 if self.is_coordinate_in_board(*adj_coord):
                     self.taken_coordinates[adj_coord] += counter
 

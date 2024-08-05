@@ -1,8 +1,6 @@
 import pygame
 from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
-from game.visuals.visual_board import VisualBoard
-from game.visuals.utils.buttons import ShuffleButton
-from time import sleep
+from game.menus.ship_placement_menu import ShipPlacementMenu
 
 FPS = 60
 
@@ -13,42 +11,24 @@ class Application:
         pygame.display.set_caption(APPLICATION_TITLE)
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
-        self.board = VisualBoard(10, 40)
-        self.shuffle_button = ShuffleButton(x=700, y=300)
+        self.ship_placement_menu = ShipPlacementMenu()
 
     def run(self):
         running = True
-        print(self.board)
 
         while running:
             self.clock.tick(FPS)
             self.screen.fill((241, 250, 238))
-            self.board.draw(self.screen)
-
-            if self.shuffle_button.is_active(self.screen):
-                self.board.random_shuffle_ships()
-                self.board.draw(self.screen)
+            self.ship_placement_menu.draw(self.screen)
 
             pygame.display.update()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-                    pygame.quit()
+                self.ship_placement_menu.handle_event(event)
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pos = pygame.mouse.get_pos()
-                    if self.board.is_position_in_board(pos):
-                        row, col = self.board.get_row_col_by_mouse(pos)
-                        print(row, col)
-
-                        ship = self.board.get_ship_on_coord(row, col)
-                        print(ship)
-
-                        if ship and event.button == 3:
-                            print(self.board)
-                            self.board.flip_ship(ship)
-                            print(self.board)
+        pygame.quit()
 
 
 def main():

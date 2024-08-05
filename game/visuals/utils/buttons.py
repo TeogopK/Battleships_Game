@@ -1,4 +1,4 @@
-from game.visuals.utils.colours import WHITE, BLUE, BLACK, LIGHT_BLUE
+from game.visuals.utils.colours import WHITE, BLUE, LIGHT_BLUE
 import pygame
 import pygame.freetype
 
@@ -28,8 +28,7 @@ class Button:
         self.rect.width = text_width + 2 * self.padding
         self.rect.height = text_height + 2 * self.padding
 
-    def is_active(self, surface):
-        action = False
+    def draw(self, surface):
         pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(pos)
 
@@ -39,19 +38,24 @@ class Button:
                          border_radius=self.border_radius)
 
         # Center the text
-        text_x = self.rect.x + self.padding
-        text_y = self.rect.y + self.padding
+        text_x = self.rect.x + (self.rect.width - self.image.get_width()) // 2
+        text_y = self.rect.y + (self.rect.height -
+                                self.image.get_height()) // 2
         surface.blit(self.image, (text_x, text_y))
+
+    def is_active(self):
+        pos = pygame.mouse.get_pos()
+        mouse_over = self.rect.collidepoint(pos)
 
         # Check for click
         if mouse_over and pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
             self.clicked = True
-            action = True
+            return True
 
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 
-        return action
+        return False
 
 
 class ShuffleButton(Button):
