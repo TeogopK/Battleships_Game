@@ -5,6 +5,9 @@ from game.visuals.utils.constants import RESOLUTION
 from game.interface.base_board import BaseBoard
 from game.visuals.visual_ship import Visual_Ship
 
+import game.visuals.utils.colors as colors
+from game.visuals.utils.shapes import DrawUtils
+
 
 class VisualTile(Sprite):
     TILE_SIZE = 50
@@ -21,8 +24,8 @@ class VisualTile(Sprite):
     def draw_tile(self, window):
         tile_position = (self.x,
                          self.y, self.size, self.size)
-        pygame.draw.rect(window, (168, 218, 220), tile_position)
-        pygame.draw.rect(window, (69, 123, 157), tile_position, 1)
+        pygame.draw.rect(window, colors.TILE_MAIN_COLOR, tile_position)
+        pygame.draw.rect(window, colors.TILE_BORDER_COLOR, tile_position, 1)
 
     def __repr__(self):
         return f"<Tile at {self.x}, {self.y}>"
@@ -60,7 +63,7 @@ class VisualBoard(Sprite, BaseBoard):
         ship.update_visual_position(new_x, new_y)
 
     def draw_ships(self, window):
-        for _, ship_list in self.ships_map.items():
+        for ship_list in self.ships_map.values():
             for ship in ship_list:
                 ship.draw(window)
 
@@ -100,20 +103,30 @@ class VisualBoard(Sprite, BaseBoard):
         col = (pos_x - self.x) // tile_size
         return row, col
 
+    def draw_sunk_ships(self, window):
+        for ship_list in self.ships_map.values():
+            for ship in ship_list:
+                if not ship.is_alive:
+                    ship.set_color(colors.SUNK_SHIP_COLOR)
+                    ship.draw(window)
+
     def draw_hits(self, window):
+
         for (row, col) in self.all_hit_coordinates:
             tile = self.tiles[row][col]
             hit_position = (tile.x, tile.y, tile.size, tile.size)
-            # Red color for hits
-            pygame.draw.rect(window, (255, 0, 0), hit_position)
+
+            DrawUtils.draw_cross(window, tile.x, tile.y,
+                                 tile.size, colors.SHOT_HIT_COLOR)
 
     def draw_misses(self, window):
         for (row, col), hit_count in self.shot_coordinates.items():
             if hit_count == 1 and (row, col) not in self.all_hit_coordinates:
                 tile = self.tiles[row][col]
                 miss_position = (tile.x, tile.y, tile.size, tile.size)
-                pygame.draw.circle(window, (0, 0, 255), (tile.x + tile.size // 2,
-                                   tile.y + tile.size // 2), tile.size // 4)  # Blue circle for misses
+
+                DrawUtils.draw_circle(
+                    window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR)
 
     def draw(self, window):
         self.draw_tiles(window)
@@ -125,6 +138,7 @@ class VisualBoard(Sprite, BaseBoard):
     def draw_for_enemy(self, window):
         self.draw_tiles(window)
         self.draw_hits(window)
+        self.draw_sunk_ships(window)
         self.draw_misses(window)
 
     def move_ship(self, ship, new_row, new_col, new_is_horizontal):
