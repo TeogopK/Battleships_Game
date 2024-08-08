@@ -23,10 +23,10 @@ class BaseBoard():
                 # Ship(1),
                 # Ship(2),
                 # Ship(2),
-                # Ship(2),
+                Ship(2),
                 # Ship(3),
                 # Ship(3),
-                # Ship(4)
+                Ship(4)
                 }
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):

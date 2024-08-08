@@ -135,9 +135,10 @@ class VisualBoard(Sprite, BaseBoard):
     def draw(self, window):
         self.draw_board_border(window)  # Draw the border around the board
         self.draw_tiles(window)
-        self.draw_hits(window)
-        self.draw_misses(window)
         self.draw_ships(window)
+        self.draw_hits(window)
+        self.draw_sunk_ships(window)
+        self.draw_misses(window)
 
     def draw_for_enemy(self, window):
         self.draw_board_border(window)  # Draw the border around the board

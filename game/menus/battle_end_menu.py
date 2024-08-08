@@ -13,7 +13,7 @@ class BattleEndMenu:
 
     def draw(self, screen):
         self.player.board.draw(screen)
-        self.enemy.board.draw_for_enemy(screen)
+        self.enemy.board.draw(screen)
         self.continue_button.draw(screen)
         pygame.display.flip()
 
