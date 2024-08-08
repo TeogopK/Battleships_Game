@@ -22,8 +22,7 @@ class VisualTile(Sprite):
         return self.size
 
     def draw_tile(self, window):
-        tile_position = (self.x,
-                         self.y, self.size, self.size)
+        tile_position = (self.x, self.y, self.size, self.size)
         pygame.draw.rect(window, colors.TILE_MAIN_COLOR, tile_position)
         pygame.draw.rect(window, colors.TILE_BORDER_COLOR, tile_position, 1)
 
@@ -32,7 +31,6 @@ class VisualTile(Sprite):
 
 
 class VisualBoard(Sprite, BaseBoard):
-
     def __init__(self, x=0, y=0):
         BaseBoard.__init__(self)
         Sprite.__init__(self)
@@ -111,11 +109,9 @@ class VisualBoard(Sprite, BaseBoard):
                     ship.draw(window)
 
     def draw_hits(self, window):
-
         for (row, col) in self.all_hit_coordinates:
             tile = self.tiles[row][col]
             hit_position = (tile.x, tile.y, tile.size, tile.size)
-
             DrawUtils.draw_cross(window, tile.x, tile.y,
                                  tile.size, colors.SHOT_HIT_COLOR)
 
@@ -124,18 +120,27 @@ class VisualBoard(Sprite, BaseBoard):
             if hit_count == 1 and (row, col) not in self.all_hit_coordinates:
                 tile = self.tiles[row][col]
                 miss_position = (tile.x, tile.y, tile.size, tile.size)
-
                 DrawUtils.draw_circle(
                     window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR)
 
+    def draw_board_border(self, window):
+        BORDER_WIDTH = 5
+        border_rect = pygame.Rect(self.x - BORDER_WIDTH,
+                                  self.y - BORDER_WIDTH,
+                                  self.get_right_border() - self.x + BORDER_WIDTH * 2,
+                                  self.get_bottom_border() - self.y + BORDER_WIDTH * 2)
+        pygame.draw.rect(window, colors.BOARD_BORDER_COLOR,
+                         border_rect, BORDER_WIDTH)
+
     def draw(self, window):
+        self.draw_board_border(window)  # Draw the border around the board
         self.draw_tiles(window)
         self.draw_hits(window)
         self.draw_misses(window)
-
         self.draw_ships(window)
 
     def draw_for_enemy(self, window):
+        self.draw_board_border(window)  # Draw the border around the board
         self.draw_tiles(window)
         self.draw_hits(window)
         self.draw_sunk_ships(window)
@@ -151,7 +156,3 @@ class VisualBoard(Sprite, BaseBoard):
 
     def __repr__(self):
         return BaseBoard.__repr__(self)
-
-
-# b = VisualBoard(10, 10)
-# print(b.tiles)

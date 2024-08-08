@@ -38,7 +38,7 @@ class Visual_Ship(Sprite, Ship):
         ship_position = (
             self.x, self.y, self.get_visual_length(), self.get_visual_width())
         pygame.draw.rect(window, self.color, ship_position)
-        # pygame.draw.rect(window, colors.SHIP_BORDER_COLOR, ship_position, 1)
+        pygame.draw.rect(window, colors.SHIP_BORDER_COLOR, ship_position, 3)
 
     def __repr__(self):
         return Ship.__repr__(self)

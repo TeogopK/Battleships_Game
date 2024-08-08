@@ -16,8 +16,8 @@ class Application:
         self.screen = pygame.display.set_mode((width, height))
         self.clock = pygame.time.Clock()
         self.players = [
-            Player("Player 1", 10, 40),
-            Player("Player 2", 600, 40)
+            Player("Player 1", 70, 100),
+            Player("Player 2", 700, 100)
         ]
         self.ship_placement_menu = ShipPlacementMenu(self.players[0])
         self.battle_menu = None
