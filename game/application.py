@@ -3,7 +3,8 @@ import game.visuals.utils.constants as constants
 from game.menus.ship_placement_menu import ShipPlacementMenu
 from game.menus.battle_menu import BattleMenu
 from game.menus.battle_end_menu import BattleEndMenu
-from game.player import Player
+from game.players.player import Player
+from game.players.ai_player import BattleAI
 import game.visuals.utils.colors as colors
 
 
@@ -25,7 +26,7 @@ class Application:
         """Initialize or reset the game."""
         self.players = [
             Player("Player 1", 70, 100),
-            Player("Player 2", 700, 100)
+            BattleAI("Player 2", 700, 100)
         ]
         self.ship_placement_menu = ShipPlacementMenu(self.players[0])
         self.battle_menu = None

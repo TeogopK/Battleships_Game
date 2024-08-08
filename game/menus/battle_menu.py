@@ -5,8 +5,6 @@ class BattleMenu:
     def __init__(self, player, enemy):
         self.player = player
         self.enemy = enemy
-
-        self.enemy_attack_position = (0, 0)
         self.stop_showing_menu = False
 
     def draw(self, screen):
@@ -26,35 +24,22 @@ class BattleMenu:
 
             row, col = self.enemy.board.get_row_col_by_mouse(pos)
 
-            if self.player.choose_attack(row, col, self.enemy):
+            if self.enemy.board.is_coordinate_shot_at(row, col):
+                return
+
+            hit = self.enemy.board.register_shot(row, col)
+
+            if hit:
+                print("Hit! Player gets another turn.")
+            else:
                 self.player.end_turn()
-                self.enemy_attack()
+                self.enemy.perform_attack(self.player)
                 self.player.take_turn()
 
         self.is_battle_over()
 
     def is_click_within_enemy_board(self, pos):
         return self.enemy.board.is_position_in_board(pos)
-
-    def enemy_attack(self):
-        row, col = self.enemy_attack_position
-
-        self.enemy.choose_attack(row, col, self.player)
-        self.enemy_attack_position = self.get_next_attack_position(row, col)
-
-        self.player.take_turn()
-
-    def get_next_attack_position(self, row, col):
-        col += 1
-        if col >= self.player.board.columns_count:
-            col = 0
-            row += 1
-
-        if row >= self.player.board.rows_count:
-            row = 0
-            col = 0
-
-        return row, col
 
     def is_battle_over(self):
         if self.player.are_all_ships_sunk() or self.enemy.are_all_ships_sunk():

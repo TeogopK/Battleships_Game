@@ -18,14 +18,14 @@ class BaseBoard():
 
     def get_base_game_ships(self):
         return {Ship(1),
-                # Ship(1),
-                # Ship(1),
-                # Ship(1),
-                # Ship(2),
-                # Ship(2),
+                Ship(1),
+                Ship(1),
+                Ship(1),
                 Ship(2),
-                # Ship(3),
-                # Ship(3),
+                Ship(2),
+                Ship(2),
+                Ship(3),
+                Ship(3),
                 Ship(4)
                 }
 
@@ -87,20 +87,30 @@ class BaseBoard():
     def is_coordinate_in_board(self, row, col):
         return 0 <= row < self.rows_count and 0 <= col < self.columns_count
 
-    def occupy_coordinates_from_placement(self, ship, reverse=False):
+    def get_adjacent_coordinates(self, ship):
+        """Get all adjacent coordinates around a ship's position."""
         adjacent_offsets = [
             (dx, dy)
-            for dx in (-1, 0, 1)  # Change to 0 only to allow adjacency
+            for dx in (-1, 0, 1)
             for dy in (-1, 0, 1)
         ]
 
-        counter = 1 if not reverse else -1
-
+        adjacent_coords = []
         for coord in ship.coordinates:
             for dx, dy in adjacent_offsets:
                 adj_coord = (coord[0] + dx, coord[1] + dy)
                 if self.is_coordinate_in_board(*adj_coord):
-                    self.taken_coordinates[adj_coord] += counter
+                    adjacent_coords.append(adj_coord)
+
+        return adjacent_coords
+
+    def occupy_coordinates_from_placement(self, ship, reverse=False):
+        """Mark or unmark coordinates as occupied based on ship placement."""
+        counter = 1 if not reverse else -1
+        adjacent_coords = self.get_adjacent_coordinates(ship)
+
+        for adj_coord in adjacent_coords:
+            self.taken_coordinates[adj_coord] += counter
 
     def does_ship_overlap(self, new_ship):
         return any(self.taken_coordinates[coord] > 0 for coord in new_ship.coordinates)
@@ -126,6 +136,9 @@ class BaseBoard():
 
         return None
 
+    def is_ship_sunk_on(self, row, col):
+        return not self.get_ship_on_coord(row, col).is_alive
+
     def are_all_ships_sunk(self):
         return all(not ship.is_alive for ship_list in self.ships_map.values()
                    for ship in ship_list)
@@ -142,6 +155,10 @@ class BaseBoard():
 
         ship.sunk_coordinate(row, col)
         self.all_hit_coordinates |= ship.sunk_coordinates
+
+        if not ship.is_alive:
+            for adj_coordinate in self.get_adjacent_coordinates(ship):
+                self.shot_coordinates[adj_coordinate] += 1
 
         return True
 

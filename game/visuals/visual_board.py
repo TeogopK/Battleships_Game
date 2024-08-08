@@ -117,7 +117,7 @@ class VisualBoard(Sprite, BaseBoard):
 
     def draw_misses(self, window):
         for (row, col), hit_count in self.shot_coordinates.items():
-            if hit_count == 1 and (row, col) not in self.all_hit_coordinates:
+            if hit_count > 0 and (row, col) not in self.all_hit_coordinates:
                 tile = self.tiles[row][col]
                 miss_position = (tile.x, tile.y, tile.size, tile.size)
                 DrawUtils.draw_circle(
@@ -133,7 +133,7 @@ class VisualBoard(Sprite, BaseBoard):
                          border_rect, BORDER_WIDTH)
 
     def draw(self, window):
-        self.draw_board_border(window)  # Draw the border around the board
+        self.draw_board_border(window)
         self.draw_tiles(window)
         self.draw_ships(window)
         self.draw_hits(window)
@@ -141,7 +141,7 @@ class VisualBoard(Sprite, BaseBoard):
         self.draw_misses(window)
 
     def draw_for_enemy(self, window):
-        self.draw_board_border(window)  # Draw the border around the board
+        self.draw_board_border(window)
         self.draw_tiles(window)
         self.draw_hits(window)
         self.draw_sunk_ships(window)
