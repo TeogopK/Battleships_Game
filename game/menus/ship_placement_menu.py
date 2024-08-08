@@ -58,6 +58,19 @@ class ShipPlacementMenu:
             return
 
         pos = pygame.mouse.get_pos()
+        if not self.player.board.is_position_in_board(pos):
+            self.release_ship()
+            return
+
+        self.drag_ship(pos)
+
+    def on_mouse_button_up(self, event):
+        if not (event.button == 1 and self.dragging_ship):
+            return
+
+        self.release_ship()
+
+    def drag_ship(self, pos):
         new_row, new_col = self.player.board.get_row_col_by_mouse(pos)
         self.dragging_ship.move(
             new_row, new_col, self.dragging_ship.is_horizontal)
@@ -70,10 +83,7 @@ class ShipPlacementMenu:
         new_pos = self.player.board.get_tile_screen_placement(new_row, new_col)
         self.dragging_ship.update_visual_position(*new_pos)
 
-    def on_mouse_button_up(self, event):
-        if not (event.button == 1 and self.dragging_ship):
-            return
-
+    def release_ship(self):
         if not self.player.board.is_ship_placement_valid(self.dragging_ship):
             self.dragging_ship.move(
                 self.original_row, self.original_col, self.dragging_ship.is_horizontal)
