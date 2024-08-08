@@ -67,6 +67,13 @@ class ShuffleButton(Button):
 
 class ReadyButton(Button):
     def __init__(self, x, y):
-        super().__init__(x, y, text="Ready", font_size=28, text_color=colors.BUTTON_TEXT_COLOR,
+        super().__init__(x, y, text="Ready", font_size=30, text_color=colors.BUTTON_TEXT_COLOR,
+                         bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR,
+                         width=200, height=50, padding=20, border_radius=10)
+
+
+class ContinueButton(Button):
+    def __init__(self, x, y):
+        super().__init__(x, y, text="Continue", font_size=28, text_color=colors.BUTTON_TEXT_COLOR,
                          bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR,
                          width=200, height=50, padding=20, border_radius=10)

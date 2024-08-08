@@ -3,7 +3,7 @@ import pygame
 
 class DrawUtils:
     @staticmethod
-    def draw_cross(surface, top_left_x, top_left_y, size, color, line_thickness=3):
+    def draw_cross(surface, top_left_x, top_left_y, size, color, line_thickness=5):
         center_x = top_left_x + size // 2
         center_y = top_left_y + size // 2
         half_size = size // 3

@@ -7,6 +7,7 @@ class BattleMenu:
         self.enemy = enemy
 
         self.enemy_attack_position = (0, 0)
+        self.stop_showing_menu = False
 
     def draw(self, screen):
         self.player.board.draw(screen)
@@ -29,6 +30,8 @@ class BattleMenu:
                 self.player.end_turn()
                 self.enemy_attack()
                 self.player.take_turn()
+
+        self.is_battle_over()
 
     def is_click_within_enemy_board(self, pos):
         return self.enemy.board.is_position_in_board(pos)
@@ -53,11 +56,7 @@ class BattleMenu:
 
         return row, col
 
-    def check_game_over(self):
-        if self.player.are_all_ships_sunk():
-            print(f"{self.player.name} loses!")
-            return True
-        if self.enemy.are_all_ships_sunk():
-            print(f"{self.player.name} wins!")
-            return True
-        return False
+    def is_battle_over(self):
+        if self.player.are_all_ships_sunk() or self.enemy.are_all_ships_sunk():
+            print("GAME OVER")
+            self.stop_showing_menu = True

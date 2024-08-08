@@ -18,15 +18,15 @@ class BaseBoard():
 
     def get_base_game_ships(self):
         return {Ship(1),
-                Ship(1),
-                Ship(1),
-                Ship(1),
-                Ship(2),
-                Ship(2),
-                Ship(2),
-                Ship(3),
-                Ship(3),
-                Ship(4)
+                # Ship(1),
+                # Ship(1),
+                # Ship(1),
+                # Ship(2),
+                # Ship(2),
+                # Ship(2),
+                # Ship(3),
+                # Ship(3),
+                # Ship(4)
                 }
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
@@ -127,8 +127,8 @@ class BaseBoard():
         return None
 
     def are_all_ships_sunk(self):
-        all(not ship.is_alive for ship_list in self.ships_map.values()
-            for ship in ship_list)
+        return all(not ship.is_alive for ship_list in self.ships_map.values()
+                   for ship in ship_list)
 
     def is_coordinate_shot_at(self, row, col):
         return self.shot_coordinates[(row, col)] > 0
@@ -168,15 +168,4 @@ class BaseBoard():
 
 
 game = BaseBoard()
-ship = Ship(2, 0, 0, True)
-game.unplaced_ships.add(ship)
-game.place_ship(ship)
-
-ship2 = Ship(2, 2, 1, True)
-game.unplaced_ships.add(ship2)
-game.place_ship(ship2)
-
-game.flip_ship(ship)
-
-print(game)
-print(game.taken_coordinates.items())
+print(game.are_all_ships_sunk())

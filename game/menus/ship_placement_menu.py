@@ -12,7 +12,7 @@ class ShipPlacementMenu:
         self.shuffle_button = ShuffleButton(x=700, y=300)
         self.start_button = ReadyButton(x=700, y=400)
         self.dragging_ship = None
-        self.finish_phase = False
+        self.stop_showing_menu = False
         self.original_row = 0
         self.original_col = 0
 
@@ -33,7 +33,7 @@ class ShipPlacementMenu:
             self.player.board.random_shuffle_ships()
 
         if self.start_button.is_active() and self.can_continue():
-            self.finish_phase = True
+            self.stop_showing_menu = True
 
     def on_mouse_button_down(self, event):
         pos = pygame.mouse.get_pos()
