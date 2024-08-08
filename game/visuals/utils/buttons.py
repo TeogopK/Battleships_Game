@@ -1,4 +1,4 @@
-from game.visuals.utils.colours import WHITE, BLUE, LIGHT_BLUE
+from game.visuals.utils.colors import WHITE, BLUE, LIGHT_BLUE
 import pygame
 import pygame.freetype
 

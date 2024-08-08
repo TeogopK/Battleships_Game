@@ -3,6 +3,7 @@ from pygame.sprite import Sprite
 
 from game.visuals.utils.constants import RESOLUTION
 from game.interface.base_board import Ship
+from game.visuals.utils.colors import DEFAULT_SHIP_COLOR
 
 
 class Visual_Ship(Sprite, Ship):
@@ -12,7 +13,7 @@ class Visual_Ship(Sprite, Ship):
         self.coordinate_size = coordinate_size
         self.x = x
         self.y = y
-        self.color = (29, 53, 87)  # Default color
+        self.color = DEFAULT_SHIP_COLOR
 
     def get_visual_length(self):
         return self.ship_length * self.coordinate_size if self.is_horizontal else self.coordinate_size
