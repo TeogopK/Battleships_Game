@@ -9,11 +9,15 @@ class Ship():
     def sunk_coordinate(self, row, col):
         self.sunk_coordinates.add((row, col))
 
+        if self.is_sunk():
+            self.is_alive = False
+
     def repair_coordinate(self, row, col):
         # Use remove to throw exception
-        self.sunk_coordinates.discard((row, col))
+        if self.is_alive:
+            self.sunk_coordinates.discard((row, col))
 
-    def is_ship_sunk(self):
+    def is_sunk(self):
         return len(self.sunk_coordinates) == self.ship_length
 
     def is_coordinate_part_of_ship(self, row, col):

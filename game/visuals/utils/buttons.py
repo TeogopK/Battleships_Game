@@ -14,7 +14,6 @@ class Button:
         self.border_radius = border_radius
         self.clicked = False
 
-        # Create text surface
         self.image, self.rect = self.create_text_surface(text, text_color)
         self.rect.topleft = (x, y)
         self.update_rect_size()
@@ -32,12 +31,10 @@ class Button:
         pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(pos)
 
-        # Draw button background with rounded corners
         bg_color = self.hover_color if mouse_over else self.bg_color
         pygame.draw.rect(surface, bg_color, self.rect,
                          border_radius=self.border_radius)
 
-        # Center the text
         text_x = self.rect.x + (self.rect.width - self.image.get_width()) // 2
         text_y = self.rect.y + (self.rect.height -
                                 self.image.get_height()) // 2
@@ -47,7 +44,6 @@ class Button:
         pos = pygame.mouse.get_pos()
         mouse_over = self.rect.collidepoint(pos)
 
-        # Check for click
         if mouse_over and pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
             self.clicked = True
             return True
@@ -61,4 +57,10 @@ class Button:
 class ShuffleButton(Button):
     def __init__(self, x, y):
         super().__init__(x, y, text="Shuffle", font_size=30, text_color=WHITE,
+                         bg_color=BLUE, hover_color=LIGHT_BLUE, padding=20, border_radius=10)
+
+
+class ReadyButton(Button):
+    def __init__(self, x, y):
+        super().__init__(x, y, text="Ready", font_size=28, text_color=WHITE,
                          bg_color=BLUE, hover_color=LIGHT_BLUE, padding=20, border_radius=10)

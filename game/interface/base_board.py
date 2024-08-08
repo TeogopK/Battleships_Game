@@ -5,14 +5,16 @@ from game.interface.ship import Ship
 
 
 class BaseBoard():
-    BOARD_ROWS = BOARD_COLS = 10
+    BOARD_ROWS_DEFAULT = BOARD_COLS_DEFAULT = 10
 
-    def __init__(self, rows_count=10, columns_count=10):
+    def __init__(self, rows_count=BOARD_ROWS_DEFAULT, columns_count=BOARD_COLS_DEFAULT):
         self.rows_count = rows_count
         self.columns_count = columns_count
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
         self.unplaced_ships = self.get_base_game_ships()
+        self.shot_coordinates = defaultdict(int)
+        self.all_hit_coordinates = set()
 
     def get_base_game_ships(self):
         return {Ship(1),
@@ -83,7 +85,7 @@ class BaseBoard():
         self.move_ship(ship, ship.row, ship.col, not ship.is_horizontal)
 
     def is_coordinate_in_board(self, row, col):
-        return 0 <= row < self.BOARD_ROWS and 0 <= col < self.BOARD_COLS
+        return 0 <= row < self.rows_count and 0 <= col < self.columns_count
 
     def occupy_coordinates_from_placement(self, ship, reverse=False):
         adjacent_offsets = [
@@ -109,7 +111,7 @@ class BaseBoard():
                 self.remove_ship(ship)
 
     def is_there_a_ship_on_coord(self, row, col):
-        for ship_list in self.ships_map.items():
+        for ship_list in self.ships_map.values():
             for ship in ship_list:
                 if ship.is_coordinate_part_of_ship(row, col):
                     return True
@@ -123,6 +125,25 @@ class BaseBoard():
                     return ship
 
         return None
+
+    def are_all_ships_sunk(self):
+        all(not ship.is_alive for ship_list in self.ships_map.values()
+            for ship in ship_list)
+
+    def is_coordinate_shot_at(self, row, col):
+        return self.shot_coordinates[(row, col)] > 0
+
+    def register_shot(self, row, col):
+        self.shot_coordinates[(row, col)] += 1
+
+        ship = self.get_ship_on_coord(row, col)
+        if not ship:
+            return False
+
+        ship.sunk_coordinate(row, col)
+        self.all_hit_coordinates |= ship.sunk_coordinates
+
+        return True
 
     def __repr__(self):
         repr_str = ""

@@ -7,7 +7,7 @@ from game.visuals.visual_ship import Visual_Ship
 
 
 class VisualTile(Sprite):
-    TILE_SIZE = 60
+    TILE_SIZE = 50
 
     def __init__(self, x, y):
         super().__init__()
@@ -72,11 +72,11 @@ class VisualBoard(Sprite, BaseBoard):
 
     def populate_with_tiles(self):
         self.tiles = [[VisualTile(*self.get_tile_screen_placement(row, col))
-                       for col in range(self.BOARD_COLS)] for row in range(self.BOARD_ROWS)]
+                       for col in range(self.columns_count)] for row in range(self.rows_count)]
 
     def draw_tiles(self, window):
-        for row in range(self.BOARD_ROWS):
-            for col in range(self.BOARD_COLS):
+        for row in range(self.rows_count):
+            for col in range(self.columns_count):
                 tile = self.tiles[row][col]
                 tile.draw_tile(window)
 
@@ -100,9 +100,32 @@ class VisualBoard(Sprite, BaseBoard):
         col = (pos_x - self.x) // tile_size
         return row, col
 
+    def draw_hits(self, window):
+        for (row, col) in self.all_hit_coordinates:
+            tile = self.tiles[row][col]
+            hit_position = (tile.x, tile.y, tile.size, tile.size)
+            # Red color for hits
+            pygame.draw.rect(window, (255, 0, 0), hit_position)
+
+    def draw_misses(self, window):
+        for (row, col), hit_count in self.shot_coordinates.items():
+            if hit_count == 1 and (row, col) not in self.all_hit_coordinates:
+                tile = self.tiles[row][col]
+                miss_position = (tile.x, tile.y, tile.size, tile.size)
+                pygame.draw.circle(window, (0, 0, 255), (tile.x + tile.size // 2,
+                                   tile.y + tile.size // 2), tile.size // 4)  # Blue circle for misses
+
     def draw(self, window):
         self.draw_tiles(window)
+        self.draw_hits(window)
+        self.draw_misses(window)
+
         self.draw_ships(window)
+
+    def draw_for_enemy(self, window):
+        self.draw_tiles(window)
+        self.draw_hits(window)
+        self.draw_misses(window)
 
     def move_ship(self, ship, new_row, new_col, new_is_horizontal):
         BaseBoard.move_ship(self, ship, new_row, new_col, new_is_horizontal)
