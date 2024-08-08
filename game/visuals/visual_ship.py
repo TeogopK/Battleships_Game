@@ -3,7 +3,7 @@ from pygame.sprite import Sprite
 
 from game.visuals.utils.constants import RESOLUTION
 from game.interface.base_board import Ship
-from game.visuals.utils.colors import DEFAULT_SHIP_COLOR
+import game.visuals.utils.colors as colors
 
 
 class Visual_Ship(Sprite, Ship):
@@ -13,7 +13,7 @@ class Visual_Ship(Sprite, Ship):
         self.coordinate_size = coordinate_size
         self.x = x
         self.y = y
-        self.color = DEFAULT_SHIP_COLOR
+        self.color = colors.SHIP_DEFAULT_COLOR
 
     def get_visual_length(self):
         return self.ship_length * self.coordinate_size if self.is_horizontal else self.coordinate_size
@@ -38,7 +38,7 @@ class Visual_Ship(Sprite, Ship):
         ship_position = (
             self.x, self.y, self.get_visual_length(), self.get_visual_width())
         pygame.draw.rect(window, self.color, ship_position)
-        pygame.draw.rect(window, (0, 100, 0), ship_position, 1)
+        # pygame.draw.rect(window, colors.SHIP_BORDER_COLOR, ship_position, 1)
 
     def __repr__(self):
         return Ship.__repr__(self)

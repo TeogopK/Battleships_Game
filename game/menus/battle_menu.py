@@ -9,7 +9,6 @@ class BattleMenu:
         self.enemy_attack_position = (0, 0)
 
     def draw(self, screen):
-        screen.fill((0, 0, 0))
         self.player.board.draw(screen)
         self.enemy.board.draw_for_enemy(screen)
         pygame.display.flip()

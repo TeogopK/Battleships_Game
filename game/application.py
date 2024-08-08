@@ -3,6 +3,8 @@ from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATIO
 from game.menus.ship_placement_menu import ShipPlacementMenu
 from game.menus.battle_menu import BattleMenu
 from game.player import Player
+import game.visuals.utils.colors as colors
+
 
 FPS = 60
 
@@ -59,7 +61,7 @@ class Application:
     def update_screen(self):
         """Update the screen based on the current phase."""
         if self.in_placement_phase:
-            self.screen.fill((241, 250, 238))
+            self.screen.fill(colors.BACKGROUND_COLOR)
             self.ship_placement_menu.draw(self.screen)
         else:
             self.battle_menu.draw(self.screen)

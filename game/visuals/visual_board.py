@@ -107,7 +107,7 @@ class VisualBoard(Sprite, BaseBoard):
         for ship_list in self.ships_map.values():
             for ship in ship_list:
                 if not ship.is_alive:
-                    ship.set_color(colors.SUNK_SHIP_COLOR)
+                    ship.set_color(colors.SHIP_SUNK_COLOR)
                     ship.draw(window)
 
     def draw_hits(self, window):

@@ -1,6 +1,6 @@
-from game.visuals.utils.colors import WHITE, BLUE, LIGHT_BLUE
 import pygame
 import pygame.freetype
+import game.visuals.utils.colors as colors
 
 
 class Button:
@@ -56,11 +56,11 @@ class Button:
 
 class ShuffleButton(Button):
     def __init__(self, x, y):
-        super().__init__(x, y, text="Shuffle", font_size=30, text_color=WHITE,
-                         bg_color=BLUE, hover_color=LIGHT_BLUE, padding=20, border_radius=10)
+        super().__init__(x, y, text="Shuffle", font_size=30, text_color=colors.BUTTON_TEXT_COLOR,
+                         bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR, padding=20, border_radius=10)
 
 
 class ReadyButton(Button):
     def __init__(self, x, y):
-        super().__init__(x, y, text="Ready", font_size=28, text_color=WHITE,
-                         bg_color=BLUE, hover_color=LIGHT_BLUE, padding=20, border_radius=10)
+        super().__init__(x, y, text="Ready", font_size=28, text_color=colors.BUTTON_TEXT_COLOR,
+                         bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR, padding=20, border_radius=10)

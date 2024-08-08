@@ -3,7 +3,7 @@ from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATIO
 from game.visuals.visual_board import VisualBoard
 from game.visuals.utils.buttons import ShuffleButton, ReadyButton
 from game.visuals.utils.buttons import Button
-from game.visuals.utils.colors import DEFAULT_SHIP_COLOR, VALID_SHIP_PLACEMENT_COLOR, INVALID_SHIP_PLACEMENT_COLOR
+from game.visuals.utils.colors import SHIP_DEFAULT_COLOR, SHIP_VALID_PLACEMENT_COLOR, SHIP_INVALID_PLACEMENT_COLOR
 
 
 class ShipPlacementMenu:
@@ -63,9 +63,9 @@ class ShipPlacementMenu:
             new_row, new_col, self.dragging_ship.is_horizontal)
 
         if self.player.board.is_ship_placement_valid(self.dragging_ship):
-            self.dragging_ship.set_color(VALID_SHIP_PLACEMENT_COLOR)
+            self.dragging_ship.set_color(SHIP_VALID_PLACEMENT_COLOR)
         else:
-            self.dragging_ship.set_color(INVALID_SHIP_PLACEMENT_COLOR)
+            self.dragging_ship.set_color(SHIP_INVALID_PLACEMENT_COLOR)
 
         new_pos = self.player.board.get_tile_screen_placement(new_row, new_col)
         self.dragging_ship.update_visual_position(*new_pos)
@@ -82,7 +82,7 @@ class ShipPlacementMenu:
         else:
             self.player.board.place_ship(self.dragging_ship)
 
-        self.dragging_ship.set_color(DEFAULT_SHIP_COLOR)
+        self.dragging_ship.set_color(SHIP_DEFAULT_COLOR)
         self.dragging_ship = None
 
     def can_continue(self):
