@@ -1,22 +1,26 @@
 import pygame
-from game.visuals.utils.constants import WINDOW_WIDTH, WINDOW_HEIGHT, APPLICATION_TITLE
-from game.visuals.visual_board import VisualBoard
-from game.visuals.utils.buttons import ShuffleButton, ReadyButton
-from game.visuals.utils.buttons import Button
-from game.visuals.utils.colors import SHIP_DEFAULT_COLOR, SHIP_VALID_PLACEMENT_COLOR, SHIP_INVALID_PLACEMENT_COLOR
+from game.visuals.utils.buttons import BasicButton
+from game.menus.battle_menu import BattleMenu
+from game.menus.menu import Menu
+
+import game.visuals.utils.colors as colors
 
 
-class ShipPlacementMenu:
+class ShipPlacementMenu(Menu):
     def __init__(self, player):
+        super().__init__()
         self.player = player
-        self.shuffle_button = ShuffleButton(x=700, y=300)
-        self.start_button = ReadyButton(x=700, y=400)
+        self.shuffle_button = BasicButton(x=700, y=300, text="Shuffle")
+        self.start_button = BasicButton(x=700, y=400, text="Ready")
         self.dragging_ship = None
         self.stop_showing_menu = False
         self.original_row = 0
         self.original_col = 0
 
+        self.next_menu = None
+
     def draw(self, screen):
+        super().draw(screen)
         self.player.board.draw(screen)
         self.shuffle_button.draw(screen)
         self.start_button.draw(screen)
@@ -33,7 +37,7 @@ class ShipPlacementMenu:
             self.player.board.random_shuffle_ships()
 
         if self.start_button.is_active() and self.can_continue():
-            self.stop_showing_menu = True
+            self.next_menu = BattleMenu(self.player)
 
     def on_mouse_button_down(self, event):
         pos = pygame.mouse.get_pos()
@@ -76,9 +80,9 @@ class ShipPlacementMenu:
             new_row, new_col, self.dragging_ship.is_horizontal)
 
         if self.player.board.is_ship_placement_valid(self.dragging_ship):
-            self.dragging_ship.set_color(SHIP_VALID_PLACEMENT_COLOR)
+            self.dragging_ship.set_color(colors.SHIP_VALID_PLACEMENT_COLOR)
         else:
-            self.dragging_ship.set_color(SHIP_INVALID_PLACEMENT_COLOR)
+            self.dragging_ship.set_color(colors.SHIP_INVALID_PLACEMENT_COLOR)
 
         new_pos = self.player.board.get_tile_screen_placement(new_row, new_col)
         self.dragging_ship.update_visual_position(*new_pos)
@@ -92,7 +96,7 @@ class ShipPlacementMenu:
         else:
             self.player.board.place_ship(self.dragging_ship)
 
-        self.dragging_ship.set_color(SHIP_DEFAULT_COLOR)
+        self.dragging_ship.set_color(colors.SHIP_DEFAULT_COLOR)
         self.dragging_ship = None
 
     def can_continue(self):

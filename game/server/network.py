@@ -7,8 +7,8 @@ class Network:
         self.server = "192.168.1.101"
         self.port = 5555
         self.addr = (self.server, self.port)
-        self.id = self.connect()
-        print(f"Connected with ID: {self.id}")
+        self.id = self.connect()  # Not used as id
+        print(f"Connected to server!")
 
     def connect(self):
         try:
