@@ -204,14 +204,15 @@ class BaseBoard():
         return json.dumps(board_data)
 
     @staticmethod
-    def deserialize_board(board_state):
-        board_data = json.loads(board_state)
+    def deserialize_board(board_data):
+        board_json = json.loads(board_data)
+
         board = BaseBoard(
-            rows_count=board_data['rows_count'],
-            columns_count=board_data['columns_count']
+            rows_count=board_json['rows_count'],
+            columns_count=board_json['columns_count']
         )
 
-        for ship_data in board_data['ships']:
+        for ship_data in board_json['ships']:
             ship = Ship(ship_data['length'])
             ship.move(ship_data['row'], ship_data['col'],
                       ship_data['is_horizontal'])

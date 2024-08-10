@@ -12,7 +12,8 @@ class RoomClient():
     def add_board(self, board_json):
         try:
             self.board = BaseBoard.deserialize_board(board_json)
-        except Exception:
+        except Exception as e:
+            print(e)
             return False
 
         self.has_board = True
@@ -27,7 +28,7 @@ class Room:
         self.is_full = False
 
     def add_board_for_client(self, client, board_json):
-        self.clients[client].add_board(board_json)
+        return self.clients[client].add_board(board_json)
 
     def add_player(self, new_client):
         if len(self.clients) >= self.max_players:
