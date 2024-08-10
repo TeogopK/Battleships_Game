@@ -1,5 +1,6 @@
 import random
 from collections import defaultdict
+import json
 
 from game.interface.ship import Ship
 
@@ -183,6 +184,55 @@ class BaseBoard():
 
         return repr_str
 
+    def serialize_board(self):
+        ships_data = []
+        for ship_list in self.ships_map.values():
+            for ship in ship_list:
+                ship_info = {
+                    'row': ship.row,
+                    'col': ship.col,
+                    'length': ship.ship_length,
+                    'is_horizontal': ship.is_horizontal,
+                    'hit_coordinates': list(ship.sunk_coordinates),
+                }
+                ships_data.append(ship_info)
+        board_data = {
+            'rows_count': self.rows_count,
+            'columns_count': self.columns_count,
+            'ships': ships_data
+        }
+        return json.dumps(board_data)
 
-game = BaseBoard()
-print(game.are_all_ships_sunk())
+    @staticmethod
+    def deserialize_board(board_state):
+        board_data = json.loads(board_state)
+        board = BaseBoard(
+            rows_count=board_data['rows_count'],
+            columns_count=board_data['columns_count']
+        )
+
+        for ship_data in board_data['ships']:
+            ship = Ship(ship_data['length'])
+            ship.move(ship_data['row'], ship_data['col'],
+                      ship_data['is_horizontal'])
+
+            if board.is_ship_placement_valid(ship):
+                board.place_ship(ship)
+            else:
+                raise ValueError("Invalid ship placement detected.")
+
+        return board
+
+
+board = BaseBoard()
+print(board.random_shuffle_ships())
+print(board)
+
+with open('board_json.txt', 'w') as file:
+    file.write(board.serialize_board())
+
+
+with open('board_json.txt', 'r') as file:
+    board_state = file.read()
+game = BaseBoard.deserialize_board(board_state)
+print(game)
