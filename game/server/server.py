@@ -1,12 +1,14 @@
 import socket
 import random
+import json
+
 from _thread import start_new_thread
 from game.server.room import Room
 from game.server.command_handler import CommandHandler
 
 
 class Server:
-    def __init__(self, server="192.168.1.101", port=5555):
+    def __init__(self, server="localhost", port=5555):
         self.server = server
         self.port = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -76,6 +78,30 @@ class Server:
 
         return self.success_response(f"Client exited from room {room_id}")
 
+    def has_opponent_joined(self, client):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        if room.is_full:
+            return self.success_response("Opponent has joined the room!")
+
+        return self.error_response("Opponent has not joined the room!")
+
+    def receive_board(self, client, board_json):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        if room.add_board_for_client(client, board_json):
+            return self.success_response("Board added successfully!")
+
+        return self.error_response("Invalid board!")
+
     def run(self):
         while True:
             try:
@@ -111,11 +137,18 @@ class Server:
     def is_room_exists(self, room_id):
         return room_id in self.rooms
 
+    def format_response(self, status, message):
+        response = {
+            "status": status,
+            "message": message
+        }
+        return json.dumps(response)
+
     def success_response(self, message):
-        return f"Success: {message}"
+        return self.format_response("success", message)
 
     def error_response(self, message):
-        return f"Error: {message}"
+        return self.format_response("error", message)
 
 
 if __name__ == "__main__":

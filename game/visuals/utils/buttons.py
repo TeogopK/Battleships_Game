@@ -63,3 +63,10 @@ class BasicButton(Button):
         super().__init__(x, y, text=text, font_size=30, text_color=colors.BUTTON_TEXT_COLOR,
                          bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR,
                          width=width, height=50, padding=20, border_radius=10)
+
+
+class GoBackButton(Button):
+    def __init__(self, x, y):
+        super().__init__(x, y, text="Go back", font_size=22, text_color=colors.BUTTON_TEXT_COLOR,
+                         bg_color=colors.BUTTON_BACKGROUND_COLOR, hover_color=colors.BUTTON_HOVER_COLOR,
+                         width=100, height=30, padding=10, border_radius=10)

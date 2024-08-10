@@ -1,14 +1,12 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton
 from game.server.network import Network
-from game.menus.ship_placement_menu import ShipPlacementMenu
-from game.menus.multiplayer_menu import MultiplayerMenu
-from game.menus.menu import Menu
+import game.menus as menus
 import game.visuals.utils.colors as colors
 from game.players.player import Player
 
 
-class StartMenu(Menu):
+class StartMenu(menus.Menu):
     def __init__(self):
         super().__init__()
         self.play_offline_button = BasicButton(
@@ -25,15 +23,16 @@ class StartMenu(Menu):
 
     def start_offline_game(self):
         player = Player("Player 1", 70, 100)
-        self.next_menu = ShipPlacementMenu(player)
+        self.next_menu = menus.ShipPlacementMenu(player)
 
     def start_multiplayer_game(self):
         try:
             network_client = Network()
         except ConnectionError:
             print("Connection error!")
+            return
 
-        self.next_menu = MultiplayerMenu(network_client)
+        self.next_menu = menus.MultiplayerMenu(network_client)
 
     def draw(self, screen):
         super().draw(screen)

@@ -222,17 +222,3 @@ class BaseBoard():
                 raise ValueError("Invalid ship placement detected.")
 
         return board
-
-
-board = BaseBoard()
-print(board.random_shuffle_ships())
-print(board)
-
-with open('board_json.txt', 'w') as file:
-    file.write(board.serialize_board())
-
-
-with open('board_json.txt', 'r') as file:
-    board_state = file.read()
-game = BaseBoard.deserialize_board(board_state)
-print(game)

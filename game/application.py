@@ -1,10 +1,7 @@
 import pygame
 import game.visuals.utils.constants as constants
 
-from game.menus.ship_placement_menu import ShipPlacementMenu
-from game.menus.battle_menu import BattleMenu
-from game.menus.battle_end_menu import BattleEndMenu
-from game.menus.start_menu import StartMenu
+import game.menus as menus
 
 from game.players.player import Player
 from game.players.ai_player import BattleAI
@@ -18,7 +15,7 @@ class Application:
         self.screen = pygame.display.set_mode((width, height))
         self.fps = fps
         self.clock = pygame.time.Clock()
-        self.menu = StartMenu()
+        self.menu = menus.StartMenu()
 
     def run(self):
         running = True

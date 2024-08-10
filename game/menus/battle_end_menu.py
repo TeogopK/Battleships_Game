@@ -1,14 +1,14 @@
 import pygame
 import game.visuals.utils.colors as colors
-from game.visuals.utils.buttons import Button, ContinueButton
+from game.visuals.utils.buttons import BasicButton
 
 
 class BattleEndMenu:
     def __init__(self, player, enemy):
         self.player = player
         self.enemy = enemy
-        self.continue_button = ContinueButton(
-            x=550, y=630)
+        self.continue_button = BasicButton(
+            x=550, y=630, text="Continue")
         self.restart_game = False
 
     def draw(self, screen):

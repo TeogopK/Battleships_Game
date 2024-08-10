@@ -10,10 +10,11 @@ class ShipPlacementMenu(Menu):
     def __init__(self, player):
         super().__init__()
         self.player = player
+
         self.shuffle_button = BasicButton(x=700, y=300, text="Shuffle")
         self.start_button = BasicButton(x=700, y=400, text="Ready")
+
         self.dragging_ship = None
-        self.stop_showing_menu = False
         self.original_row = 0
         self.original_col = 0
 
@@ -37,7 +38,15 @@ class ShipPlacementMenu(Menu):
             self.player.board.random_shuffle_ships()
 
         if self.start_button.is_active() and self.can_continue():
+            self.handle_sending_board()
+
+    def handle_sending_board(self):
+        response = self.player.send_board()
+        if response['status'] == 'success':
+            print("Wait for opponent to send board!")
+
             self.next_menu = BattleMenu(self.player)
+        print(response)
 
     def on_mouse_button_down(self, event):
         pos = pygame.mouse.get_pos()
