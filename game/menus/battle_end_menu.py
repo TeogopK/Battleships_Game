@@ -7,8 +7,7 @@ class BattleEndMenu:
     def __init__(self, player, enemy):
         self.player = player
         self.enemy = enemy
-        self.continue_button = BasicButton(
-            x=550, y=630, text="Continue")
+        self.continue_button = BasicButton(x=550, y=630, text="Continue")
         self.restart_game = False
 
     def draw(self, screen):

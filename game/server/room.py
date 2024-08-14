@@ -1,7 +1,7 @@
 from game.interface.base_board import BaseBoard
 
 
-class RoomClient():
+class RoomClient:
     def __init__(self, client):
         self.client = client
         self.board = None
@@ -44,5 +44,4 @@ class Room:
         return True
 
     def start_battle(self):
-        print(
-            f"Battle started in Room {self.room_id} between {self.clients[0]} and {self.clients[1]}")
+        print(f"Battle started in Room {self.room_id} between {self.clients[0]} and {self.clients[1]}")

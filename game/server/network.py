@@ -17,8 +17,7 @@ class Network:
             self.client.settimeout(5)
             return self.client.recv(2048).decode()
         except socket.timeout:
-            raise ConnectionError(
-                "Connection timed out while trying to receive initial data.")
+            raise ConnectionError("Connection timed out while trying to receive initial data.")
         except socket.error as e:
             raise ConnectionError(f"Socket error: {e}")
 
@@ -43,9 +42,8 @@ class Network:
     def run(self):
         try:
             while True:
-                user_input = input(
-                    "> ")
-                if user_input.lower() == 'quit':
+                user_input = input("> ")
+                if user_input.lower() == "quit":
                     print("Exiting...")
                     break
                 response = self.send(user_input)

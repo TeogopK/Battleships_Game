@@ -43,8 +43,7 @@ class VisualBoard(Sprite, BaseBoard):
         self.random_shuffle_ships()
 
     def initialize_visual_ships(self):
-        self.unplaced_ships = {Visual_Ship(
-            ship.ship_length, self.get_tile_size()) for ship in self.unplaced_ships}
+        self.unplaced_ships = {Visual_Ship(ship.ship_length, self.get_tile_size()) for ship in self.unplaced_ships}
 
     def random_shuffle_ships(self):
         BaseBoard.random_shuffle_ships(self)
@@ -72,8 +71,10 @@ class VisualBoard(Sprite, BaseBoard):
         return (self.x + col * VisualTile.TILE_SIZE, self.y + row * VisualTile.TILE_SIZE)
 
     def populate_with_tiles(self):
-        self.tiles = [[VisualTile(*self.get_tile_screen_placement(row, col))
-                       for col in range(self.columns_count)] for row in range(self.rows_count)]
+        self.tiles = [
+            [VisualTile(*self.get_tile_screen_placement(row, col)) for col in range(self.columns_count)]
+            for row in range(self.rows_count)
+        ]
 
     def draw_tiles(self, window):
         for row in range(self.rows_count):
@@ -112,25 +113,24 @@ class VisualBoard(Sprite, BaseBoard):
         for (row, col) in self.all_hit_coordinates:
             tile = self.tiles[row][col]
             hit_position = (tile.x, tile.y, tile.size, tile.size)
-            DrawUtils.draw_cross(window, tile.x, tile.y,
-                                 tile.size, colors.SHOT_HIT_COLOR)
+            DrawUtils.draw_cross(window, tile.x, tile.y, tile.size, colors.SHOT_HIT_COLOR)
 
     def draw_misses(self, window):
         for (row, col), hit_count in self.shot_coordinates.items():
             if hit_count > 0 and (row, col) not in self.all_hit_coordinates:
                 tile = self.tiles[row][col]
                 miss_position = (tile.x, tile.y, tile.size, tile.size)
-                DrawUtils.draw_circle(
-                    window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR)
+                DrawUtils.draw_circle(window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR)
 
     def draw_board_border(self, window):
         BORDER_WIDTH = 5
-        border_rect = pygame.Rect(self.x - BORDER_WIDTH,
-                                  self.y - BORDER_WIDTH,
-                                  self.get_right_border() - self.x + BORDER_WIDTH * 2,
-                                  self.get_bottom_border() - self.y + BORDER_WIDTH * 2)
-        pygame.draw.rect(window, colors.BOARD_BORDER_COLOR,
-                         border_rect, BORDER_WIDTH)
+        border_rect = pygame.Rect(
+            self.x - BORDER_WIDTH,
+            self.y - BORDER_WIDTH,
+            self.get_right_border() - self.x + BORDER_WIDTH * 2,
+            self.get_bottom_border() - self.y + BORDER_WIDTH * 2,
+        )
+        pygame.draw.rect(window, colors.BOARD_BORDER_COLOR, border_rect, BORDER_WIDTH)
 
     def draw(self, window):
         self.draw_board_border(window)

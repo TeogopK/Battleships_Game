@@ -1,4 +1,4 @@
-class Ship():
+class Ship:
     def __init__(self, ship_length, row=None, col=None, is_horizontal=True):
         super().__init__()
         self.ship_length = ship_length
@@ -28,8 +28,10 @@ class Ship():
             self.coordinates = []
             return
 
-        self.coordinates = [(self.row + tile * (not self.is_horizontal), self.col + tile *
-                             self.is_horizontal) for tile in range(self.ship_length)]
+        self.coordinates = [
+            (self.row + tile * (not self.is_horizontal), self.col + tile * self.is_horizontal)
+            for tile in range(self.ship_length)
+        ]
 
     def flip(self):
         self.is_horizontal = not self.is_horizontal

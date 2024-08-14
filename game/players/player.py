@@ -19,10 +19,7 @@ class Player:
         self.has_sent_board = False
 
     def send_command(self, command_type, **kwargs):
-        command_data = {
-            "command": command_type,
-            "args": kwargs
-        }
+        command_data = {"command": command_type, "args": kwargs}
         command_json = json.dumps(command_data)
         response_json = self.network_client.send(command_json)
         response = json.loads(response_json)
@@ -34,9 +31,7 @@ class Player:
         return response
 
     def join_room_with_id(self, room_id):
-        response = self.send_command(
-            COMMAND_JOIN_ROOM_WITH_ID, room_id=room_id
-        )
+        response = self.send_command(COMMAND_JOIN_ROOM_WITH_ID, room_id=room_id)
 
         return response
 

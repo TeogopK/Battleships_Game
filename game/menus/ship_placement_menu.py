@@ -42,7 +42,7 @@ class ShipPlacementMenu(Menu):
 
     def handle_sending_board(self):
         response = self.player.send_board()
-        if response['status'] == 'success':
+        if response["status"] == "success":
             print("Wait for opponent to send board!")
 
             self.next_menu = BattleMenu(self.player)
@@ -85,8 +85,7 @@ class ShipPlacementMenu(Menu):
 
     def drag_ship(self, pos):
         new_row, new_col = self.player.board.get_row_col_by_mouse(pos)
-        self.dragging_ship.move(
-            new_row, new_col, self.dragging_ship.is_horizontal)
+        self.dragging_ship.move(new_row, new_col, self.dragging_ship.is_horizontal)
 
         if self.player.board.is_ship_placement_valid(self.dragging_ship):
             self.dragging_ship.set_color(colors.SHIP_VALID_PLACEMENT_COLOR)
@@ -98,8 +97,7 @@ class ShipPlacementMenu(Menu):
 
     def release_ship(self):
         if not self.player.board.is_ship_placement_valid(self.dragging_ship):
-            self.dragging_ship.move(
-                self.original_row, self.original_col, self.dragging_ship.is_horizontal)
+            self.dragging_ship.move(self.original_row, self.original_col, self.dragging_ship.is_horizontal)
             self.player.board.place_ship(self.dragging_ship)
             print("Cannot place ship here!")
         else:

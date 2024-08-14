@@ -138,10 +138,7 @@ class Server:
         return room_id in self.rooms
 
     def format_response(self, status, message):
-        response = {
-            "status": status,
-            "message": message
-        }
+        response = {"status": status, "message": message}
         return json.dumps(response)
 
     def success_response(self, message):

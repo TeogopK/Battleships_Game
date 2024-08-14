@@ -5,7 +5,7 @@ import json
 from game.interface.ship import Ship
 
 
-class BaseBoard():
+class BaseBoard:
     BOARD_ROWS_DEFAULT = BOARD_COLS_DEFAULT = 10
 
     def __init__(self, rows_count=BOARD_ROWS_DEFAULT, columns_count=BOARD_COLS_DEFAULT):
@@ -18,17 +18,7 @@ class BaseBoard():
         self.all_hit_coordinates = set()
 
     def get_base_game_ships(self):
-        return {Ship(1),
-                Ship(1),
-                Ship(1),
-                Ship(1),
-                Ship(2),
-                Ship(2),
-                Ship(2),
-                Ship(3),
-                Ship(3),
-                Ship(4)
-                }
+        return {Ship(1), Ship(1), Ship(1), Ship(1), Ship(2), Ship(2), Ship(2), Ship(3), Ship(3), Ship(4)}
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
         return random.randint(0, board_border - 1 - is_horizontal * ship_length)
@@ -41,10 +31,8 @@ class BaseBoard():
 
             while not placed:
                 is_horizontal = random.choice([True, False])
-                row = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.rows_count)
-                col = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.columns_count)
+                row = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.rows_count)
+                col = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.columns_count)
 
                 ship.move(row, col, is_horizontal)
 
@@ -90,11 +78,7 @@ class BaseBoard():
 
     def get_adjacent_coordinates(self, ship):
         """Get all adjacent coordinates around a ship's position."""
-        adjacent_offsets = [
-            (dx, dy)
-            for dx in (-1, 0, 1)
-            for dy in (-1, 0, 1)
-        ]
+        adjacent_offsets = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
 
         adjacent_coords = []
         for coord in ship.coordinates:
@@ -141,8 +125,7 @@ class BaseBoard():
         return not self.get_ship_on_coord(row, col).is_alive
 
     def are_all_ships_sunk(self):
-        return all(not ship.is_alive for ship_list in self.ships_map.values()
-                   for ship in ship_list)
+        return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
 
     def is_coordinate_shot_at(self, row, col):
         return self.shot_coordinates[(row, col)] > 0
@@ -166,13 +149,13 @@ class BaseBoard():
     def __repr__(self):
         repr_str = ""
         for ship in self.ships_map.values():
-            repr_str += str(ship) + '\n'
+            repr_str += str(ship) + "\n"
 
-        board_representation = [['-' for _ in range(10)] for _ in range(10)]
+        board_representation = [["-" for _ in range(10)] for _ in range(10)]
 
         for (row, col), value in self.taken_coordinates.items():
             if value:
-                board_representation[row][col] = '+'
+                board_representation[row][col] = "+"
 
         for ship_list in self.ships_map.values():
             for ship in ship_list:
@@ -180,7 +163,7 @@ class BaseBoard():
                     board_representation[row][col] = str(ship.ship_length)
 
         for row in board_representation:
-            repr_str += ' '.join(row) + '\n'
+            repr_str += " ".join(row) + "\n"
 
         return repr_str
 
@@ -189,33 +172,25 @@ class BaseBoard():
         for ship_list in self.ships_map.values():
             for ship in ship_list:
                 ship_info = {
-                    'row': ship.row,
-                    'col': ship.col,
-                    'length': ship.ship_length,
-                    'is_horizontal': ship.is_horizontal,
-                    'hit_coordinates': list(ship.sunk_coordinates),
+                    "row": ship.row,
+                    "col": ship.col,
+                    "length": ship.ship_length,
+                    "is_horizontal": ship.is_horizontal,
+                    "hit_coordinates": list(ship.sunk_coordinates),
                 }
                 ships_data.append(ship_info)
-        board_data = {
-            'rows_count': self.rows_count,
-            'columns_count': self.columns_count,
-            'ships': ships_data
-        }
+        board_data = {"rows_count": self.rows_count, "columns_count": self.columns_count, "ships": ships_data}
         return json.dumps(board_data)
 
     @staticmethod
     def deserialize_board(board_data):
         board_json = json.loads(board_data)
 
-        board = BaseBoard(
-            rows_count=board_json['rows_count'],
-            columns_count=board_json['columns_count']
-        )
+        board = BaseBoard(rows_count=board_json["rows_count"], columns_count=board_json["columns_count"])
 
-        for ship_data in board_json['ships']:
-            ship = Ship(ship_data['length'])
-            ship.move(ship_data['row'], ship_data['col'],
-                      ship_data['is_horizontal'])
+        for ship_data in board_json["ships"]:
+            ship = Ship(ship_data["length"])
+            ship.move(ship_data["row"], ship_data["col"], ship_data["is_horizontal"])
 
             if board.is_ship_placement_valid(ship):
                 board.place_ship(ship)

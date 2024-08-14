@@ -9,17 +9,19 @@ class DrawUtils:
         half_size = size // 3
 
         pygame.draw.line(
-            surface, color,
+            surface,
+            color,
             (center_x - half_size, center_y - half_size),
             (center_x + half_size, center_y + half_size),
-            line_thickness
+            line_thickness,
         )
 
         pygame.draw.line(
-            surface, color,
+            surface,
+            color,
             (center_x - half_size, center_y + half_size),
             (center_x + half_size, center_y - half_size),
-            line_thickness
+            line_thickness,
         )
 
     @staticmethod
@@ -28,8 +30,4 @@ class DrawUtils:
         Draws a miss mark on the given surface at the top-left coordinate (top_left_x, y)
         with the specified size and color.
         """
-        pygame.draw.circle(
-            surface, color,
-            (top_left_x + size // 2, top_left_y + size // 2),
-            size // 4
-        )
+        pygame.draw.circle(surface, color, (top_left_x + size // 2, top_left_y + size // 2), size // 4)

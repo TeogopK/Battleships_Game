@@ -41,8 +41,7 @@ class CommandHandler:
             if command is None:
                 return self.server.error_response("Unknown command")
 
-            missing_args = [
-                arg for arg in command.required_args if arg not in args]
+            missing_args = [arg for arg in command.required_args if arg not in args]
             if missing_args:
                 return self.server.error_response(f"Missing arguments: {', '.join(missing_args)}")
 

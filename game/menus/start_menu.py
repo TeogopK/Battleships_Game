@@ -9,8 +9,7 @@ from game.players.player import Player
 class StartMenu(menus.Menu):
     def __init__(self):
         super().__init__()
-        self.play_offline_button = BasicButton(
-            x=250, y=630, text="Play offline")
+        self.play_offline_button = BasicButton(x=250, y=630, text="Play offline")
         self.play_online_button = BasicButton(x=650, y=630, text="Play online")
         self.next_menu = None
 
@@ -22,7 +21,7 @@ class StartMenu(menus.Menu):
             self.start_multiplayer_game()
 
     def start_offline_game(self):
-        player = Player("Player 1", 70, 100)
+        player = Player("Player 1", None)
         self.next_menu = menus.ShipPlacementMenu(player)
 
     def start_multiplayer_game(self):

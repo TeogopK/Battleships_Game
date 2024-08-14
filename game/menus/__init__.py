@@ -7,11 +7,11 @@ from .battle_menu import BattleMenu
 from .wait_for_opponent_menu import WaitForOpponentMenu
 
 __all__ = [
-    'BattleEndMenu',
-    'BattleMenu',
-    'Menu',
-    'MultiplayerMenu',
-    'ShipPlacementMenu',
-    'StartMenu',
-    'WaitForOpponentMenu',
+    "BattleEndMenu",
+    "BattleMenu",
+    "Menu",
+    "MultiplayerMenu",
+    "ShipPlacementMenu",
+    "StartMenu",
+    "WaitForOpponentMenu",
 ]

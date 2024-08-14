@@ -70,8 +70,8 @@ class BattleAI(Player):
 
     def add_positions_to_stack(self, positions):
         valid_moves = [
-            (new_row, new_col) for new_row, new_col in positions
-            if (new_row, new_col) not in self.shot_history and
-            self.board.is_coordinate_in_board(new_row, new_col)
+            (new_row, new_col)
+            for new_row, new_col in positions
+            if (new_row, new_col) not in self.shot_history and self.board.is_coordinate_in_board(new_row, new_col)
         ]
         self.hit_stack.extend(valid_moves)
