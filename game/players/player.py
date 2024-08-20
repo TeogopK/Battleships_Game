@@ -8,9 +8,10 @@ COMMAND_JOIN_RANDOM_ROOM = "join_random_room"
 COMMAND_SEND_BOARD = "send_board"
 COMMAND_EXIT_ROOM = "exit_room"
 COMMAND_HAS_OPPONENT_JOINED = "has_opponent_joined"
-COMMAND_CAN_GAME_START = "exit_room"
+COMMAND_IS_OPPONENT_READY = "is_opponent_ready"
 
 COMMAND_REGISTER_SHOT = "register_shot"
+COMMAND_ASK_TO_RECEIVE_SHOT = "ask_to_receive_shot"
 
 
 class Player:
@@ -22,7 +23,8 @@ class Player:
         self.enemy_board_view = VisualBoardEnemyView(x=700, y=100)
 
         self.has_sent_board = False
-        self.is_turn = True
+        self.is_turn = False
+        self.turn_end_time = None
 
     def send_command(self, command_type, **kwargs):
         command_data = {"command": command_type, "args": kwargs}
@@ -50,6 +52,7 @@ class Player:
         board_json = self.board.serialize_board()
         response = self.send_command(COMMAND_SEND_BOARD, board_json=board_json)
 
+        self.has_sent_board = response["status"]
         return response
 
     def exit_room(self):
@@ -62,8 +65,11 @@ class Player:
 
         return response
 
-    def ask_can_game_start(self):
-        response = self.send_command(COMMAND_SEND_BOARD)
+    def is_opponent_ready(self):
+        response = self.send_command(COMMAND_IS_OPPONENT_READY)
+
+        if response["status"] == "success":
+            self.is_turn = response["args"]["is_turn"]
 
         return response
 
@@ -84,8 +90,21 @@ class Player:
             ship = Ship.deserialize(response_args["sunk_ship"])
             self.enemy_board_view.reveal_sunk_ship(ship)
 
-        if response_args["is_turn"]:
-            self.is_turn = True
+        self.is_turn = response_args["is_turn"]
+        self.turn_end_time = response_args["turn_end_time"]
+
+    def ask_to_receive_shot(self):
+        response = self.send_command(COMMAND_ASK_TO_RECEIVE_SHOT)
+
+        if response["status"] == "error":
+            return
+
+        response_args = response["args"]
+        row, col = response_args["row"], response_args["col"]
+
+        self.board.register_shot(row, col)
+        self.is_turn = response_args["is_turn"]
+        self.turn_end_time = response_args["turn_end_time"]
 
     def are_all_ships_sunk(self):
         return self.board.are_all_ships_sunk()

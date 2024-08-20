@@ -5,6 +5,8 @@ from game.menus.menu import Menu
 
 import game.visuals.utils.colors as colors
 
+IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 2
+
 
 class ShipPlacementMenu(Menu):
     def __init__(self, player):
@@ -19,6 +21,7 @@ class ShipPlacementMenu(Menu):
         self.original_col = 0
 
         self.next_menu = None
+        pygame.time.set_timer(IS_OPPONENT_READY_EVENT, 2000)
 
     def draw(self, screen):
         super().draw(screen)
@@ -27,26 +30,34 @@ class ShipPlacementMenu(Menu):
         self.start_button.draw(screen)
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            self.on_mouse_button_down(event)
-        elif event.type == pygame.MOUSEBUTTONUP:
-            self.on_mouse_button_up(event)
-        elif event.type == pygame.MOUSEMOTION:
-            self.on_mouse_motion(event)
+        if self.player.has_sent_board:
+            if event.type == IS_OPPONENT_READY_EVENT:
+                self.handle_is_opponent_ready()
 
-        if self.shuffle_button.is_active():
-            self.player.board.random_shuffle_ships()
+        else:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.on_mouse_button_down(event)
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.on_mouse_button_up(event)
+            elif event.type == pygame.MOUSEMOTION:
+                self.on_mouse_motion(event)
 
-        if self.start_button.is_active() and self.can_continue():
-            self.handle_sending_board()
+            if self.shuffle_button.is_active():
+                self.player.board.random_shuffle_ships()
+
+            if self.start_button.is_active() and self.can_continue():
+                self.handle_sending_board()
+
+    def handle_is_opponent_ready(self):
+        response = self.player.is_opponent_ready()
+
+        if response["status"] == "success":
+            self.next_menu = BattleMenu(self.player)
 
     def handle_sending_board(self):
         response = self.player.send_board()
         if response["status"] == "success":
             print("Wait for opponent to send board!")
-
-            self.next_menu = BattleMenu(self.player)
-        print(response)
 
     def on_mouse_button_down(self, event):
         pos = pygame.mouse.get_pos()
@@ -97,7 +108,9 @@ class ShipPlacementMenu(Menu):
 
     def release_ship(self):
         if not self.player.board.is_ship_placement_valid(self.dragging_ship):
-            self.dragging_ship.move(self.original_row, self.original_col, self.dragging_ship.is_horizontal)
+            self.dragging_ship.move(
+                self.original_row, self.original_col, self.dragging_ship.is_horizontal
+            )
             self.player.board.place_ship(self.dragging_ship)
             print("Cannot place ship here!")
         else:

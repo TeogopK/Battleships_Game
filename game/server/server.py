@@ -102,6 +102,27 @@ class Server:
 
         return self.error_response("Invalid board!")
 
+    def is_opponent_ready(self, client):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        opponent = room.get_opponent_client(client)
+
+        if opponent == None:
+            return self.error_response("No opponent found!")
+
+        if not room.does_client_have_board(opponent):
+            return self.error_response("Opponent has no board yet!")
+
+        room.start_battle()
+
+        return self.success_response(
+            "Starting game!", is_turn=room.is_client_turn(client)
+        )
+
     def register_shot(self, client, row, col):
         if not self.is_client_in_room(client):
             return self.error_response("Client is not in a room!")
@@ -112,12 +133,7 @@ class Server:
         if not room.is_client_turn(client):
             return self.error_response("Not player's turn!", is_player_turn=False)
 
-        row, col = room.convert_coordinates(row, col)
-        if (
-            row == None
-            or col == None
-            or not room.is_client_shot_valid(client, row, col)
-        ):
+        if not room.is_client_shot_valid(client, row, col):
             return self.error_response("Invalid shot", is_shot_valid=False)
 
         is_ship_hit, is_ship_sunk, ship = room.register_shot_for_client(
@@ -131,6 +147,29 @@ class Server:
             has_sunk_ship=is_ship_sunk,
             sunk_ship=ship.serialize() if is_ship_sunk else None,
             is_turn=is_turn,
+            turn_end_time=0,
+        )
+
+    def send_opponents_shot(self, client):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        last_shot = room.give_shot_from_history(client)
+        if last_shot == None:
+            return self.error_response("Client is not in a room!")
+
+        row, col = last_shot
+        is_turn = room.is_client_turn(client)
+
+        return self.success_response(
+            "Shot was made by the opponent!",
+            row=row,
+            col=col,
+            is_turn=is_turn,
+            turn_end_time=0,
         )
 
     def run(self):

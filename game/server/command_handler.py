@@ -7,6 +7,8 @@ COMMAND_SEND_BOARD = "send_board"
 COMMAND_EXIT_ROOM = "exit_room"
 COMMAND_HAS_OPPONENT_JOINED = "has_opponent_joined"
 COMMAND_REGISTER_SHOT = "register_shot"
+COMMAND_ASK_TO_RECEIVE_SHOT = "ask_to_receive_shot"
+COMMAND_IS_OPPONENT_READY = "is_opponent_ready"
 
 
 class Command:
@@ -32,12 +34,18 @@ class CommandHandler:
             COMMAND_SEND_BOARD: Command(
                 COMMAND_SEND_BOARD, self.server.receive_board, ["board_json"]
             ),
+            COMMAND_IS_OPPONENT_READY: Command(
+                COMMAND_IS_OPPONENT_READY, self.server.is_opponent_ready, []
+            ),
             COMMAND_EXIT_ROOM: Command(COMMAND_EXIT_ROOM, self.server.exit_room, []),
             COMMAND_HAS_OPPONENT_JOINED: Command(
                 COMMAND_HAS_OPPONENT_JOINED, self.server.has_opponent_joined, []
             ),
             COMMAND_REGISTER_SHOT: Command(
                 COMMAND_REGISTER_SHOT, self.server.register_shot, ["row", "col"]
+            ),
+            COMMAND_ASK_TO_RECEIVE_SHOT: Command(
+                COMMAND_ASK_TO_RECEIVE_SHOT, self.server.send_opponents_shot, []
             ),
         }
 
