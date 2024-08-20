@@ -41,21 +41,21 @@ class Server:
         room = Room(room_id, client)
         self.rooms[room_id] = room
         self.clients_to_rooms[client] = room_id
-        return self.success_response(f"Room {room_id} created", room_id=room_id)
+        return self.success_response(f"Room {room_id} created!", room_id=room_id)
 
     def join_room_with_id(self, client, room_id):
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
         if not self.is_room_exists(room_id):
-            return self.error_response("Room ID not found.")
+            return self.error_response("Room ID not found!")
 
         room = self.rooms[room_id]
         if not room.add_player(client):
-            return self.error_response("Room is full or player is already in the room.")
+            return self.error_response("Room is full or player is already in the room!")
 
         self.clients_to_rooms[client] = room_id
-        return self.success_response(f"Joined room {room_id}", room_id=room_id)
+        return self.success_response(f"Joined room {room_id}!", room_id=room_id)
 
     def change_room_publicity(self, client):
         if not self.is_client_in_room(client):
@@ -83,7 +83,7 @@ class Server:
                     f"Joined room {room.room_id}", room_id=room.room_id
                 )
 
-        return self.error_response("No available rooms to join")
+        return self.error_response("No available rooms to join!")
 
     def exit_room(self, client):
         if not self.is_client_in_room(client):
@@ -92,7 +92,7 @@ class Server:
         room_id = self.clients_to_rooms.pop(client)
         self.rooms.pop(room_id)
 
-        return self.success_response(f"Client exited from room {room_id}")
+        return self.success_response(f"Client exited from room {room_id}!")
 
     def has_opponent_joined(self, client):
         if not self.is_client_in_room(client):
@@ -150,7 +150,7 @@ class Server:
             return self.error_response("Not player's turn!", is_player_turn=False)
 
         if not room.is_client_shot_valid(client, row, col):
-            return self.error_response("Invalid shot", is_shot_valid=False)
+            return self.error_response("Invalid shot!", is_shot_valid=False)
 
         is_ship_hit, is_ship_sunk, ship = room.register_shot_for_client(
             client, row, col

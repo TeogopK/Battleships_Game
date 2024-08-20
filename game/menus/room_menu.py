@@ -7,6 +7,7 @@ from game.visuals.utils.shapes import DrawUtils
 import game.visuals.utils.colors as colors
 
 CHECK_OPPONENT_EVENT = pygame.USEREVENT + 1
+UPDATE_WAITING_MESSAGE_EVENT = pygame.USEREVENT + 8
 
 
 class RoomMenu(menus.Menu):
@@ -23,6 +24,9 @@ class RoomMenu(menus.Menu):
         self.is_room_private = False
 
         pygame.time.set_timer(CHECK_OPPONENT_EVENT, 2000)
+        pygame.time.set_timer(UPDATE_WAITING_MESSAGE_EVENT, 500)
+
+        self.waiting_dots = 0
 
     def handle_event(self, event):
         if self.exit_room_button.is_active():
@@ -33,6 +37,9 @@ class RoomMenu(menus.Menu):
 
         if event.type == CHECK_OPPONENT_EVENT:
             self.check_has_opponent_joined()
+
+        if event.type == UPDATE_WAITING_MESSAGE_EVENT:
+            self.update_waiting_dots()
 
     def exit_room(self):
         response = self.player.exit_room()
@@ -58,6 +65,12 @@ class RoomMenu(menus.Menu):
         if response.get("status") == "success":
             self.next_menu = menus.ShipPlacementMenu(self.player, self.room_id)
 
+    def update_waiting_dots(self):
+        self.waiting_dots = (self.waiting_dots + 1) % 4
+
+    def get_waiting_message(self):
+        return f"Waiting for someone to join{'.' * self.waiting_dots}"
+
     def draw(self, screen):
         super().draw(screen)
         self.exit_room_button.draw(screen)
@@ -68,5 +81,7 @@ class RoomMenu(menus.Menu):
             screen, f"Room ID: {self.room_id} ", 620, 300, 64, glow_size=3
         )
 
-        DrawUtils.draw_label(screen, "Room privacy: ", x=620, y=450)
-        DrawUtils.draw_input_text(screen, self.get_room_privacy_label(), x=620, y=500)
+        DrawUtils.draw_label(screen, "Room privacy: ", x=620, y=430)
+        DrawUtils.draw_input_text(screen, self.get_room_privacy_label(), x=620, y=480)
+
+        DrawUtils.draw_label(screen, self.get_waiting_message(), x=620, y=570)
