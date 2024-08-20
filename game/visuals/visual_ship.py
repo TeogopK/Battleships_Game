@@ -14,7 +14,7 @@ class Visual_Ship(Sprite, Ship):
         col=None,
         is_horizontal=True,
         is_alive=True,
-        sunk_coordinates=set(),
+        sunk_coordinates=None,
         coordinate_size=None,
         x=None,
         y=None,

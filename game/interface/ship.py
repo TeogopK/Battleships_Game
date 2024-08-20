@@ -9,16 +9,17 @@ class Ship:
         col=None,
         is_horizontal=True,
         is_alive=True,
-        sunk_coordinates=set(),
+        sunk_coordinates=None,
     ):
         super().__init__()
         self.ship_length = ship_length
         self.move(row, col, is_horizontal)
         self.is_alive = is_alive
-        self.sunk_coordinates = sunk_coordinates
+        self.sunk_coordinates = sunk_coordinates if sunk_coordinates != None else set()
 
     def sunk_coordinate(self, row, col):
-        self.sunk_coordinates.add((row, col))
+        if (row, col) in self.coordinates:
+            self.sunk_coordinates.add((row, col))
 
         if self.is_sunk():
             self.is_alive = False
@@ -87,17 +88,3 @@ class Ship:
             ),
         )
         return ship
-
-
-s = Ship(3, 10, 1, False)
-s.fill_coordinates()
-print(s.is_coordinate_part_of_ship(1, 1))
-print(s.is_coordinate_part_of_ship(1, 11))
-s.sunk_coordinate(1, 1)
-s.sunk_coordinate(2, 1)
-s.sunk_coordinate(3, 1)
-print(s)
-
-gg = s.serialize()
-ss = Ship.deserialize(gg)
-print(ss)

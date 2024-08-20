@@ -177,7 +177,7 @@ class BaseBoard:
 
         is_ship_hit = True
         ship.sunk_coordinate(row, col)
-        self.all_hit_coordinates |= ship.sunk_coordinates
+        self.all_hit_coordinates.update(ship.sunk_coordinates)
 
         is_ship_sunk = not ship.is_alive
         if is_ship_sunk:
@@ -245,7 +245,7 @@ class BaseBoardEnemyView(BaseBoard):
         rows_count=BaseBoard.BOARD_ROWS_DEFAULT,
         columns_count=BaseBoard.BOARD_COLS_DEFAULT,
     ):
-        super().__init__(rows_count, columns_count, unplaced_ships=set())
+        super().__init__(rows_count, columns_count, set())
 
     def register_shot(self, row, col, is_hit):
         self.shot_coordinates[(row, col)] += 1

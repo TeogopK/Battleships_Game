@@ -159,7 +159,7 @@ class Server:
 
         last_shot = room.give_shot_from_history(client)
         if last_shot == None:
-            return self.error_response("Client is not in a room!")
+            return self.error_response("Client has not made a shot yet!")
 
         row, col = last_shot
         is_turn = room.is_client_turn(client)
