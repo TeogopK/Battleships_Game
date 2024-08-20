@@ -72,3 +72,5 @@ class CommandHandler:
             return command.handler(client, **args)
         except json.JSONDecodeError:
             return self.server.error_response("Invalid JSON format")
+        except Exception as e:
+            return self.server.error_response("Server error!")

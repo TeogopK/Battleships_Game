@@ -77,12 +77,12 @@ class Room:
         target_client = self.get_opponent_client(client)
         is_ship_hit, is_ship_sunk, ship = target_client.board.register_shot(row, col)
 
-        target_client.shot_history.append((row, col))
-
         if is_ship_hit:
             self.give_client_turn(client)
         else:
             self.take_client_turn(client)
+
+        target_client.shot_history.append((row, col, target_client.is_turn))
 
         return is_ship_hit, is_ship_sunk, ship
 

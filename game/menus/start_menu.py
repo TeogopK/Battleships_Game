@@ -4,6 +4,7 @@ from game.server.network import Network
 import game.menus as menus
 import game.visuals.utils.colors as colors
 from game.players.player import Player
+from game.visuals.utils.shapes import DrawUtils
 
 
 class StartMenu(menus.Menu):
@@ -37,3 +38,4 @@ class StartMenu(menus.Menu):
         super().draw(screen)
         self.play_online_button.draw(screen)
         self.play_offline_button.draw(screen)
+        DrawUtils.draw_title(screen, "Battleships", 128, 620, 200, glow_size=7)

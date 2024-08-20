@@ -1,4 +1,5 @@
 import pygame
+import game.visuals.utils.colors as colors
 
 
 class DrawUtils:
@@ -30,4 +31,26 @@ class DrawUtils:
         Draws a miss mark on the given surface at the top-left coordinate (top_left_x, y)
         with the specified size and color.
         """
-        pygame.draw.circle(surface, color, (top_left_x + size // 2, top_left_y + size // 2), size // 4)
+        pygame.draw.circle(
+            surface, color, (top_left_x + size // 2, top_left_y + size // 2), size // 4
+        )
+
+    @staticmethod
+    def draw_title(surface, text, font_size, x, y, glow_size):
+        main_color = colors.TITLE_TEXT_COLOR
+        glow_color = colors.TITLE_SHADOW_COLOR
+
+        font = pygame.font.Font(None, font_size)
+
+        text_surface = font.render(text, True, main_color)
+        glow_surface = font.render(text, True, glow_color)
+
+        text_rect = text_surface.get_rect(center=(x, y))
+
+        for offset in range(1, glow_size):
+            surface.blit(glow_surface, text_rect.move(-offset, 0))
+            surface.blit(glow_surface, text_rect.move(offset, 0))
+            surface.blit(glow_surface, text_rect.move(0, -offset))
+            surface.blit(glow_surface, text_rect.move(0, offset))
+
+        surface.blit(text_surface, text_rect)

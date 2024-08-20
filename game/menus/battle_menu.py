@@ -11,7 +11,7 @@ class BattleMenu(menus.Menu):
     def __init__(self, player):
         super().__init__()
         self.player = player
-        pygame.time.set_timer(ASK_RECEIVE_SHOT_EVENT, 2000)
+        pygame.time.set_timer(ASK_RECEIVE_SHOT_EVENT, 1000)
 
     def draw(self, screen):
         self.player.board.draw(screen)

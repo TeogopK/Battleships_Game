@@ -44,7 +44,7 @@ class Server:
         print(f"Room {room_id} created")
         return self.success_response(f"Room {room_id} created")
 
-    def join_room_with_id(self, room_id, client):
+    def join_room_with_id(self, client, room_id):
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
@@ -161,8 +161,7 @@ class Server:
         if last_shot == None:
             return self.error_response("Client has not made a shot yet!")
 
-        row, col = last_shot
-        is_turn = room.is_client_turn(client)
+        row, col, is_turn = last_shot
 
         return self.success_response(
             "Shot was made by the opponent!",

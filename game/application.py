@@ -9,7 +9,12 @@ import game.visuals.utils.colors as colors
 
 
 class Application:
-    def __init__(self, width=constants.WINDOW_WIDTH, height=constants.WINDOW_HEIGHT, fps=constants.FPS):
+    def __init__(
+        self,
+        width=constants.WINDOW_WIDTH,
+        height=constants.WINDOW_HEIGHT,
+        fps=constants.FPS,
+    ):
         pygame.init()
         pygame.display.set_caption(constants.APPLICATION_TITLE)
         self.screen = pygame.display.set_mode((width, height))
