@@ -7,7 +7,7 @@ class RoomClient:
         self.board = None
         self.has_board = False
 
-        self.is_turn = False
+        self.is_turn = True
 
     def add_board(self, board_json):
         try:
@@ -18,6 +18,11 @@ class RoomClient:
 
         self.has_board = True
         return True
+
+    def is_shot_valid(self, row, col):
+        return self.board.is_coordinate_in_board(
+            row, col
+        ) and not self.board.is_coordinate_shot_at(row, col)
 
 
 class Room:
@@ -43,5 +48,43 @@ class Room:
 
         return True
 
+    def is_client_turn(self, client):
+        return self.clients[client].is_turn
+
+    def give_client_turn(self, client):
+        self.clients[client].is_turn = True
+
+    def take_client_turn(self, client):
+        self.clients[client].is_turn = False
+
+    def convert_coordinates(self, row_string, col_string):
+        try:
+            row = int(row_string)
+            col = int(col_string)
+            return row, col
+        except ValueError:
+            return None, None
+
+    def is_client_shot_valid(self, client, row, col):
+        target_client = self.get_opponent_client(client)
+        return target_client.is_shot_valid(row, col)
+
+    def register_shot_for_client(self, client, row, col):
+        target_client = self.get_opponent_client(client)
+        is_ship_hit, is_ship_sunk, ship = target_client.board.register_shot(row, col)
+
+        if not is_ship_hit:
+            pass  # self.take_client_turn(client)
+
+        return is_ship_hit, is_ship_sunk, ship
+
+    def get_opponent_client(self, client):
+        for opponent_client in self.clients:
+            if opponent_client != client:
+                return self.clients[opponent_client]
+        return None
+
     def start_battle(self):
-        print(f"Battle started in Room {self.room_id} between {self.clients[0]} and {self.clients[1]}")
+        print(
+            f"Battle started in Room {self.room_id} between {self.clients[0]} and {self.clients[1]}"
+        )

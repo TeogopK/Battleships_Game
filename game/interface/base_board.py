@@ -8,17 +8,38 @@ from game.interface.ship import Ship
 class BaseBoard:
     BOARD_ROWS_DEFAULT = BOARD_COLS_DEFAULT = 10
 
-    def __init__(self, rows_count=BOARD_ROWS_DEFAULT, columns_count=BOARD_COLS_DEFAULT):
+    def __init__(
+        self,
+        rows_count=BOARD_ROWS_DEFAULT,
+        columns_count=BOARD_COLS_DEFAULT,
+        unplaced_ships=None,
+    ):
         self.rows_count = rows_count
         self.columns_count = columns_count
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
-        self.unplaced_ships = self.get_base_game_ships()
+        self.unplaced_ships = (
+            unplaced_ships
+            if unplaced_ships != None
+            else BaseBoard.get_base_game_ships()
+        )
         self.shot_coordinates = defaultdict(int)
         self.all_hit_coordinates = set()
 
-    def get_base_game_ships(self):
-        return {Ship(1), Ship(1), Ship(1), Ship(1), Ship(2), Ship(2), Ship(2), Ship(3), Ship(3), Ship(4)}
+    @staticmethod
+    def get_base_game_ships():
+        return {
+            Ship(1),
+            Ship(1),
+            Ship(1),
+            Ship(1),
+            Ship(2),
+            Ship(2),
+            Ship(2),
+            Ship(3),
+            Ship(3),
+            Ship(4),
+        }
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
         return random.randint(0, board_border - 1 - is_horizontal * ship_length)
@@ -26,13 +47,19 @@ class BaseBoard:
     def random_shuffle_ships(self):
         self.remove_all_ships()
 
-        for ship in sorted(list(self.unplaced_ships), key=lambda ship: -ship.ship_length):
+        for ship in sorted(
+            list(self.unplaced_ships), key=lambda ship: -ship.ship_length
+        ):
             placed = False
 
             while not placed:
                 is_horizontal = random.choice([True, False])
-                row = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.rows_count)
-                col = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.columns_count)
+                row = self.get_random_start_for_ship(
+                    ship.ship_length, is_horizontal, self.rows_count
+                )
+                col = self.get_random_start_for_ship(
+                    ship.ship_length, is_horizontal, self.columns_count
+                )
 
                 ship.move(row, col, is_horizontal)
 
@@ -44,7 +71,9 @@ class BaseBoard:
         return self.is_ship_in_board(ship) and not self.does_ship_overlap(ship)
 
     def is_ship_in_board(self, ship):
-        return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
+        return all(
+            self.is_coordinate_in_board(row, col) for row, col in ship.coordinates
+        )
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
@@ -125,26 +154,37 @@ class BaseBoard:
         return not self.get_ship_on_coord(row, col).is_alive
 
     def are_all_ships_sunk(self):
-        return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
+        return all(
+            not ship.is_alive
+            for ship_list in self.ships_map.values()
+            for ship in ship_list
+        )
+
+    def is_coordinate_in_board(self, row, col):
+        return 0 <= row < self.rows_count and 0 <= col < self.columns_count
 
     def is_coordinate_shot_at(self, row, col):
         return self.shot_coordinates[(row, col)] > 0
 
     def register_shot(self, row, col):
+        is_ship_hit = False
+        is_ship_sunk = False
         self.shot_coordinates[(row, col)] += 1
 
         ship = self.get_ship_on_coord(row, col)
         if not ship:
-            return False
+            return is_ship_hit, is_ship_sunk, ship
 
+        is_ship_hit = True
         ship.sunk_coordinate(row, col)
         self.all_hit_coordinates |= ship.sunk_coordinates
 
-        if not ship.is_alive:
+        is_ship_sunk = not ship.is_alive
+        if is_ship_sunk:
             for adj_coordinate in self.get_adjacent_coordinates(ship):
                 self.shot_coordinates[adj_coordinate] += 1
 
-        return True
+        return is_ship_hit, is_ship_sunk, ship
 
     def __repr__(self):
         repr_str = ""
@@ -171,30 +211,52 @@ class BaseBoard:
         ships_data = []
         for ship_list in self.ships_map.values():
             for ship in ship_list:
-                ship_info = {
-                    "row": ship.row,
-                    "col": ship.col,
-                    "length": ship.ship_length,
-                    "is_horizontal": ship.is_horizontal,
-                    "hit_coordinates": list(ship.sunk_coordinates),
-                }
-                ships_data.append(ship_info)
-        board_data = {"rows_count": self.rows_count, "columns_count": self.columns_count, "ships": ships_data}
+                ships_data.append(ship.serialize())
+
+        board_data = {
+            "rows_count": self.rows_count,
+            "columns_count": self.columns_count,
+            "ships": ships_data,
+        }
         return json.dumps(board_data)
 
     @staticmethod
     def deserialize_board(board_data):
         board_json = json.loads(board_data)
 
-        board = BaseBoard(rows_count=board_json["rows_count"], columns_count=board_json["columns_count"])
+        board = BaseBoard(
+            rows_count=board_json["rows_count"],
+            columns_count=board_json["columns_count"],
+        )
 
-        for ship_data in board_json["ships"]:
-            ship = Ship(ship_data["length"])
-            ship.move(ship_data["row"], ship_data["col"], ship_data["is_horizontal"])
-
+        for ship_json in board_json["ships"]:
+            ship = Ship.deserialize(ship_json)
             if board.is_ship_placement_valid(ship):
                 board.place_ship(ship)
             else:
                 raise ValueError("Invalid ship placement detected.")
 
         return board
+
+
+class BaseBoardEnemyView(BaseBoard):
+    def __init__(
+        self,
+        rows_count=BaseBoard.BOARD_ROWS_DEFAULT,
+        columns_count=BaseBoard.BOARD_COLS_DEFAULT,
+    ):
+        super().__init__(rows_count, columns_count, unplaced_ships=set())
+
+    def register_shot(self, row, col, is_hit):
+        self.shot_coordinates[(row, col)] += 1
+
+        if is_hit:
+            self.all_hit_coordinates.add((row, col))
+
+    def reveal_sunk_ship(self, ship):
+        self.place_ship(ship)
+
+        for adj_coordinate in self.get_adjacent_coordinates(ship):
+            self.shot_coordinates[adj_coordinate] += 1
+
+        return True

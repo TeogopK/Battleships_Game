@@ -1,10 +1,21 @@
+import json
+
+
 class Ship:
-    def __init__(self, ship_length, row=None, col=None, is_horizontal=True):
+    def __init__(
+        self,
+        ship_length,
+        row=None,
+        col=None,
+        is_horizontal=True,
+        is_alive=True,
+        sunk_coordinates=set(),
+    ):
         super().__init__()
         self.ship_length = ship_length
         self.move(row, col, is_horizontal)
-        self.is_alive = True
-        self.sunk_coordinates = set()
+        self.is_alive = is_alive
+        self.sunk_coordinates = sunk_coordinates
 
     def sunk_coordinate(self, row, col):
         self.sunk_coordinates.add((row, col))
@@ -29,7 +40,10 @@ class Ship:
             return
 
         self.coordinates = [
-            (self.row + tile * (not self.is_horizontal), self.col + tile * self.is_horizontal)
+            (
+                self.row + tile * (not self.is_horizontal),
+                self.col + tile * self.is_horizontal,
+            )
             for tile in range(self.ship_length)
         ]
 
@@ -46,14 +60,44 @@ class Ship:
     def __repr__(self):
         return f"<Ship with length {self.ship_length}, is horizontal {self.is_horizontal} at {self.coordinates} with sunk {self.sunk_coordinates}>"
 
+    def serialize(self):
+        """Serialize the Ship object to a JSON string."""
+        ship_data = {
+            "ship_length": self.ship_length,
+            "row": self.row,
+            "col": self.col,
+            "is_horizontal": self.is_horizontal,
+            "is_alive": self.is_alive,
+            "sunk_coordinates": list(self.sunk_coordinates),
+        }
+        return json.dumps(ship_data)
 
-# s = Ship(3, 10, 1, False)
-# s.fill_coordinates()
-# print(s.is_coordinate_part_of_ship(1, 1))
-# print(s.is_coordinate_part_of_ship(1, 11))
-# s.sunk_coordinate(1, 1)
-# s.sunk_coordinate(2, 1)
-# s.sunk_coordinate(3, 1)
-# print(s)
+    @staticmethod
+    def deserialize(ship_json):
+        """Deserialize a JSON string into a Ship object."""
+        ship_data = json.loads(ship_json)
+        ship = Ship(
+            ship_length=ship_data["ship_length"],
+            row=ship_data["row"],
+            col=ship_data["col"],
+            is_horizontal=ship_data["is_horizontal"],
+            is_alive=ship_data["is_alive"],
+            sunk_coordinates=set(
+                tuple(coord) for coord in ship_data["sunk_coordinates"]
+            ),
+        )
+        return ship
 
-# print(s.is_coordinate_part_of_ship(10, 1))
+
+s = Ship(3, 10, 1, False)
+s.fill_coordinates()
+print(s.is_coordinate_part_of_ship(1, 1))
+print(s.is_coordinate_part_of_ship(1, 11))
+s.sunk_coordinate(1, 1)
+s.sunk_coordinate(2, 1)
+s.sunk_coordinate(3, 1)
+print(s)
+
+gg = s.serialize()
+ss = Ship.deserialize(gg)
+print(ss)

@@ -17,14 +17,17 @@ class Network:
             self.client.settimeout(5)
             return self.client.recv(2048).decode()
         except socket.timeout:
-            raise ConnectionError("Connection timed out while trying to receive initial data.")
+            raise ConnectionError(
+                "Connection timed out while trying to receive initial data."
+            )
         except socket.error as e:
             raise ConnectionError(f"Socket error: {e}")
 
     def send(self, data):
         try:
+            print(data)
             self.client.send(str.encode(data))
-            self.client.settimeout(5)
+            self.client.settimeout(60)
             response = self.client.recv(2048).decode()
             return response
         except socket.timeout:

@@ -102,16 +102,47 @@ class Server:
 
         return self.error_response("Invalid board!")
 
+    def register_shot(self, client, row, col):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        if not room.is_client_turn(client):
+            return self.error_response("Not player's turn!", is_player_turn=False)
+
+        row, col = room.convert_coordinates(row, col)
+        if (
+            row == None
+            or col == None
+            or not room.is_client_shot_valid(client, row, col)
+        ):
+            return self.error_response("Invalid shot", is_shot_valid=False)
+
+        is_ship_hit, is_ship_sunk, ship = room.register_shot_for_client(
+            client, row, col
+        )
+        is_turn = room.is_client_turn(client)
+
+        return self.success_response(
+            "Shot registered!",
+            has_hit_ship=is_ship_hit,
+            has_sunk_ship=is_ship_sunk,
+            sunk_ship=ship.serialize() if is_ship_sunk else None,
+            is_turn=is_turn,
+        )
+
     def run(self):
         while True:
             try:
                 conn, addr = self.s.accept()
                 print(f"Connected to: {addr}")
-                start_new_thread(self.handle_client, (conn,))
+                start_new_thread(self._handle_client, (conn,))
             except Exception as e:
                 print(f"Exception in accepting connections: {e}")
 
-    def handle_client(self, conn):
+    def _handle_client(self, conn):
         conn.send(str.encode("Connected"))
         while True:
             try:
@@ -122,6 +153,7 @@ class Server:
 
                 command = data.decode("utf-8")
                 response = self.command_handler.handle_command(command, conn)
+                print("Sending response:", response)
                 conn.sendall(str.encode(response))
 
             except Exception as e:
@@ -137,15 +169,16 @@ class Server:
     def is_room_exists(self, room_id):
         return room_id in self.rooms
 
-    def format_response(self, status, message):
-        response = {"status": status, "message": message}
-        return json.dumps(response)
+    def format_response(self, status, message, **kwargs):
+        response_data = {"status": status, "message": message, "args": kwargs}
+        response_json = json.dumps(response_data)
+        return response_json
 
-    def success_response(self, message):
-        return self.format_response("success", message)
+    def success_response(self, message, **kwargs):
+        return self.format_response("success", message, **kwargs)
 
-    def error_response(self, message):
-        return self.format_response("error", message)
+    def error_response(self, message, **kwargs):
+        return self.format_response("error", message, **kwargs)
 
 
 if __name__ == "__main__":

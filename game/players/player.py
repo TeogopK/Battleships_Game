@@ -1,22 +1,28 @@
-from game.visuals.visual_board import VisualBoard
+from game.visuals.visual_board import VisualBoard, VisualBoardEnemyView
+from game.interface.ship import Ship
 import json
 
-COMMAND_CREATE_ROOM = "create-room"
-COMMAND_JOIN_ROOM_WITH_ID = "join-room-with-id"
-COMMAND_JOIN_RANDOM_ROOM = "join-random-room"
-COMMAND_SEND_BOARD = "send-board"
-COMMAND_EXIT_ROOM = "exit-room"
-COMMAND_HAS_OPPONENT_JOINED = "has-opponent-joined"
-COMMAND_CAN_GAME_START = "exit-room"
+COMMAND_CREATE_ROOM = "create_room"
+COMMAND_JOIN_ROOM_WITH_ID = "join_room_with_id"
+COMMAND_JOIN_RANDOM_ROOM = "join_random_room"
+COMMAND_SEND_BOARD = "send_board"
+COMMAND_EXIT_ROOM = "exit_room"
+COMMAND_HAS_OPPONENT_JOINED = "has_opponent_joined"
+COMMAND_CAN_GAME_START = "exit_room"
+
+COMMAND_REGISTER_SHOT = "register_shot"
 
 
 class Player:
-    def __init__(self, name, network_client, x=70, y=100):
+    def __init__(self, name, network_client):
         self.name = name
         self.network_client = network_client
 
-        self.board = VisualBoard(x, y)
+        self.board = VisualBoard(x=70, y=100)
+        self.enemy_board_view = VisualBoardEnemyView(x=700, y=100)
+
         self.has_sent_board = False
+        self.is_turn = True
 
     def send_command(self, command_type, **kwargs):
         command_data = {"command": command_type, "args": kwargs}
@@ -60,6 +66,26 @@ class Player:
         response = self.send_command(COMMAND_SEND_BOARD)
 
         return response
+
+    def shot(self, row, col):
+        response = self.send_command(COMMAND_REGISTER_SHOT, row=row, col=col)
+        response_args = response["args"]
+
+        if response["status"] == "error":
+            if not response_args.get("is_player_turn", False):
+                return
+
+            if not response_args.get("is_shot_valid", False):
+                return
+
+        self.enemy_board_view.register_shot(row, col, response_args["has_hit_ship"])
+
+        if response_args["has_sunk_ship"]:
+            ship = Ship.deserialize(response_args["sunk_ship"])
+            self.enemy_board_view.reveal_sunk_ship(ship)
+
+        if response_args["is_turn"]:
+            self.is_turn = True
 
     def are_all_ships_sunk(self):
         return self.board.are_all_ships_sunk()

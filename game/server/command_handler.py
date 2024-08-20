@@ -1,11 +1,12 @@
 import json
 
-COMMAND_CREATE_ROOM = "create-room"
-COMMAND_JOIN_ROOM_WITH_ID = "join-room-with-id"
-COMMAND_JOIN_RANDOM_ROOM = "join-random-room"
-COMMAND_SEND_BOARD = "send-board"
-COMMAND_EXIT_ROOM = "exit-room"
-COMMAND_HAS_OPPONENT_JOINED = "has-opponent-joined"
+COMMAND_CREATE_ROOM = "create_room"
+COMMAND_JOIN_ROOM_WITH_ID = "join_room_with_id"
+COMMAND_JOIN_RANDOM_ROOM = "join_random_room"
+COMMAND_SEND_BOARD = "send_board"
+COMMAND_EXIT_ROOM = "exit_room"
+COMMAND_HAS_OPPONENT_JOINED = "has_opponent_joined"
+COMMAND_REGISTER_SHOT = "register_shot"
 
 
 class Command:
@@ -19,12 +20,25 @@ class CommandHandler:
     def __init__(self, server):
         self.server = server
         self.commands = {
-            COMMAND_CREATE_ROOM: Command(COMMAND_CREATE_ROOM, self.server.create_room, []),
-            COMMAND_JOIN_ROOM_WITH_ID: Command(COMMAND_JOIN_ROOM_WITH_ID, self.server.join_room_with_id, ["room_id"]),
-            COMMAND_JOIN_RANDOM_ROOM: Command(COMMAND_JOIN_RANDOM_ROOM, self.server.join_random_room, []),
-            COMMAND_SEND_BOARD: Command(COMMAND_SEND_BOARD, self.server.receive_board, ["board_json"]),
+            COMMAND_CREATE_ROOM: Command(
+                COMMAND_CREATE_ROOM, self.server.create_room, []
+            ),
+            COMMAND_JOIN_ROOM_WITH_ID: Command(
+                COMMAND_JOIN_ROOM_WITH_ID, self.server.join_room_with_id, ["room_id"]
+            ),
+            COMMAND_JOIN_RANDOM_ROOM: Command(
+                COMMAND_JOIN_RANDOM_ROOM, self.server.join_random_room, []
+            ),
+            COMMAND_SEND_BOARD: Command(
+                COMMAND_SEND_BOARD, self.server.receive_board, ["board_json"]
+            ),
             COMMAND_EXIT_ROOM: Command(COMMAND_EXIT_ROOM, self.server.exit_room, []),
-            COMMAND_HAS_OPPONENT_JOINED: Command(COMMAND_HAS_OPPONENT_JOINED, self.server.has_opponent_joined, []),
+            COMMAND_HAS_OPPONENT_JOINED: Command(
+                COMMAND_HAS_OPPONENT_JOINED, self.server.has_opponent_joined, []
+            ),
+            COMMAND_REGISTER_SHOT: Command(
+                COMMAND_REGISTER_SHOT, self.server.register_shot, ["row", "col"]
+            ),
         }
 
     def handle_command(self, json_command, client):
@@ -43,7 +57,9 @@ class CommandHandler:
 
             missing_args = [arg for arg in command.required_args if arg not in args]
             if missing_args:
-                return self.server.error_response(f"Missing arguments: {', '.join(missing_args)}")
+                return self.server.error_response(
+                    f"Missing arguments: {', '.join(missing_args)}"
+                )
 
             return command.handler(client, **args)
         except json.JSONDecodeError:
