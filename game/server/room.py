@@ -33,6 +33,11 @@ class Room:
         self.max_players = 2
         self.is_full = False
         self.has_battle_started = False
+        self.is_private = False
+
+    def change_publicity(self):
+        self.is_private = not self.is_private
+        return self.is_private
 
     def add_board_for_client(self, client, board_json):
         return self.clients[client].add_board(board_json)

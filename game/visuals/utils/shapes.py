@@ -36,7 +36,7 @@ class DrawUtils:
         )
 
     @staticmethod
-    def draw_title(surface, text, font_size, x, y, glow_size):
+    def draw_title(surface, text, x, y, font_size, glow_size):
         main_color = colors.TITLE_TEXT_COLOR
         glow_color = colors.TITLE_SHADOW_COLOR
 
@@ -54,3 +54,28 @@ class DrawUtils:
             surface.blit(glow_surface, text_rect.move(0, offset))
 
         surface.blit(text_surface, text_rect)
+
+    @staticmethod
+    def draw_text(surface, text, x, y, font_size, text_color=colors.TEXT_LABEL_COLOR):
+        font = pygame.font.Font(None, font_size)
+        text_surface = font.render(text, True, text_color)
+        text_rect = text_surface.get_rect(center=(x, y))
+        surface.blit(text_surface, text_rect)
+
+    @staticmethod
+    def draw_input_text(
+        surface, text, x, y, font_size=46, text_color=colors.TEXT_INPUT_COLOR
+    ):
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)
+
+    @staticmethod
+    def draw_label(
+        surface, text, x, y, font_size=36, text_color=colors.TEXT_LABEL_COLOR
+    ):
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)
+
+    @staticmethod
+    def draw_message(
+        surface, text, x, y, font_size=24, text_color=colors.TEXT_MESSAGE_COLOR
+    ):
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)

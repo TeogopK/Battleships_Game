@@ -9,9 +9,11 @@ import game.visuals.utils.colors as colors
 
 
 class MultiplayerMenu(Menu):
-    def __init__(self, client):
+    GAME_ROOM_ID_LENGTH = 6
+
+    def __init__(self, client, player_name):
         super().__init__()
-        self.player = Player("Player 1", client)
+        self.player = Player(player_name, client)
 
         self.create_room_button = BasicButton(
             x=150, y=630, text="Create room", width=300
@@ -25,7 +27,7 @@ class MultiplayerMenu(Menu):
         self.go_back_button = GoBackButton(10, 10)
 
         self.next_menu = None
-        self.current_input = ""
+        self.room_id_input = ""
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -33,7 +35,7 @@ class MultiplayerMenu(Menu):
 
         if self.create_room_button.is_active():
             response = self.player.create_room()
-            self.handle_response(response, menus.WaitForOpponentMenu)
+            self.handle_response(response, menus.RoomMenu)
 
         if self.join_room_with_id_button.is_active():
             self.process_join_room_by_id()
@@ -43,47 +45,34 @@ class MultiplayerMenu(Menu):
             self.handle_response(response, menus.ShipPlacementMenu)
 
         if self.go_back_button.is_active():
-            self.next_menu = menus.StartMenu()
+            self.next_menu = menus.StartMenu(self.player.name)
 
     def handle_keydown(self, event):
         if event.key == pygame.K_BACKSPACE:
-            self.current_input = self.current_input[:-1]
+            self.room_id_input = self.room_id_input[:-1]
         elif event.key == pygame.K_RETURN:
             self.process_join_room_by_id()
         elif event.key in range(pygame.K_0, pygame.K_9 + 1):
-            if len(self.current_input) < 6:
-                self.current_input += str(event.key - pygame.K_0)
+            if len(self.room_id_input) < self.GAME_ROOM_ID_LENGTH:
+                self.room_id_input += str(event.key - pygame.K_0)
 
     def process_join_room_by_id(self):
-        if len(self.current_input) == 6:
-            room_id = self.current_input
+        if len(self.room_id_input) == 6:
+            room_id = self.room_id_input
             response = self.player.join_room_with_id(room_id)
             self.handle_response(response, menus.ShipPlacementMenu)
 
     def handle_response(self, response, menu):
         if response.get("status") == "error":
-            print(response.get("message", "Unknown error"))
             return
 
-        print(response.get("message", "Operation successful"))
-        self.next_menu = menu(self.player)
+        room_id = response["args"]["room_id"]
+        self.next_menu = menu(self.player, room_id)
 
-    def draw_input_text(self, screen):
-        input_text = self.current_input + "-" * (6 - len(self.current_input))
-        input_font = pygame.font.Font(None, 48)
-        input_surface = input_font.render(input_text, True, colors.TEXT_LABEL_COLOR)
-        input_rect = input_surface.get_rect(center=(620, 500))
-        screen.blit(input_surface, input_rect)
-
-    def draw_label(self, screen):
-        font = pygame.font.Font(None, 24)
-        explanation_surface = font.render(
-            "Enter 6-digit Room ID to join a specific room:",
-            True,
-            colors.TEXT_LABEL_COLOR,
+    def get_input_text(self):
+        return self.room_id_input + "-" * (
+            self.GAME_ROOM_ID_LENGTH - len(self.room_id_input)
         )
-        explanation_rect = explanation_surface.get_rect(center=(620, 450))
-        screen.blit(explanation_surface, explanation_rect)
 
     def draw(self, screen):
         super().draw(screen)
@@ -92,8 +81,10 @@ class MultiplayerMenu(Menu):
         self.join_random_room_button.draw(screen)
         self.go_back_button.draw(screen)
 
-        DrawUtils.draw_title(screen, "Battleships", 128, 620, 200, glow_size=7)
-        DrawUtils.draw_title(screen, "Multiplayer", 64, 620, 300, glow_size=3)
+        DrawUtils.draw_title(screen, "Battleships", 620, 200, 128, glow_size=7)
+        DrawUtils.draw_title(screen, "Multiplayer", 620, 300, 64, glow_size=3)
 
-        self.draw_input_text(screen)
-        self.draw_label(screen)
+        DrawUtils.draw_label(
+            screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450
+        )
+        DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=500)

@@ -41,8 +41,7 @@ class Server:
         room = Room(room_id, client)
         self.rooms[room_id] = room
         self.clients_to_rooms[client] = room_id
-        print(f"Room {room_id} created")
-        return self.success_response(f"Room {room_id} created")
+        return self.success_response(f"Room {room_id} created", room_id=room_id)
 
     def join_room_with_id(self, client, room_id):
         if self.is_client_in_room(client):
@@ -56,16 +55,33 @@ class Server:
             return self.error_response("Room is full or player is already in the room.")
 
         self.clients_to_rooms[client] = room_id
-        return self.success_response(f"Joined room {room_id}")
+        return self.success_response(f"Joined room {room_id}", room_id=room_id)
+
+    def change_room_publicity(self, client):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        is_private = room.change_publicity()
+
+        return self.success_response(
+            f"Room {room_id} publicity changed!", is_private=is_private
+        )
 
     def join_random_room(self, client):
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
         for room in self.rooms.values():
+            if room.is_private:
+                continue
             if room.add_player(client):
                 self.clients_to_rooms[client] = room.room_id
-                return self.success_response(f"Successfully joined room {room.room_id}")
+                return self.success_response(
+                    f"Joined room {room.room_id}", room_id=room.room_id
+                )
 
         return self.error_response("No available rooms to join")
 

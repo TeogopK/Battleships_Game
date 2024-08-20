@@ -9,9 +9,10 @@ IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 2
 
 
 class ShipPlacementMenu(Menu):
-    def __init__(self, player):
+    def __init__(self, player, room_id):
         super().__init__()
         self.player = player
+        self.room_id = room_id
 
         self.shuffle_button = BasicButton(x=700, y=300, text="Shuffle")
         self.start_button = BasicButton(x=700, y=400, text="Ready")

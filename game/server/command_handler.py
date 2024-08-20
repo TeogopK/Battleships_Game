@@ -9,6 +9,7 @@ COMMAND_HAS_OPPONENT_JOINED = "has_opponent_joined"
 COMMAND_REGISTER_SHOT = "register_shot"
 COMMAND_ASK_TO_RECEIVE_SHOT = "ask_to_receive_shot"
 COMMAND_IS_OPPONENT_READY = "is_opponent_ready"
+COMMAND_CHANGE_ROOM_PUBLICITY = "change_room_publicity"
 
 
 class Command:
@@ -46,6 +47,9 @@ class CommandHandler:
             ),
             COMMAND_ASK_TO_RECEIVE_SHOT: Command(
                 COMMAND_ASK_TO_RECEIVE_SHOT, self.server.send_opponents_shot, []
+            ),
+            COMMAND_CHANGE_ROOM_PUBLICITY: Command(
+                COMMAND_CHANGE_ROOM_PUBLICITY, self.server.change_room_publicity, []
             ),
         }
 

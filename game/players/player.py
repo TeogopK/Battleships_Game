@@ -12,6 +12,7 @@ COMMAND_IS_OPPONENT_READY = "is_opponent_ready"
 
 COMMAND_REGISTER_SHOT = "register_shot"
 COMMAND_ASK_TO_RECEIVE_SHOT = "ask_to_receive_shot"
+COMMAND_CHANGE_ROOM_PUBLICITY = "change_room_publicity"
 
 
 class Player:
@@ -57,6 +58,11 @@ class Player:
 
     def exit_room(self):
         response = self.send_command(COMMAND_EXIT_ROOM)
+
+        return response
+
+    def change_room_publicity(self):
+        response = self.send_command(COMMAND_CHANGE_ROOM_PUBLICITY)
 
         return response
 
