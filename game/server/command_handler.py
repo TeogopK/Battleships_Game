@@ -10,6 +10,7 @@ COMMAND_REGISTER_SHOT = "register_shot"
 COMMAND_ASK_TO_RECEIVE_SHOT = "ask_to_receive_shot"
 COMMAND_IS_OPPONENT_READY = "is_opponent_ready"
 COMMAND_CHANGE_ROOM_PUBLICITY = "change_room_publicity"
+COMMAND_REQUEST_ENEMY_BOARD = "request_enemy_board"
 
 
 class Command:
@@ -53,6 +54,9 @@ class CommandHandler:
             COMMAND_CHANGE_ROOM_PUBLICITY: Command(
                 COMMAND_CHANGE_ROOM_PUBLICITY, self.server.change_room_publicity, []
             ),
+            COMMAND_REQUEST_ENEMY_BOARD: Command(
+                COMMAND_REQUEST_ENEMY_BOARD, self.server.send_enemy_board, []
+            ),
         }
 
     def handle_command(self, json_command, client):
@@ -79,4 +83,5 @@ class CommandHandler:
         except json.JSONDecodeError:
             return self.server.error_response("Invalid JSON format")
         except Exception as e:
+            print(e)
             return self.server.error_response("Server error!")

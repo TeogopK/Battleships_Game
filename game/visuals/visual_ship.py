@@ -4,6 +4,7 @@ from pygame.sprite import Sprite
 from game.visuals.utils.constants import RESOLUTION
 from game.interface.base_board import Ship
 import game.visuals.utils.colors as colors
+import json
 
 
 class Visual_Ship(Sprite, Ship):

@@ -13,6 +13,7 @@ class BaseBoard:
         rows_count=BOARD_ROWS_DEFAULT,
         columns_count=BOARD_COLS_DEFAULT,
         unplaced_ships=None,
+        ship_constructor=Ship,
     ):
         self.rows_count = rows_count
         self.columns_count = columns_count
@@ -21,24 +22,25 @@ class BaseBoard:
         self.unplaced_ships = (
             unplaced_ships
             if unplaced_ships != None
-            else BaseBoard.get_base_game_ships()
+            else BaseBoard.get_base_game_ships(ship_constructor)
         )
+
         self.shot_coordinates = defaultdict(int)
         self.all_hit_coordinates = set()
 
     @staticmethod
-    def get_base_game_ships():
+    def get_base_game_ships(ship_constructor):
         return {
-            Ship(1),
-            Ship(1),
-            Ship(1),
-            Ship(1),
-            Ship(2),
-            Ship(2),
-            Ship(2),
-            Ship(3),
-            Ship(3),
-            Ship(4),
+            ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(3),
+            # ship_constructor(3),
+            # ship_constructor(4),
         }
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
@@ -220,6 +222,14 @@ class BaseBoard:
         }
         return json.dumps(board_data)
 
+    def _place_ships_from_json(self, board_json):
+        for ship_json in board_json["ships"]:
+            ship = Ship.deserialize(ship_json)
+            if self.is_ship_placement_valid(ship):
+                self.place_ship(ship)
+            else:
+                raise ValueError("Invalid ship placement detected.")
+
     @staticmethod
     def deserialize_board(board_data):
         board_json = json.loads(board_data)
@@ -229,12 +239,7 @@ class BaseBoard:
             columns_count=board_json["columns_count"],
         )
 
-        for ship_json in board_json["ships"]:
-            ship = Ship.deserialize(ship_json)
-            if board.is_ship_placement_valid(ship):
-                board.place_ship(ship)
-            else:
-                raise ValueError("Invalid ship placement detected.")
+        board._place_ships_from_json(board_json)
 
         return board
 
@@ -253,10 +258,21 @@ class BaseBoardEnemyView(BaseBoard):
         if is_hit:
             self.all_hit_coordinates.add((row, col))
 
-    def reveal_sunk_ship(self, ship):
+    def reveal_ship(self, ship, reveal_adjacent=False):
+        if not self.is_ship_placement_valid(ship):
+            return
+
         self.place_ship(ship)
 
-        for adj_coordinate in self.get_adjacent_coordinates(ship):
-            self.shot_coordinates[adj_coordinate] += 1
+        if reveal_adjacent:
+            for adj_coordinate in self.get_adjacent_coordinates(ship):
+                self.shot_coordinates[adj_coordinate] += 1
 
         return True
+
+    def reveal_ships_from_board_data(self, board_data):
+        board_json = json.loads(board_data)
+
+        for ship_data in board_json["ships"]:
+            ship = Ship.deserialize(ship_data)
+            self.reveal_ship(ship)

@@ -159,11 +159,14 @@ class Server:
         if not room.is_client_turn(client):
             return self.error_response("Not player's turn!", is_player_turn=False)
 
+        if room.has_battle_ended:
+            return self.error_response("Battle has ended!")
+
         if not room.is_client_shot_valid(client, row, col):
             return self.error_response("Invalid shot!", is_shot_valid=False)
 
-        is_ship_hit, is_ship_sunk, ship = room.register_shot_for_client(
-            client, row, col
+        is_ship_hit, is_ship_sunk, ship, has_battle_ended, is_winner = (
+            room.register_shot_for_client(client, row, col)
         )
         is_turn = room.is_client_turn(client)
 
@@ -174,6 +177,8 @@ class Server:
             sunk_ship=ship.serialize() if is_ship_sunk else None,
             is_turn=is_turn,
             turn_end_time=0,
+            has_battle_ended=has_battle_ended,
+            is_winner=is_winner,
         )
 
     def send_opponents_shot(self, client):
@@ -187,7 +192,7 @@ class Server:
         if last_shot == None:
             return self.error_response("Client has not made a shot yet!")
 
-        row, col, is_turn = last_shot
+        row, col, is_turn, has_battle_ended, is_winner = last_shot
 
         return self.success_response(
             "Shot was made by the opponent!",
@@ -195,6 +200,24 @@ class Server:
             col=col,
             is_turn=is_turn,
             turn_end_time=0,
+            has_battle_ended=has_battle_ended,
+            is_winner=is_winner,
+        )
+
+    def send_enemy_board(self, client):
+        if not self.is_client_in_room(client):
+            return self.error_response("Client is not in a room!")
+
+        room_id = self.clients_to_rooms.get(client)
+        room = self.rooms[room_id]
+
+        if not room.has_battle_ended:
+            return self.error_response("Battle is still going!")
+
+        enemy_board_data = room.get_enemy_board(client)
+
+        return self.success_response(
+            "Return the enemy board!", enemy_board_data=enemy_board_data
         )
 
     def run(self):

@@ -56,7 +56,7 @@ class ShipPlacementMenu(Menu):
         response = self.player.is_opponent_ready()
 
         if response["status"] == "success":
-            self.next_menu = BattleMenu(self.player)
+            self.next_menu = BattleMenu(self.player, self.opponent_name)
 
     def handle_sending_board(self):
         response = self.player.send_board()

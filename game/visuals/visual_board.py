@@ -32,7 +32,7 @@ class VisualTile(Sprite):
 
 class VisualBoard(Sprite, BaseBoard):
     def __init__(self, x=0, y=0):
-        BaseBoard.__init__(self)
+        BaseBoard.__init__(self, ship_constructor=Visual_Ship)
         Sprite.__init__(self)
         self.x = x
         self.y = y
@@ -43,10 +43,8 @@ class VisualBoard(Sprite, BaseBoard):
         self.random_shuffle_ships()
 
     def initialize_visual_ships(self):
-        self.unplaced_ships = {
-            Visual_Ship(ship.ship_length, coordinate_size=self.get_tile_size())
-            for ship in self.unplaced_ships
-        }
+        for ship in self.unplaced_ships:
+            ship.coordinate_size = self.get_tile_size()
 
     def random_shuffle_ships(self):
         BaseBoard.random_shuffle_ships(self)
@@ -173,7 +171,7 @@ class VisualBoardEnemyView(VisualBoard, BaseBoardEnemyView):
         VisualBoard.__init__(self, x, y)
         BaseBoardEnemyView.__init__(self)
 
-    def reveal_sunk_ship(self, ship):
+    def reveal_ship(self, ship, reveal_adjacent=False):
         visual_ship = Visual_Ship(
             ship.ship_length,
             ship.row,
@@ -183,4 +181,4 @@ class VisualBoardEnemyView(VisualBoard, BaseBoardEnemyView):
             ship.sunk_coordinates,
             coordinate_size=self.get_tile_size(),
         )
-        BaseBoardEnemyView.reveal_sunk_ship(self, visual_ship)
+        BaseBoardEnemyView.reveal_ship(self, visual_ship, reveal_adjacent)

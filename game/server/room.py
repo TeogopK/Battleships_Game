@@ -14,7 +14,7 @@ class RoomClient:
     def add_board(self, board_json):
         try:
             self.board = BaseBoard.deserialize_board(board_json)
-        except Exception as e:
+        except ValueError as e:
             print(e)
             return False
 
@@ -26,15 +26,24 @@ class RoomClient:
             row, col
         ) and not self.board.is_coordinate_shot_at(row, col)
 
+    def are_all_player_ships_sunk(self):
+        return self.board.are_all_ships_sunk()
+
+    def add_shot_history_of_enemy(self, row, col, is_turn, has_battle_ended, is_winner):
+        self.shot_history.append((row, col, is_turn, has_battle_ended, is_winner))
+
 
 class Room:
     def __init__(self, room_id, client, client_name):
         self.room_id = room_id
         self.clients = {client: RoomClient(client, client_name)}
         self.max_players = 2
-        self.is_full = False
-        self.has_battle_started = False
         self.is_private = False
+        self.is_full = False
+
+        self.has_battle_started = False
+        self.has_battle_ended = False
+        self.winner = None
 
     def change_publicity(self):
         self.is_private = not self.is_private
@@ -67,14 +76,6 @@ class Room:
         self.clients[client].is_turn = False
         self.get_opponent_client(client).is_turn = True
 
-    def convert_coordinates(self, row_string, col_string):
-        try:
-            row = int(row_string)
-            col = int(col_string)
-            return row, col
-        except ValueError:
-            return None, None
-
     def is_client_shot_valid(self, client, row, col):
         target_client = self.get_opponent_client(client)
         return target_client.is_shot_valid(row, col)
@@ -88,9 +89,23 @@ class Room:
         else:
             self.take_client_turn(client)
 
-        target_client.shot_history.append((row, col, target_client.is_turn))
+        self.check_has_battle_ended()
 
-        return is_ship_hit, is_ship_sunk, ship
+        target_client.add_shot_history_of_enemy(
+            row,
+            col,
+            target_client.is_turn,
+            self.has_battle_ended,
+            self.is_client_winner(target_client.client),
+        )
+
+        return (
+            is_ship_hit,
+            is_ship_sunk,
+            ship,
+            self.has_battle_ended,
+            self.is_client_winner(client),
+        )
 
     def give_shot_from_history(self, client):
         shot_history = self.clients[client].shot_history
@@ -117,3 +132,19 @@ class Room:
             client.is_turn = True
             self.has_battle_started = True
             break
+
+    def check_has_battle_ended(self):
+        for room_client in self.clients.values():
+            if room_client.are_all_player_ships_sunk():
+                self.has_battle_ended = True
+                self.loser = room_client.client
+                break
+
+        return self.has_battle_ended
+
+    def is_client_winner(self, client):
+        return self.check_has_battle_ended() and self.loser != client
+
+    def get_enemy_board(self, client):
+        opponent = self.get_opponent_client(client)
+        return opponent.board.serialize_board()

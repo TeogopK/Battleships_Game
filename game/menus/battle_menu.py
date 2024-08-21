@@ -8,10 +8,14 @@ ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 3
 
 
 class BattleMenu(menus.Menu):
-    def __init__(self, player):
+    def __init__(self, player, opponent_name):
         super().__init__()
         self.player = player
+        self.opponent_name = opponent_name
+
         pygame.time.set_timer(ASK_RECEIVE_SHOT_EVENT, 1000)
+
+        self.is_battle_over = False
 
     def draw(self, screen):
         super().draw(screen)
@@ -19,6 +23,10 @@ class BattleMenu(menus.Menu):
         self.player.enemy_board_view.draw(screen)
 
     def handle_event(self, event):
+        if self.is_battle_over:
+            self.next_menu = menus.BattleEndMenu(self.player, self.opponent_name)
+            return
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
 
@@ -28,15 +36,15 @@ class BattleMenu(menus.Menu):
 
         if event.type == ASK_RECEIVE_SHOT_EVENT:
             if not self.player.is_turn:
-                self.player.ask_to_receive_shot()
+                self.ask_for_shot_command()
 
-        self.is_battle_over()
+        self.is_battle_over = self.player.is_in_finished_battle
 
     def is_click_within_enemy_board(self, pos):
         return self.player.enemy_board_view.is_position_in_board(pos)
 
-    def is_battle_over(self):
-        pass
+    def ask_for_shot_command(self):
+        self.player.ask_to_receive_shot()
 
     def send_shot_command(self, pos):
         row, col = self.player.enemy_board_view.get_row_col_by_mouse(pos)
@@ -45,3 +53,5 @@ class BattleMenu(menus.Menu):
             return
 
         self.player.shot(row, col)
+
+        self.is_battle_over = self.player.is_in_finished_battle
