@@ -24,13 +24,15 @@ class CommandHandler:
         self.server = server
         self.commands = {
             COMMAND_CREATE_ROOM: Command(
-                COMMAND_CREATE_ROOM, self.server.create_room, []
+                COMMAND_CREATE_ROOM, self.server.create_room, ["client_name"]
             ),
             COMMAND_JOIN_ROOM_WITH_ID: Command(
-                COMMAND_JOIN_ROOM_WITH_ID, self.server.join_room_with_id, ["room_id"]
+                COMMAND_JOIN_ROOM_WITH_ID,
+                self.server.join_room_with_id,
+                ["room_id", "client_name"],
             ),
             COMMAND_JOIN_RANDOM_ROOM: Command(
-                COMMAND_JOIN_RANDOM_ROOM, self.server.join_random_room, []
+                COMMAND_JOIN_RANDOM_ROOM, self.server.join_random_room, ["client_name"]
             ),
             COMMAND_SEND_BOARD: Command(
                 COMMAND_SEND_BOARD, self.server.receive_board, ["board_json"]

@@ -2,38 +2,41 @@ import pygame
 from game.visuals.utils.buttons import BasicButton
 from game.menus.battle_menu import BattleMenu
 from game.menus.menu import Menu
-
 import game.visuals.utils.colors as colors
+from game.visuals.utils.shapes import DrawUtils
 
 IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 2
+WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 3
 
 
 class ShipPlacementMenu(Menu):
-    def __init__(self, player, room_id):
+    def __init__(self, player, room_id, opponent_name):
         super().__init__()
         self.player = player
         self.room_id = room_id
+        self.opponent_name = opponent_name
 
-        self.shuffle_button = BasicButton(x=700, y=300, text="Shuffle")
-        self.start_button = BasicButton(x=700, y=400, text="Ready")
+        self.shuffle_button = BasicButton(x=600, y=558, text="Shuffle")
+        self.start_button = BasicButton(x=950, y=558, text="Ready")
 
         self.dragging_ship = None
         self.original_row = 0
         self.original_col = 0
 
         self.next_menu = None
-        pygame.time.set_timer(IS_OPPONENT_READY_EVENT, 2000)
 
-    def draw(self, screen):
-        super().draw(screen)
-        self.player.board.draw(screen)
-        self.shuffle_button.draw(screen)
-        self.start_button.draw(screen)
+        self.waiting_dots = 0
+
+        pygame.time.set_timer(IS_OPPONENT_READY_EVENT, 2000)
+        pygame.time.set_timer(WAITING_MESSAGE_UPDATE_EVENT, 500)
 
     def handle_event(self, event):
         if self.player.has_sent_board:
             if event.type == IS_OPPONENT_READY_EVENT:
                 self.handle_is_opponent_ready()
+
+            elif event.type == WAITING_MESSAGE_UPDATE_EVENT:
+                self.update_waiting_dots()
 
         else:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -58,7 +61,15 @@ class ShipPlacementMenu(Menu):
     def handle_sending_board(self):
         response = self.player.send_board()
         if response["status"] == "success":
+            self.start_button.set_disabled(True)
+            self.shuffle_button.set_disabled(True)
             print("Wait for opponent to send board!")
+
+    def update_waiting_dots(self):
+        self.waiting_dots = (self.waiting_dots + 1) % 4
+
+    def get_waiting_message(self):
+        return f"Waiting for opponent to be ready{'.' * self.waiting_dots}"
 
     def on_mouse_button_down(self, event):
         pos = pygame.mouse.get_pos()
@@ -122,3 +133,55 @@ class ShipPlacementMenu(Menu):
 
     def can_continue(self):
         return len(self.player.board.unplaced_ships) == 0
+
+    def draw(self, screen):
+        super().draw(screen)
+        self.player.board.draw(screen)
+        self.shuffle_button.draw(screen)
+        self.start_button.draw(screen)
+
+        DrawUtils.draw_title(
+            screen, "Ship placement phase", x=920, y=120, font_size=64, glow_size=3
+        )
+
+        DrawUtils.draw_message(
+            screen,
+            f"Left click and hold a ship to move it!",
+            x=600,
+            y=200,
+            font_size=34,
+            alignment="left",
+        )
+        DrawUtils.draw_message(
+            screen,
+            f"Right click on a ship to flip it!",
+            x=600,
+            y=250,
+            font_size=34,
+            alignment="left",
+        )
+        DrawUtils.draw_message(
+            screen,
+            f"Once the board is set up click the button 'Ready'.",
+            x=600,
+            y=300,
+            font_size=34,
+            alignment="left",
+        )
+
+        DrawUtils.draw_label(
+            screen, f"Room ID: {self.room_id}", x=600, y=400, alignment="left"
+        )
+        DrawUtils.draw_label(
+            screen, f"Opponent: {self.opponent_name}", x=600, y=450, alignment="left"
+        )
+
+        if self.player.has_sent_board:
+            DrawUtils.draw_message(
+                screen,
+                self.get_waiting_message(),
+                x=600,
+                y=500,
+                font_size=34,
+                alignment="left",
+            )

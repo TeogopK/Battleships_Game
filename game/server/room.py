@@ -2,8 +2,9 @@ from game.interface.base_board import BaseBoard
 
 
 class RoomClient:
-    def __init__(self, client):
+    def __init__(self, client, client_name):
         self.client = client
+        self.client_name = client_name
         self.board = None
         self.shot_history = []
         self.has_board = False
@@ -27,9 +28,9 @@ class RoomClient:
 
 
 class Room:
-    def __init__(self, room_id, client):
+    def __init__(self, room_id, client, client_name):
         self.room_id = room_id
-        self.clients = {client: RoomClient(client)}
+        self.clients = {client: RoomClient(client, client_name)}
         self.max_players = 2
         self.is_full = False
         self.has_battle_started = False
@@ -42,14 +43,14 @@ class Room:
     def add_board_for_client(self, client, board_json):
         return self.clients[client].add_board(board_json)
 
-    def add_player(self, new_client):
+    def add_player(self, new_client, client_name):
         if len(self.clients) >= self.max_players:
             return False
 
         if new_client in self.clients:
             return False
 
-        self.clients[new_client] = RoomClient(new_client)
+        self.clients[new_client] = RoomClient(new_client, client_name)
 
         self.is_full = len(self.clients) == self.max_players
 

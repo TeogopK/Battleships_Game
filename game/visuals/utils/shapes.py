@@ -56,26 +56,59 @@ class DrawUtils:
         surface.blit(text_surface, text_rect)
 
     @staticmethod
-    def draw_text(surface, text, x, y, font_size, text_color=colors.TEXT_LABEL_COLOR):
+    def draw_text(
+        surface,
+        text,
+        x,
+        y,
+        font_size,
+        text_color=colors.TEXT_LABEL_COLOR,
+        alignment="center",
+    ):
         font = pygame.font.Font(None, font_size)
         text_surface = font.render(text, True, text_color)
-        text_rect = text_surface.get_rect(center=(x, y))
+
+        if alignment == "left":
+            text_rect = text_surface.get_rect(left=x, centery=y)
+        elif alignment == "right":
+            text_rect = text_surface.get_rect(right=x, centery=y)
+        else:
+            text_rect = text_surface.get_rect(center=(x, y))
+
         surface.blit(text_surface, text_rect)
 
     @staticmethod
     def draw_input_text(
-        surface, text, x, y, font_size=46, text_color=colors.TEXT_INPUT_COLOR
+        surface,
+        text,
+        x,
+        y,
+        font_size=46,
+        text_color=colors.TEXT_INPUT_COLOR,
+        alignment="center",
     ):
-        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color, alignment)
 
     @staticmethod
     def draw_label(
-        surface, text, x, y, font_size=36, text_color=colors.TEXT_LABEL_COLOR
+        surface,
+        text,
+        x,
+        y,
+        font_size=36,
+        text_color=colors.TEXT_LABEL_COLOR,
+        alignment="center",
     ):
-        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color, alignment)
 
     @staticmethod
     def draw_message(
-        surface, text, x, y, font_size=24, text_color=colors.TEXT_MESSAGE_COLOR
+        surface,
+        text,
+        x,
+        y,
+        font_size=24,
+        text_color=colors.TEXT_MESSAGE_COLOR,
+        alignment="center",
     ):
-        DrawUtils.draw_text(surface, text, x, y, font_size, text_color)
+        DrawUtils.draw_text(surface, text, x, y, font_size, text_color, alignment)

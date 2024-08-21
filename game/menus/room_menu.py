@@ -63,7 +63,10 @@ class RoomMenu(menus.Menu):
     def check_has_opponent_joined(self):
         response = self.player.has_opponent_joined()
         if response.get("status") == "success":
-            self.next_menu = menus.ShipPlacementMenu(self.player, self.room_id)
+            opponent_name = response["args"]["opponent_name"]
+            self.next_menu = menus.ShipPlacementMenu(
+                self.player, self.room_id, opponent_name
+            )
 
     def update_waiting_dots(self):
         self.waiting_dots = (self.waiting_dots + 1) % 4

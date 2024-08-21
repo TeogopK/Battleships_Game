@@ -35,17 +35,19 @@ class Player:
         return response
 
     def create_room(self):
-        response = self.send_command(COMMAND_CREATE_ROOM)
+        response = self.send_command(COMMAND_CREATE_ROOM, client_name=self.name)
 
         return response
 
     def join_room_with_id(self, room_id):
-        response = self.send_command(COMMAND_JOIN_ROOM_WITH_ID, room_id=room_id)
+        response = self.send_command(
+            COMMAND_JOIN_ROOM_WITH_ID, room_id=room_id, client_name=self.name
+        )
 
         return response
 
     def join_random_room(self):
-        response = self.send_command(COMMAND_JOIN_RANDOM_ROOM)
+        response = self.send_command(COMMAND_JOIN_RANDOM_ROOM, client_name=self.name)
 
         return response
 

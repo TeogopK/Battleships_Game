@@ -45,7 +45,7 @@ class StartMenu(menus.Menu):
 
     def start_offline_game(self):
         player = Player(self.get_player_name_input(), None)
-        self.next_menu = menus.ShipPlacementMenu(player)
+        self.next_menu = menus.ShipPlacementMenu(player, 1, "BattleBot")
 
     def start_multiplayer_game(self):
         try:

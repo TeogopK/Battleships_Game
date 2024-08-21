@@ -33,17 +33,17 @@ class Server:
             if room_id not in self.rooms:
                 return room_id
 
-    def create_room(self, client):
+    def create_room(self, client, client_name):
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
         room_id = self.generate_unique_room_id()
-        room = Room(room_id, client)
+        room = Room(room_id, client, client_name)
         self.rooms[room_id] = room
         self.clients_to_rooms[client] = room_id
         return self.success_response(f"Room {room_id} created!", room_id=room_id)
 
-    def join_room_with_id(self, client, room_id):
+    def join_room_with_id(self, client, room_id, client_name):
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
@@ -51,11 +51,32 @@ class Server:
             return self.error_response("Room ID not found!")
 
         room = self.rooms[room_id]
-        if not room.add_player(client):
+        if not room.add_player(client, client_name):
             return self.error_response("Room is full or player is already in the room!")
 
-        self.clients_to_rooms[client] = room_id
-        return self.success_response(f"Joined room {room_id}!", room_id=room_id)
+        return self._finish_joining_room(client, room)
+
+    def _finish_joining_room(self, client, room):
+        self.clients_to_rooms[client] = room.room_id
+
+        opponent_name = room.get_opponent_client(client).client_name
+        return self.success_response(
+            f"Joined room {room.room_id}!",
+            room_id=room.room_id,
+            opponent_name=opponent_name,
+        )
+
+    def join_random_room(self, client, client_name):
+        if self.is_client_in_room(client):
+            return self.error_response("Client is already in a room!")
+
+        for room in self.rooms.values():
+            if room.is_private:
+                continue
+            if room.add_player(client, client_name):
+                return self._finish_joining_room(client, room)
+
+        return self.error_response("No available rooms to join!")
 
     def change_room_publicity(self, client):
         if not self.is_client_in_room(client):
@@ -69,21 +90,6 @@ class Server:
         return self.success_response(
             f"Room {room_id} publicity changed!", is_private=is_private
         )
-
-    def join_random_room(self, client):
-        if self.is_client_in_room(client):
-            return self.error_response("Client is already in a room!")
-
-        for room in self.rooms.values():
-            if room.is_private:
-                continue
-            if room.add_player(client):
-                self.clients_to_rooms[client] = room.room_id
-                return self.success_response(
-                    f"Joined room {room.room_id}", room_id=room.room_id
-                )
-
-        return self.error_response("No available rooms to join!")
 
     def exit_room(self, client):
         if not self.is_client_in_room(client):
@@ -101,10 +107,14 @@ class Server:
         room_id = self.clients_to_rooms.get(client)
         room = self.rooms[room_id]
 
-        if room.is_full:
-            return self.success_response("Opponent has joined the room!")
+        if not room.is_full:
+            return self.error_response("Opponent has not joined the room!")
 
-        return self.error_response("Opponent has not joined the room!")
+        opponent_name = room.get_opponent_client(client).client_name
+        return self.success_response(
+            f"Opponent {opponent_name} has joined the room!",
+            opponent_name=opponent_name,
+        )
 
     def receive_board(self, client, board_json):
         if not self.is_client_in_room(client):
@@ -113,10 +123,10 @@ class Server:
         room_id = self.clients_to_rooms.get(client)
         room = self.rooms[room_id]
 
-        if room.add_board_for_client(client, board_json):
-            return self.success_response("Board added successfully!")
+        if not room.add_board_for_client(client, board_json):
+            return self.error_response("Invalid board!")
 
-        return self.error_response("Invalid board!")
+        return self.success_response("Board added successfully!")
 
     def is_opponent_ready(self, client):
         if not self.is_client_in_room(client):

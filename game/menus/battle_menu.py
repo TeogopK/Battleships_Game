@@ -14,6 +14,7 @@ class BattleMenu(menus.Menu):
         pygame.time.set_timer(ASK_RECEIVE_SHOT_EVENT, 1000)
 
     def draw(self, screen):
+        super().draw(screen)
         self.player.board.draw(screen)
         self.player.enemy_board_view.draw(screen)
 

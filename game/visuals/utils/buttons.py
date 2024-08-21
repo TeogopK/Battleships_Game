@@ -4,7 +4,21 @@ import game.visuals.utils.colors as colors
 
 
 class Button:
-    def __init__(self, x, y, text, font_size, text_color, bg_color, hover_color, width, height, padding=10, border_radius=5):
+    def __init__(
+        self,
+        x,
+        y,
+        text,
+        font_size,
+        text_color,
+        bg_color,
+        hover_color,
+        width,
+        height,
+        padding=10,
+        border_radius=5,
+        disabled=False,
+    ):
         self.font = pygame.freetype.SysFont("Arial", font_size)
         self.text = text
         self.text_color = text_color
@@ -14,10 +28,14 @@ class Button:
         self.height = height
         self.padding = padding
         self.border_radius = border_radius
+        self.disabled = disabled
         self.clicked = False
 
         self.image, self.rect = self.create_text_surface(text, text_color)
-        self.rect.topleft = (x + (width - self.rect.width) // 2, y + (height - self.rect.height) // 2)
+        self.rect.topleft = (
+            x + (width - self.rect.width) // 2,
+            y + (height - self.rect.height) // 2,
+        )
         self.rect.size = (self.rect.width, self.rect.height)
 
         self.button_rect = pygame.Rect(x, y, width, height)
@@ -27,19 +45,33 @@ class Button:
         return text_surface, rect
 
     def draw(self, surface):
-        pos = pygame.mouse.get_pos()
-        mouse_over = self.button_rect.collidepoint(pos)
+        if self.disabled:
+            bg_color = colors.BUTTON_DISABLED_COLOR
+        else:
+            pos = pygame.mouse.get_pos()
+            mouse_over = self.button_rect.collidepoint(pos)
+            bg_color = self.hover_color if mouse_over else self.bg_color
 
-        bg_color = self.hover_color if mouse_over else self.bg_color
-        pygame.draw.rect(surface, bg_color, self.button_rect, border_radius=self.border_radius)
-
-        pygame.draw.rect(surface, (0, 0, 0), self.button_rect, 2, border_radius=self.border_radius)
-
-        text_x = self.button_rect.x + (self.button_rect.width - self.image.get_width()) // 2
-        text_y = self.button_rect.y + (self.button_rect.height - self.image.get_height()) // 2
+        pygame.draw.rect(
+            surface, bg_color, self.button_rect, border_radius=self.border_radius
+        )
+        pygame.draw.rect(
+            surface, (0, 0, 0), self.button_rect, 2, border_radius=self.border_radius
+        )
+        self.image, _ = self.create_text_surface(self.text, self.text_color)
+        text_x = (
+            self.button_rect.x + (self.button_rect.width - self.image.get_width()) // 2
+        )
+        text_y = (
+            self.button_rect.y
+            + (self.button_rect.height - self.image.get_height()) // 2
+        )
         surface.blit(self.image, (text_x, text_y))
 
     def is_active(self):
+        if self.disabled:
+            return False
+
         pos = pygame.mouse.get_pos()
         mouse_over = self.button_rect.collidepoint(pos)
 
@@ -51,6 +83,9 @@ class Button:
             self.clicked = False
 
         return False
+
+    def set_disabled(self, disabled):
+        self.disabled = disabled
 
 
 class BasicButton(Button):

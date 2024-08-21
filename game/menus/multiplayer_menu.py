@@ -42,14 +42,14 @@ class MultiplayerMenu(Menu):
 
         if self.create_room_button.is_active():
             response = self.player.create_room()
-            self.handle_response(response, menus.RoomMenu)
+            self.handle_create_room_response(response)
 
         if self.join_room_with_id_button.is_active():
             self.process_join_room_by_id()
 
         if self.join_random_room_button.is_active():
             response = self.player.join_random_room()
-            self.handle_response(response, menus.ShipPlacementMenu)
+            self.handle_join_room_response(response)
 
         if self.go_back_button.is_active():
             self.next_menu = menus.StartMenu(self.player.name)
@@ -70,15 +70,26 @@ class MultiplayerMenu(Menu):
 
         room_id = self.room_id_input
         response = self.player.join_room_with_id(room_id)
-        self.handle_response(response, menus.ShipPlacementMenu)
+        self.handle_join_room_response(response)
 
-    def handle_response(self, response, menu):
+    def handle_create_room_response(self, response):
+        """Handles the response for creating a room."""
         if response.get("status") == "error":
             self.show_message(response["message"])
             return
 
         room_id = response["args"]["room_id"]
-        self.next_menu = menu(self.player, room_id)
+        self.next_menu = menus.RoomMenu(self.player, room_id)
+
+    def handle_join_room_response(self, response):
+        """Handles the response for joining a room (either by ID or random)."""
+        if response.get("status") == "error":
+            self.show_message(response["message"])
+            return
+
+        room_id = response["args"]["room_id"]
+        opponent_name = response["args"]["opponent_name"]
+        self.next_menu = menus.ShipPlacementMenu(self.player, room_id, opponent_name)
 
     def show_message(self, message):
         """Displays a message and sets a timer to clear it using a custom pygame event."""
