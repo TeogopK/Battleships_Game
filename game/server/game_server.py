@@ -5,6 +5,7 @@ from game.server.room import Room
 from game.server.command_handler import CommandHandler
 from game.players.battle_bot import BattleBot
 from game.server.network import MultiplayerNetwork, OfflineNetwork
+import game.players.command_literals as command_literals
 
 
 class GameServer:
@@ -238,8 +239,12 @@ class SinglePlayerServer(GameServer):
 
     def set_up_game_room(self, player):
         player.create_room()
-        self.battle_bot.join_random_room()
+        response = self.battle_bot.join_random_room()
         self.battle_bot.send_board()
+
+        room_id = response["args"]["room_id"]
+
+        return room_id
 
     def handle_offline_client(self, command, is_player):
         client = self.battle_bot.name if not is_player else "Player"
@@ -247,7 +252,7 @@ class SinglePlayerServer(GameServer):
 
         if is_player:
             command_json = json.loads(command)
-            if command_json.get("command") == COMMAND_REGISTER_SHOT:
+            if command_json.get("command") == command_literals.COMMAND_REGISTER_SHOT:
                 self.battle_bot.start_main_loop()
 
         return response

@@ -42,7 +42,7 @@ class StartMenu(menus.Menu):
                 self.name_input += event.unicode
 
     def get_player_name_input(self):
-        return self.name_input if len(self.name_input) > 0 else "Player1"
+        return self.name_input if len(self.name_input) > 0 else "Player"
 
     def start_offline_game(self):
         offline_server = SinglePlayerServer()
@@ -50,10 +50,10 @@ class StartMenu(menus.Menu):
 
         player.network_client.add_server_instance(offline_server)
 
-        offline_server.set_up_game_room(player)
+        room_id = offline_server.set_up_game_room(player)
 
         self.next_menu = menus.ShipPlacementMenu(
-            player, 1, offline_server.battle_bot.name
+            player, room_id, offline_server.battle_bot.name
         )
 
     def start_multiplayer_game(self):
