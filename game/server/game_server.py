@@ -1,31 +1,20 @@
-import socket
 import random
 import json
 
-from _thread import start_new_thread
 from game.server.room import Room
 from game.server.command_handler import CommandHandler
+from game.players.battle_bot import BattleBot
+from game.server.network import MultiplayerNetwork, OfflineNetwork
 
 
-class Server:
-    def __init__(self, server="localhost", port=5555):
-        self.server = server
-        self.port = port
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class GameServer:
+    def __init__(self):
         self.rooms = {}
         self.clients_to_rooms = {}
         self.command_handler = CommandHandler(self)
-        self.setup_server()
 
-    def setup_server(self):
-        try:
-            self.s.bind((self.server, self.port))
-            self.s.listen(5)
-            print(f"Server started, listening on {self.server}:{self.port}")
-        except socket.error as e:
-            print(f"Socket error during setup: {e}")
-            self.s.close()
-            raise
+    def run(self):
+        pass
 
     def generate_unique_room_id(self):
         while True:
@@ -220,36 +209,6 @@ class Server:
             "Return the enemy board!", enemy_board_data=enemy_board_data
         )
 
-    def run(self):
-        while True:
-            try:
-                conn, addr = self.s.accept()
-                print(f"Connected to: {addr}")
-                start_new_thread(self._handle_client, (conn,))
-            except Exception as e:
-                print(f"Exception in accepting connections: {e}")
-
-    def _handle_client(self, conn):
-        conn.send(str.encode("Connected"))
-        while True:
-            try:
-                data = conn.recv(2048)
-                if not data:
-                    print("Client disconnected")
-                    break
-
-                command = data.decode("utf-8")
-                response = self.command_handler.handle_command(command, conn)
-                print("Sending response:", response)
-                conn.sendall(str.encode(response))
-
-            except Exception as e:
-                print(f"Exception handling client: {e}")
-                break
-
-        print("Lost connection")
-        conn.close()
-
     def is_client_in_room(self, client):
         return client in self.clients_to_rooms
 
@@ -268,6 +227,27 @@ class Server:
         return self.format_response("error", message, **kwargs)
 
 
-if __name__ == "__main__":
-    server = Server()
-    server.run()
+COMMAND_REGISTER_SHOT = "register_shot"
+
+
+class SinglePlayerServer(GameServer):
+    def __init__(self):
+        super().__init__()
+        self.battle_bot = BattleBot(OfflineNetwork(is_player=False))
+        self.battle_bot.network_client.add_server_instance(self)
+
+    def set_up_game_room(self, player):
+        player.create_room()
+        self.battle_bot.join_random_room()
+        self.battle_bot.send_board()
+
+    def handle_offline_client(self, command, is_player):
+        client = self.battle_bot.name if not is_player else "Player"
+        response = self.command_handler.handle_command(command, client)
+
+        if is_player:
+            command_json = json.loads(command)
+            if command_json.get("command") == COMMAND_REGISTER_SHOT:
+                self.battle_bot.start_main_loop()
+
+        return response

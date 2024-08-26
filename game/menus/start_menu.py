@@ -1,6 +1,7 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton
-from game.server.network import Network
+from game.server.network import MultiplayerNetwork, OfflineNetwork
+from game.server.game_server import SinglePlayerServer
 import game.menus as menus
 import game.visuals.utils.colors as colors
 from game.players.player import Player
@@ -44,12 +45,20 @@ class StartMenu(menus.Menu):
         return self.name_input if len(self.name_input) > 0 else "Player1"
 
     def start_offline_game(self):
-        player = Player(self.get_player_name_input(), None)
-        self.next_menu = menus.ShipPlacementMenu(player, 1, "BattleBot")
+        offline_server = SinglePlayerServer()
+        player = Player(self.get_player_name_input(), OfflineNetwork(is_player=True))
+
+        player.network_client.add_server_instance(offline_server)
+
+        offline_server.set_up_game_room(player)
+
+        self.next_menu = menus.ShipPlacementMenu(
+            player, 1, offline_server.battle_bot.name
+        )
 
     def start_multiplayer_game(self):
         try:
-            network_client = Network()
+            network_client = MultiplayerNetwork()
         except ConnectionError:
             print("Connection error!")
             return

@@ -4,7 +4,7 @@ import game.visuals.utils.constants as constants
 import game.menus as menus
 
 from game.players.player import Player
-from game.players.ai_player import BattleAI
+from game.players.battle_bot import BattleBot
 import game.visuals.utils.colors as colors
 
 

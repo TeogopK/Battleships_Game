@@ -119,6 +119,8 @@ class Player:
         self.is_in_finished_battle = response_args["has_battle_ended"]
         self.is_winner = response_args["is_winner"]
 
+        return response
+
     def ask_to_receive_shot(self):
         response = self.send_command(COMMAND_ASK_TO_RECEIVE_SHOT)
 

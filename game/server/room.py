@@ -1,4 +1,5 @@
 from game.interface.base_board import BaseBoard
+from game.players.battle_bot import BattleBot
 
 
 class RoomClient:
