@@ -19,6 +19,8 @@ class StartMenu(menus.Menu):
         self.next_menu = None
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if event.type == pygame.KEYDOWN:
             self.handle_keydown(event)
 
@@ -60,7 +62,8 @@ class StartMenu(menus.Menu):
         try:
             network_client = MultiplayerNetwork()
         except ConnectionError:
-            print("Connection error!")
+            print("SErver")
+            self.show_message("Unable to connect to the server!")
             return
 
         self.next_menu = menus.MultiplayerMenu(
@@ -69,6 +72,7 @@ class StartMenu(menus.Menu):
 
     def draw(self, screen):
         super().draw(screen)
+
         self.play_online_button.draw(screen)
         self.play_offline_button.draw(screen)
         DrawUtils.draw_label(screen, "Enter your battle name:", x=620, y=450)

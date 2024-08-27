@@ -5,13 +5,13 @@ from game.menus.menu import Menu
 import game.visuals.utils.colors as colors
 from game.visuals.utils.shapes import DrawUtils
 
-IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 2
-WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 3
-
 
 class ShipPlacementMenu(Menu):
+    IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 1
+    WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 2
+
     def __init__(self, player, room_id, opponent_name):
-        super().__init__()
+        super().__init__(message_x=697, message_y=538)
         self.player = player
         self.room_id = room_id
         self.opponent_name = opponent_name
@@ -27,15 +27,17 @@ class ShipPlacementMenu(Menu):
 
         self.waiting_dots = 0
 
-        pygame.time.set_timer(IS_OPPONENT_READY_EVENT, 2000)
-        pygame.time.set_timer(WAITING_MESSAGE_UPDATE_EVENT, 500)
+        pygame.time.set_timer(self.IS_OPPONENT_READY_EVENT, 2000)
+        pygame.time.set_timer(self.WAITING_MESSAGE_UPDATE_EVENT, 500)
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if self.player.has_sent_board:
-            if event.type == IS_OPPONENT_READY_EVENT:
+            if event.type == self.IS_OPPONENT_READY_EVENT:
                 self.handle_is_opponent_ready()
 
-            elif event.type == WAITING_MESSAGE_UPDATE_EVENT:
+            elif event.type == self.WAITING_MESSAGE_UPDATE_EVENT:
                 self.update_waiting_dots()
 
         else:
@@ -60,10 +62,13 @@ class ShipPlacementMenu(Menu):
 
     def handle_sending_board(self):
         response = self.player.send_board()
-        if response["status"] == "success":
-            self.start_button.set_disabled(True)
-            self.shuffle_button.set_disabled(True)
-            print("Wait for opponent to send board!")
+        if response["status"] == "error":
+            self.show_message(response["message"])
+            return
+
+        self.start_button.set_disabled(True)
+        self.shuffle_button.set_disabled(True)
+        print("Wait for opponent to send board!")
 
     def update_waiting_dots(self):
         self.waiting_dots = (self.waiting_dots + 1) % 4
@@ -124,7 +129,7 @@ class ShipPlacementMenu(Menu):
                 self.original_row, self.original_col, self.dragging_ship.is_horizontal
             )
             self.player.board.place_ship(self.dragging_ship)
-            print("Cannot place ship here!")
+            self.show_message("Cannot place ship there!")
         else:
             self.player.board.place_ship(self.dragging_ship)
 
@@ -136,6 +141,7 @@ class ShipPlacementMenu(Menu):
 
     def draw(self, screen):
         super().draw(screen)
+
         self.player.board.draw(screen)
         self.shuffle_button.draw(screen)
         self.start_button.draw(screen)

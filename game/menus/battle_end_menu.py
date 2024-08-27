@@ -45,6 +45,8 @@ class BattleEndMenu(menus.Menu):
         )
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.exit_room_button.is_active():

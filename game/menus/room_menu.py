@@ -6,11 +6,11 @@ from game.players.player import Player
 from game.visuals.utils.shapes import DrawUtils
 import game.visuals.utils.colors as colors
 
-CHECK_OPPONENT_EVENT = pygame.USEREVENT + 1
-UPDATE_WAITING_MESSAGE_EVENT = pygame.USEREVENT + 8
-
 
 class RoomMenu(menus.Menu):
+    CHECK_OPPONENT_EVENT = pygame.USEREVENT + 3
+    UPDATE_WAITING_MESSAGE_EVENT = pygame.USEREVENT + 4
+
     def __init__(self, player, room_id):
         super().__init__()
         self.player = player
@@ -23,22 +23,24 @@ class RoomMenu(menus.Menu):
         self.next_menu = None
         self.is_room_private = False
 
-        pygame.time.set_timer(CHECK_OPPONENT_EVENT, 2000)
-        pygame.time.set_timer(UPDATE_WAITING_MESSAGE_EVENT, 500)
+        pygame.time.set_timer(self.CHECK_OPPONENT_EVENT, 2000)
+        pygame.time.set_timer(self.UPDATE_WAITING_MESSAGE_EVENT, 500)
 
         self.waiting_dots = 0
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if self.exit_room_button.is_active():
             self.exit_room()
 
         if self.change_publicity_button.is_active():
             self.change_room_publicity()
 
-        if event.type == CHECK_OPPONENT_EVENT:
+        if event.type == self.CHECK_OPPONENT_EVENT:
             self.check_has_opponent_joined()
 
-        if event.type == UPDATE_WAITING_MESSAGE_EVENT:
+        if event.type == self.UPDATE_WAITING_MESSAGE_EVENT:
             self.update_waiting_dots()
 
     def exit_room(self):

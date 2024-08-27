@@ -4,16 +4,16 @@ import time
 import game.menus as menus
 from game.visuals.visual_board import VisualBoard
 
-ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 3
-
 
 class BattleMenu(menus.Menu):
+    ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 5
+
     def __init__(self, player, opponent_name):
         super().__init__()
         self.player = player
         self.opponent_name = opponent_name
 
-        pygame.time.set_timer(ASK_RECEIVE_SHOT_EVENT, 1000)
+        pygame.time.set_timer(self.ASK_RECEIVE_SHOT_EVENT, 1000)
 
         self.is_battle_over = False
 
@@ -23,6 +23,8 @@ class BattleMenu(menus.Menu):
         self.player.enemy_board_view.draw(screen)
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if self.is_battle_over:
             self.next_menu = menus.BattleEndMenu(self.player, self.opponent_name)
             return
@@ -34,7 +36,7 @@ class BattleMenu(menus.Menu):
                 if self.is_click_within_enemy_board(pos):
                     self.send_shot_command(pos)
 
-        if event.type == ASK_RECEIVE_SHOT_EVENT:
+        if event.type == self.ASK_RECEIVE_SHOT_EVENT:
             if not self.player.is_turn:
                 self.ask_for_shot_command()
 

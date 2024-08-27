@@ -3,10 +3,6 @@ import game.visuals.utils.constants as constants
 
 import game.menus as menus
 
-from game.players.player import Player
-from game.players.battle_bot import BattleBot
-import game.visuals.utils.colors as colors
-
 
 class Application:
     def __init__(

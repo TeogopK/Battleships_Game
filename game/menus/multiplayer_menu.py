@@ -7,12 +7,9 @@ from game.players.player import Player
 from game.visuals.utils.shapes import DrawUtils
 import game.visuals.utils.colors as colors
 
-CLEAR_MESSAGE_EVENT = pygame.USEREVENT + 9
-
 
 class MultiplayerMenu(Menu):
     GAME_ROOM_ID_LENGTH = 6
-    MESSAGE_DISPLAY_TIME = 3000
 
     def __init__(self, client, player_name):
         super().__init__()
@@ -31,14 +28,12 @@ class MultiplayerMenu(Menu):
 
         self.next_menu = None
         self.room_id_input = ""
-        self.message = ""
 
     def handle_event(self, event):
+        super().handle_event(event)
+
         if event.type == pygame.KEYDOWN:
             self.handle_keydown(event)
-
-        if event.type == CLEAR_MESSAGE_EVENT:
-            self.message = ""
 
         if self.create_room_button.is_active():
             response = self.player.create_room()
@@ -91,11 +86,6 @@ class MultiplayerMenu(Menu):
         opponent_name = response["args"]["opponent_name"]
         self.next_menu = menus.ShipPlacementMenu(self.player, room_id, opponent_name)
 
-    def show_message(self, message):
-        """Displays a message and sets a timer to clear it using a custom pygame event."""
-        self.message = message
-        pygame.time.set_timer(CLEAR_MESSAGE_EVENT, self.MESSAGE_DISPLAY_TIME)
-
     def get_input_text(self):
         return self.room_id_input + "-" * (
             self.GAME_ROOM_ID_LENGTH - len(self.room_id_input)
@@ -115,6 +105,3 @@ class MultiplayerMenu(Menu):
             screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450
         )
         DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=500)
-
-        if self.message:
-            DrawUtils.draw_message(screen, self.message, x=620, y=600)
