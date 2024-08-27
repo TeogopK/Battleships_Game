@@ -3,7 +3,7 @@ import game.visuals.utils.colors as colors
 from game.visuals.utils.buttons import BasicButton
 import game.menus as menus
 
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 
 
 class BattleEndMenu(menus.Menu):
@@ -14,6 +14,7 @@ class BattleEndMenu(menus.Menu):
         self.opponent_name = opponent_name
 
         self.exit_room_button = BasicButton(x=490, y=630, text="Exit room")
+        self.ending_message = self.get_ending_message()
 
         player.request_enemy_board()
 
@@ -22,15 +23,14 @@ class BattleEndMenu(menus.Menu):
 
         self.player.board.draw(screen)
         self.player.enemy_board_view.draw(screen)
-        self.exit_room_button.draw(screen)
+        DrawUtils.apply_color_overlay(screen, color=colors.TILE_MAIN_COLOR)
 
-        ending_message = self.get_ending_message()
-        DrawUtils.draw_title(
-            screen, ending_message[0], x=630, y=33, font_size=64, glow_size=4
+        DrawUtils.draw_centered_message_with_background(
+            screen,
+            title_text=self.ending_message[0],
+            subtitle_text=self.ending_message[1],
         )
-        DrawUtils.draw_title(
-            screen, ending_message[1], x=630, y=75, font_size=30, glow_size=2
-        )
+        self.exit_room_button.draw(screen)
 
     def get_ending_message(self):
         if self.player.is_winner:

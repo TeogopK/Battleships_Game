@@ -3,7 +3,7 @@ import json
 from game.visuals.utils.buttons import BasicButton, GoBackButton
 import game.menus as menus
 from game.players.player import Player
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 import game.visuals.utils.colors as colors
 
 

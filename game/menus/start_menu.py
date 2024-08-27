@@ -5,7 +5,7 @@ from game.server.game_server import SinglePlayerServer
 import game.menus as menus
 import game.visuals.utils.colors as colors
 from game.players.player import Player
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 
 
 class StartMenu(menus.Menu):

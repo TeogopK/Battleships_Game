@@ -3,7 +3,7 @@ from game.visuals.utils.buttons import BasicButton
 from game.menus.battle_menu import BattleMenu
 from game.menus.menu import Menu
 import game.visuals.utils.colors as colors
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 
 
 class ShipPlacementMenu(Menu):
@@ -183,6 +183,7 @@ class ShipPlacementMenu(Menu):
         )
 
         if self.player.has_sent_board:
+            DrawUtils.apply_color_overlay(screen)
             DrawUtils.draw_message(
                 screen,
                 self.get_waiting_message(),

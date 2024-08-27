@@ -1,6 +1,6 @@
 import pygame
 
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 import game.visuals.utils.colors as colors
 
 

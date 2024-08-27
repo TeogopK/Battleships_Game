@@ -6,7 +6,7 @@ from game.interface.base_board import BaseBoard, BaseBoardEnemyView
 from game.visuals.visual_ship import Visual_Ship
 
 import game.visuals.utils.colors as colors
-from game.visuals.utils.shapes import DrawUtils
+from game.visuals.utils.draw_utils import DrawUtils
 
 
 class VisualTile(Sprite):
@@ -31,6 +31,8 @@ class VisualTile(Sprite):
 
 
 class VisualBoard(Sprite, BaseBoard):
+    BORDER_WIDTH = 5
+
     def __init__(self, x=0, y=0):
         BaseBoard.__init__(self, ship_constructor=Visual_Ship)
         Sprite.__init__(self)
@@ -137,18 +139,47 @@ class VisualBoard(Sprite, BaseBoard):
                 )
 
     def draw_board_border(self, window):
-        BORDER_WIDTH = 5
         border_rect = pygame.Rect(
-            self.x - BORDER_WIDTH,
-            self.y - BORDER_WIDTH,
-            self.get_right_border() - self.x + BORDER_WIDTH * 2,
-            self.get_bottom_border() - self.y + BORDER_WIDTH * 2,
+            self.x - self.BORDER_WIDTH,
+            self.y - self.BORDER_WIDTH,
+            self.get_right_border() - self.x + self.BORDER_WIDTH * 2,
+            self.get_bottom_border() - self.y + self.BORDER_WIDTH * 2,
         )
-        pygame.draw.rect(window, colors.BOARD_BORDER_COLOR, border_rect, BORDER_WIDTH)
+        pygame.draw.rect(
+            window, colors.BOARD_BORDER_COLOR, border_rect, self.BORDER_WIDTH
+        )
+
+    def draw_numeration(self, window):
+        font = pygame.font.SysFont(None, 22)
+        tile_size = self.get_tile_size()
+
+        for row in range(self.rows_count):
+            number_text = font.render(str(row + 1), True, colors.BOARD_NUMERATION_COLOR)
+            text_rect = number_text.get_rect(
+                center=(
+                    self.x - tile_size // 2,
+                    self.y + row * tile_size + tile_size // 2,
+                )
+            )
+            window.blit(number_text, text_rect.topleft)
+
+        for col in range(self.columns_count):
+            letter_text = font.render(
+                chr(col + ord("A")), True, colors.BOARD_NUMERATION_COLOR
+            )
+            text_rect = letter_text.get_rect(
+                center=(
+                    self.x + col * tile_size + tile_size // 2,
+                    self.y - tile_size // 2,
+                )
+            )
+            window.blit(letter_text, text_rect.topleft)
 
     def draw(self, window):
         self.draw_board_border(window)
         self.draw_tiles(window)
+        self.draw_numeration(window)
+
         self.draw_ships(window)
         self.draw_hits(window)
         self.draw_sunk_ships(window)
