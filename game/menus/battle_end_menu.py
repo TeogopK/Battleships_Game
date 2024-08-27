@@ -13,7 +13,7 @@ class BattleEndMenu(menus.Menu):
         self.player = player
         self.opponent_name = opponent_name
 
-        self.exit_room_button = BasicButton(x=550, y=630, text="Exit room")
+        self.exit_room_button = BasicButton(x=490, y=630, text="Exit room")
 
         player.request_enemy_board()
 
@@ -26,10 +26,10 @@ class BattleEndMenu(menus.Menu):
 
         ending_message = self.get_ending_message()
         DrawUtils.draw_title(
-            screen, ending_message[0], x=1, y=1, font_size=40, glow_size=6
+            screen, ending_message[0], x=630, y=33, font_size=64, glow_size=4
         )
         DrawUtils.draw_title(
-            screen, ending_message[1], x=1, y=50, font_size=30, glow_size=3
+            screen, ending_message[1], x=630, y=75, font_size=30, glow_size=2
         )
 
     def get_ending_message(self):

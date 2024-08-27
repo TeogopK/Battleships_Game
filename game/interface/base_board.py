@@ -31,16 +31,16 @@ class BaseBoard:
     @staticmethod
     def get_base_game_ships(ship_constructor):
         return {
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(2),
-            ship_constructor(2),
-            ship_constructor(2),
-            ship_constructor(3),
-            ship_constructor(3),
-            ship_constructor(4),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(3),
+            # ship_constructor(3),
+            ship_constructor(9),
         }
 
     def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
