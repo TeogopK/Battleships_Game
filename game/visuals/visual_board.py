@@ -17,14 +17,21 @@ class VisualTile(Sprite):
         self.x = x
         self.y = y
         self.size = self.TILE_SIZE * RESOLUTION
+        self.is_hovered = False
 
     def get_size(self):
         return self.size
 
     def draw_tile(self, window):
         tile_position = (self.x, self.y, self.size, self.size)
-        pygame.draw.rect(window, colors.TILE_MAIN_COLOR, tile_position)
+        tile_color = (
+            colors.TILE_HOVER_COLOR if self.is_hovered else colors.TILE_MAIN_COLOR
+        )
+        pygame.draw.rect(window, tile_color, tile_position)
         pygame.draw.rect(window, colors.TILE_BORDER_COLOR, tile_position, 1)
+
+    def set_hover(self, is_hovered):
+        self.is_hovered = is_hovered
 
     def __repr__(self):
         return f"<Tile at {self.x}, {self.y}>"
