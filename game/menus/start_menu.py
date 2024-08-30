@@ -13,11 +13,10 @@ class StartMenu(Menu):
     MAX_PLAYER_NAME_LENGTH = 10
 
     def __init__(self, name_input=""):
-        super().__init__(type(self))
+        super().__init__()
         self.play_offline_button = BasicButton(x=250, y=630, text="Play offline")
         self.play_online_button = BasicButton(x=650, y=630, text="Play online")
         self.name_input = name_input
-        self.next_menu = None
 
     def handle_event(self, event):
         super().handle_event(event)
@@ -53,7 +52,7 @@ class StartMenu(Menu):
 
         room_id = offline_server.set_up_game_room(player)
 
-        self.next_menu = ShipPlacementMenu(self.first_menu_type, player, room_id, offline_server.battle_bot.name)
+        self.next_menu = ShipPlacementMenu(self.menus_evolution, player, room_id, offline_server.battle_bot.name)
 
     def start_multiplayer_game(self):
         try:
@@ -63,8 +62,7 @@ class StartMenu(Menu):
             return
 
         self.next_menu = MultiplayerMenu(
-            self.first_menu_type,
-            type(self),
+            self.menus_evolution,
             network_client,
             self.get_player_name_input(),
         )

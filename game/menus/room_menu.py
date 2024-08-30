@@ -9,14 +9,13 @@ class RoomMenu(Menu):
     CHECK_OPPONENT_EVENT = pygame.USEREVENT + 3
     UPDATE_WAITING_MESSAGE_EVENT = pygame.USEREVENT + 4
 
-    def __init__(self, first_menu_type, previous_menu_type, player, room_id):
-        super().__init__(first_menu_type, previous_menu_type)
+    def __init__(self, menus_evolution, player, room_id):
+        super().__init__(menus_evolution)
         self.player = player
         self.room_id = room_id
         self.exit_room_button = BasicButton(x=250, y=630, text="Exit room", width=300)
         self.change_publicity_button = BasicButton(x=650, y=630, text="Change publicity", width=300)
 
-        self.next_menu = None
         self.is_room_private = False
 
         pygame.time.set_timer(self.CHECK_OPPONENT_EVENT, 2000)
@@ -42,7 +41,8 @@ class RoomMenu(Menu):
     def exit_room(self):
         response = self.player.exit_room()
         if response.get("status") == "success":
-            self.next_menu = self.previous_menu_type(self.first_menu_type, self.player.network_client, self.player.name)
+            previous_menu_type = self.get_father_in_evolution()
+            self.next_menu = previous_menu_type(self.menus_evolution, self.player.network_client, self.player.name)
 
     def change_room_publicity(self):
         response = self.player.change_room_publicity()
@@ -56,7 +56,7 @@ class RoomMenu(Menu):
         response = self.player.has_opponent_joined()
         if response.get("status") == "success":
             opponent_name = response["args"]["opponent_name"]
-            self.next_menu = ShipPlacementMenu(self.first_menu_type, self.player, self.room_id, opponent_name)
+            self.next_menu = ShipPlacementMenu(self.menus_evolution, self.player, self.room_id, opponent_name)
 
     def update_waiting_dots(self):
         self.waiting_dots = (self.waiting_dots + 1) % 4

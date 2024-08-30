@@ -10,18 +10,30 @@ class Menu:
 
     def __init__(
         self,
-        first_menu_type=None,
-        previous_menu_type=None,
+        menus_evolution=None,
         message_x=620,
         message_y=600,
     ):
-        self.next_menu = None
-        self.first_menu_type = first_menu_type
-        self.previous_menu_type = previous_menu_type
+        self.menus_evolution = menus_evolution if menus_evolution is not None else []
 
         self.message = ""
         self.message_x = message_x
         self.message_y = message_y
+        self.next_menu = None
+
+        self.add_self_to_evolution()
+
+    def get_father_in_evolution(self):
+        self.menus_evolution.pop()
+        if not self.menus_evolution:
+            return None
+        return self.menus_evolution.pop()
+
+    def add_self_to_evolution(self):
+        self.menus_evolution.append(type(self))
+
+    def get_first_menu_in_evolution(self):
+        return self.menus_evolution[0]
 
     def handle_event(self, event):
         if event.type == self.CLEAR_MESSAGE_EVENT:

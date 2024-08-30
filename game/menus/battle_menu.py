@@ -8,8 +8,8 @@ from game.menus.battle_end_menu import BattleEndMenu
 class BattleMenu(Menu):
     ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 5
 
-    def __init__(self, first_menu_type, player, opponent_name):
-        super().__init__(first_menu_type, message_x=137, message_y=690)
+    def __init__(self, menus_evolution, player, opponent_name):
+        super().__init__(menus_evolution, message_x=137, message_y=690)
         self.player = player
         self.opponent_name = opponent_name
 
@@ -55,7 +55,7 @@ class BattleMenu(Menu):
         super().handle_event(event)
 
         if self.is_battle_over:
-            self.next_menu = BattleEndMenu(self.first_menu_type, self.player, self.opponent_name)
+            self.next_menu = BattleEndMenu(self.menus_evolution, self.player, self.opponent_name)
             return
 
         if event.type == pygame.MOUSEMOTION:

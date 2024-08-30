@@ -10,16 +10,21 @@ from game.menus.room_menu import RoomMenu
 class MultiplayerMenu(Menu):
     GAME_ROOM_ID_LENGTH = 6
 
-    def __init__(self, first_menu_type, previous_menu_type, client, player_name):
-        super().__init__(first_menu_type, previous_menu_type)
+    def __init__(self, menus_evolution, client, player_name):
+        super().__init__(menus_evolution)
         self.player = Player(player_name, client)
 
-        self.create_room_button = BasicButton(x=150, y=630, text="Create room", width=300)
-        self.join_room_with_id_button = BasicButton(x=475, y=630, text="Join room by id", width=300)
-        self.join_random_room_button = BasicButton(x=800, y=630, text="Join random room", width=300)
+        self.create_room_button = BasicButton(
+            x=150, y=630, text="Create room", width=300
+        )
+        self.join_room_with_id_button = BasicButton(
+            x=475, y=630, text="Join room by id", width=300
+        )
+        self.join_random_room_button = BasicButton(
+            x=800, y=630, text="Join random room", width=300
+        )
         self.go_back_button = GoBackButton(10, 10)
 
-        self.next_menu = None
         self.room_id_input = ""
 
     def handle_event(self, event):
@@ -40,7 +45,8 @@ class MultiplayerMenu(Menu):
             self.handle_join_room_response(response)
 
         if self.go_back_button.is_active():
-            self.next_menu = self.previous_menu_type(self.first_menu_type, self.player.name)
+            previous_menu_type = self.get_father_in_evolution()
+            self.next_menu = previous_menu_type(self.player.name)
 
     def handle_keydown(self, event):
         if event.key == pygame.K_BACKSPACE:
@@ -67,7 +73,7 @@ class MultiplayerMenu(Menu):
             return
 
         room_id = response["args"]["room_id"]
-        self.next_menu = RoomMenu(self.first_menu_type, type(self), self.player, room_id)
+        self.next_menu = RoomMenu(self.menus_evolution, self.player, room_id)
 
     def handle_join_room_response(self, response):
         """Handles the response for joining a room (either by ID or random)."""
@@ -77,10 +83,14 @@ class MultiplayerMenu(Menu):
 
         room_id = response["args"]["room_id"]
         opponent_name = response["args"]["opponent_name"]
-        self.next_menu = ShipPlacementMenu(self.first_menu_type, self.player, room_id, opponent_name)
+        self.next_menu = ShipPlacementMenu(
+            self.menus_evolution, self.player, room_id, opponent_name
+        )
 
     def get_input_text(self):
-        return self.room_id_input + "-" * (self.GAME_ROOM_ID_LENGTH - len(self.room_id_input))
+        return self.room_id_input + "-" * (
+            self.GAME_ROOM_ID_LENGTH - len(self.room_id_input)
+        )
 
     def draw(self, screen):
         super().draw(screen)
@@ -92,5 +102,7 @@ class MultiplayerMenu(Menu):
         DrawUtils.draw_title(screen, "Battleships", 620, 200, 128, glow_size=7)
         DrawUtils.draw_title(screen, "Multiplayer", 620, 300, 64, glow_size=3)
 
-        DrawUtils.draw_label(screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450)
+        DrawUtils.draw_label(
+            screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450
+        )
         DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=500)

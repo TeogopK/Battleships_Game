@@ -10,8 +10,10 @@ class ShipPlacementMenu(Menu):
     IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 1
     WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 2
 
-    def __init__(self, first_menu_type, player, room_id, opponent_name):
-        super().__init__(first_menu_type, message_x=697, message_y=538)
+    def __init__(self, menus_evolution, player, room_id, opponent_name):
+        super().__init__(menus_evolution, message_x=697, message_y=538)
+        self.add_self_to_evolution()
+
         self.player = player
         self.room_id = room_id
         self.opponent_name = opponent_name
@@ -22,8 +24,6 @@ class ShipPlacementMenu(Menu):
         self.dragging_ship = None
         self.original_row = 0
         self.original_col = 0
-
-        self.next_menu = None
 
         self.waiting_dots = 0
 
@@ -58,7 +58,7 @@ class ShipPlacementMenu(Menu):
         response = self.player.is_opponent_ready()
 
         if response["status"] == "success":
-            self.next_menu = BattleMenu(self.first_menu_type, self.player, self.opponent_name)
+            self.next_menu = BattleMenu(self.menus_evolution, self.player, self.opponent_name)
 
     def handle_sending_board(self):
         response = self.player.send_board()

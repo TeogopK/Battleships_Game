@@ -7,8 +7,8 @@ from game.visuals.utils.draw_utils import DrawUtils
 
 
 class BattleEndMenu(Menu):
-    def __init__(self, first_menu_type, player, opponent_name):
-        super().__init__(first_menu_type)
+    def __init__(self, menus_evolution, player, opponent_name):
+        super().__init__(menus_evolution)
 
         self.player = player
         self.opponent_name = opponent_name
@@ -61,5 +61,5 @@ class BattleEndMenu(Menu):
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.exit_room_button.is_active():
-
-                self.next_menu = self.first_menu_type(self.player.name)
+                first_menu_type = self.get_first_menu_in_evolution()
+                self.next_menu = first_menu_type(self.player.name)
