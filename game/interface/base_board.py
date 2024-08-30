@@ -19,11 +19,7 @@ class BaseBoard:
         self.columns_count = columns_count
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
-        self.unplaced_ships = (
-            unplaced_ships
-            if unplaced_ships != None
-            else BaseBoard.get_base_game_ships(ship_constructor)
-        )
+        self.unplaced_ships = unplaced_ships if unplaced_ships != None else BaseBoard.get_base_game_ships(ship_constructor)
 
         self.shot_coordinates = defaultdict(int)
         self.all_hit_coordinates = set()
@@ -49,19 +45,13 @@ class BaseBoard:
     def random_shuffle_ships(self):
         self.remove_all_ships()
 
-        for ship in sorted(
-            list(self.unplaced_ships), key=lambda ship: -ship.ship_length
-        ):
+        for ship in sorted(list(self.unplaced_ships), key=lambda ship: -ship.ship_length):
             placed = False
 
             while not placed:
                 is_horizontal = random.choice([True, False])
-                row = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.rows_count
-                )
-                col = self.get_random_start_for_ship(
-                    ship.ship_length, is_horizontal, self.columns_count
-                )
+                row = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.rows_count)
+                col = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.columns_count)
 
                 ship.move(row, col, is_horizontal)
 
@@ -73,9 +63,7 @@ class BaseBoard:
         return self.is_ship_in_board(ship) and not self.does_ship_overlap(ship)
 
     def is_ship_in_board(self, ship):
-        return all(
-            self.is_coordinate_in_board(row, col) for row, col in ship.coordinates
-        )
+        return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
@@ -156,11 +144,7 @@ class BaseBoard:
         return not self.get_ship_on_coord(row, col).is_alive
 
     def are_all_ships_sunk(self):
-        return all(
-            not ship.is_alive
-            for ship_list in self.ships_map.values()
-            for ship in ship_list
-        )
+        return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
 
     def is_coordinate_in_board(self, row, col):
         return 0 <= row < self.rows_count and 0 <= col < self.columns_count

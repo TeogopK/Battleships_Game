@@ -24,9 +24,7 @@ class VisualTile(Sprite):
 
     def draw_tile(self, window):
         tile_position = (self.x, self.y, self.size, self.size)
-        tile_color = (
-            colors.TILE_HOVER_COLOR if self.is_hovered else colors.TILE_MAIN_COLOR
-        )
+        tile_color = colors.TILE_HOVER_COLOR if self.is_hovered else colors.TILE_MAIN_COLOR
         pygame.draw.rect(window, tile_color, tile_position)
         pygame.draw.rect(window, colors.TILE_BORDER_COLOR, tile_position, 1)
 
@@ -85,10 +83,7 @@ class VisualBoard(Sprite, BaseBoard):
 
     def populate_with_tiles(self):
         self.tiles = [
-            [
-                VisualTile(*self.get_tile_screen_placement(row, col))
-                for col in range(self.columns_count)
-            ]
+            [VisualTile(*self.get_tile_screen_placement(row, col)) for col in range(self.columns_count)]
             for row in range(self.rows_count)
         ]
 
@@ -109,10 +104,7 @@ class VisualBoard(Sprite, BaseBoard):
 
     def is_position_in_board(self, pos):
         pos_x, pos_y = pos
-        return (
-            self.x <= pos_x <= self.get_right_border()
-            and self.y <= pos_y <= self.get_bottom_border()
-        )
+        return self.x <= pos_x <= self.get_right_border() and self.y <= pos_y <= self.get_bottom_border()
 
     def get_row_col_by_mouse(self, pos):
         pos_x, pos_y = pos
@@ -132,18 +124,14 @@ class VisualBoard(Sprite, BaseBoard):
         for row, col in self.all_hit_coordinates:
             tile = self.tiles[row][col]
             hit_position = (tile.x, tile.y, tile.size, tile.size)
-            DrawUtils.draw_cross(
-                window, tile.x, tile.y, tile.size, colors.SHOT_HIT_COLOR
-            )
+            DrawUtils.draw_cross(window, tile.x, tile.y, tile.size, colors.SHOT_HIT_COLOR)
 
     def draw_misses(self, window):
         for (row, col), hit_count in self.shot_coordinates.items():
             if hit_count > 0 and (row, col) not in self.all_hit_coordinates:
                 tile = self.tiles[row][col]
                 miss_position = (tile.x, tile.y, tile.size, tile.size)
-                DrawUtils.draw_circle(
-                    window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR
-                )
+                DrawUtils.draw_circle(window, tile.x, tile.y, tile.size, colors.SHOT_MISS_COLOR)
 
     def draw_board_border(self, window):
         border_rect = pygame.Rect(
@@ -152,9 +140,7 @@ class VisualBoard(Sprite, BaseBoard):
             self.get_right_border() - self.x + self.BORDER_WIDTH * 2,
             self.get_bottom_border() - self.y + self.BORDER_WIDTH * 2,
         )
-        pygame.draw.rect(
-            window, colors.BOARD_BORDER_COLOR, border_rect, self.BORDER_WIDTH
-        )
+        pygame.draw.rect(window, colors.BOARD_BORDER_COLOR, border_rect, self.BORDER_WIDTH)
 
     def draw_numeration(self, window):
         font = pygame.font.SysFont(None, 22)
@@ -171,9 +157,7 @@ class VisualBoard(Sprite, BaseBoard):
             window.blit(number_text, text_rect.topleft)
 
         for col in range(self.columns_count):
-            letter_text = font.render(
-                chr(col + ord("A")), True, colors.BOARD_NUMERATION_COLOR
-            )
+            letter_text = font.render(chr(col + ord("A")), True, colors.BOARD_NUMERATION_COLOR)
             text_rect = letter_text.get_rect(
                 center=(
                     self.x + col * tile_size + tile_size // 2,

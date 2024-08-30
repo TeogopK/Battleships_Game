@@ -23,9 +23,7 @@ class OfflineNetwork(AbstractNetwork):
 
     def send(self, data):
         """Simulate sending data to the server and receiving a response."""
-        response = self.server_instance.handle_offline_client(
-            data, is_player=self.is_player
-        )
+        response = self.server_instance.handle_offline_client(data, is_player=self.is_player)
         return response
 
     def close(self):
@@ -48,9 +46,7 @@ class MultiplayerNetwork(AbstractNetwork):
             self.client.settimeout(10)
             return self.client.recv(2048).decode()
         except socket.timeout:
-            raise ConnectionError(
-                "Connection timed out while trying to receive initial data."
-            )
+            raise ConnectionError("Connection timed out while trying to receive initial data.")
         except socket.error as e:
             raise ConnectionError(f"Socket error: {e}")
 

@@ -24,19 +24,13 @@ class RoomClient:
         return True
 
     def is_shot_valid(self, row, col):
-        return self.board.is_coordinate_in_board(
-            row, col
-        ) and not self.board.is_coordinate_shot_at(row, col)
+        return self.board.is_coordinate_in_board(row, col) and not self.board.is_coordinate_shot_at(row, col)
 
     def are_all_player_ships_sunk(self):
         return self.board.are_all_ships_sunk()
 
-    def add_shot_history_of_enemy(
-        self, row, col, is_turn, has_battle_ended, is_winner, turn_end_time
-    ):
-        self.shot_history.append(
-            (row, col, is_turn, has_battle_ended, is_winner, turn_end_time)
-        )
+    def add_shot_history_of_enemy(self, row, col, is_turn, has_battle_ended, is_winner, turn_end_time):
+        self.shot_history.append((row, col, is_turn, has_battle_ended, is_winner, turn_end_time))
 
 
 class Room:

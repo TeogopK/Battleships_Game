@@ -20,9 +20,7 @@ class Visual_Ship(Sprite, Ship):
         x=None,
         y=None,
     ):
-        Ship.__init__(
-            self, ship_length, row, col, is_horizontal, is_alive, sunk_coordinates
-        )
+        Ship.__init__(self, ship_length, row, col, is_horizontal, is_alive, sunk_coordinates)
         Sprite.__init__(self)
         self.coordinate_size = coordinate_size
         self.x = x
@@ -30,18 +28,10 @@ class Visual_Ship(Sprite, Ship):
         self.color = colors.SHIP_DEFAULT_COLOR
 
     def get_visual_length(self):
-        return (
-            self.ship_length * self.coordinate_size
-            if self.is_horizontal
-            else self.coordinate_size
-        )
+        return self.ship_length * self.coordinate_size if self.is_horizontal else self.coordinate_size
 
     def get_visual_width(self):
-        return (
-            self.coordinate_size
-            if self.is_horizontal
-            else self.ship_length * self.coordinate_size
-        )
+        return self.coordinate_size if self.is_horizontal else self.ship_length * self.coordinate_size
 
     def get_right_border(self):
         return self.x + self.get_visual_length()

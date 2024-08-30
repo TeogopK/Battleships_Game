@@ -125,9 +125,7 @@ class ShipPlacementMenu(Menu):
 
     def release_ship(self):
         if not self.player.board.is_ship_placement_valid(self.dragging_ship):
-            self.dragging_ship.move(
-                self.original_row, self.original_col, self.dragging_ship.is_horizontal
-            )
+            self.dragging_ship.move(self.original_row, self.original_col, self.dragging_ship.is_horizontal)
             self.player.board.place_ship(self.dragging_ship)
             self.show_message("Cannot place ship there!")
         else:
@@ -146,9 +144,7 @@ class ShipPlacementMenu(Menu):
         self.shuffle_button.draw(screen)
         self.start_button.draw(screen)
 
-        DrawUtils.draw_title(
-            screen, "Ship placement phase", x=920, y=120, font_size=64, glow_size=3
-        )
+        DrawUtils.draw_title(screen, "Ship placement phase", x=920, y=120, font_size=64, glow_size=3)
 
         DrawUtils.draw_message(
             screen,
@@ -175,12 +171,8 @@ class ShipPlacementMenu(Menu):
             alignment="left",
         )
 
-        DrawUtils.draw_label(
-            screen, f"Room ID: {self.room_id}", x=600, y=400, alignment="left"
-        )
-        DrawUtils.draw_label(
-            screen, f"Opponent: {self.opponent_name}", x=600, y=450, alignment="left"
-        )
+        DrawUtils.draw_label(screen, f"Room ID: {self.room_id}", x=600, y=400, alignment="left")
+        DrawUtils.draw_label(screen, f"Opponent: {self.opponent_name}", x=600, y=450, alignment="left")
 
         if self.player.has_sent_board:
             DrawUtils.apply_color_overlay(screen)

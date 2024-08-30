@@ -78,9 +78,7 @@ class GameServer:
 
         is_private = room.change_publicity()
 
-        return self.success_response(
-            f"Room {room_id} publicity changed!", is_private=is_private
-        )
+        return self.success_response(f"Room {room_id} publicity changed!", is_private=is_private)
 
     def exit_room(self, client):
         if not self.is_client_in_room(client):
@@ -239,9 +237,7 @@ class GameServer:
 
         enemy_board_data = room.get_enemy_board(client)
 
-        return self.success_response(
-            "Return the enemy board!", enemy_board_data=enemy_board_data
-        )
+        return self.success_response("Return the enemy board!", enemy_board_data=enemy_board_data)
 
     def is_client_in_room(self, client):
         return client in self.clients_to_rooms

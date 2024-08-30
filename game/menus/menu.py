@@ -23,9 +23,7 @@ class Menu:
         screen.fill(colors.BACKGROUND_COLOR)
 
         if self.message:
-            DrawUtils.draw_message(
-                screen, self.message, x=self.message_x, y=self.message_y
-            )
+            DrawUtils.draw_message(screen, self.message, x=self.message_x, y=self.message_y)
 
     def show_message(self, message):
         """Displays a message and sets a timer to clear it using a custom pygame event."""

@@ -9,7 +9,7 @@ from game.visuals.utils.draw_utils import DrawUtils
 
 
 class StartMenu(menus.Menu):
-    MAX_PLAYER_NAME_LENGTH = 20
+    MAX_PLAYER_NAME_LENGTH = 10
 
     def __init__(self, name_input=""):
         super().__init__()
@@ -32,9 +32,7 @@ class StartMenu(menus.Menu):
 
     def handle_keydown(self, event):
         allowed_name_keys = (
-            set(range(pygame.K_a, pygame.K_z + 1))
-            | set(range(pygame.K_0, pygame.K_9 + 1))
-            | {pygame.K_MINUS}
+            set(range(pygame.K_a, pygame.K_z + 1)) | set(range(pygame.K_0, pygame.K_9 + 1)) | {pygame.K_MINUS}
         )
 
         if event.key == pygame.K_BACKSPACE:
@@ -54,9 +52,7 @@ class StartMenu(menus.Menu):
 
         room_id = offline_server.set_up_game_room(player)
 
-        self.next_menu = menus.ShipPlacementMenu(
-            player, room_id, offline_server.battle_bot.name
-        )
+        self.next_menu = menus.ShipPlacementMenu(player, room_id, offline_server.battle_bot.name)
 
     def start_multiplayer_game(self):
         try:
@@ -66,9 +62,7 @@ class StartMenu(menus.Menu):
             self.show_message("Unable to connect to the server!")
             return
 
-        self.next_menu = menus.MultiplayerMenu(
-            network_client, self.get_player_name_input()
-        )
+        self.next_menu = menus.MultiplayerMenu(network_client, self.get_player_name_input())
 
     def draw(self, screen):
         super().draw(screen)

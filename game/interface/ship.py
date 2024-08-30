@@ -83,8 +83,6 @@ class Ship:
             col=ship_data["col"],
             is_horizontal=ship_data["is_horizontal"],
             is_alive=ship_data["is_alive"],
-            sunk_coordinates=set(
-                tuple(coord) for coord in ship_data["sunk_coordinates"]
-            ),
+            sunk_coordinates=set(tuple(coord) for coord in ship_data["sunk_coordinates"]),
         )
         return ship

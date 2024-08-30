@@ -15,15 +15,9 @@ class MultiplayerMenu(Menu):
         super().__init__()
         self.player = Player(player_name, client)
 
-        self.create_room_button = BasicButton(
-            x=150, y=630, text="Create room", width=300
-        )
-        self.join_room_with_id_button = BasicButton(
-            x=475, y=630, text="Join room by id", width=300
-        )
-        self.join_random_room_button = BasicButton(
-            x=800, y=630, text="Join random room", width=300
-        )
+        self.create_room_button = BasicButton(x=150, y=630, text="Create room", width=300)
+        self.join_room_with_id_button = BasicButton(x=475, y=630, text="Join room by id", width=300)
+        self.join_random_room_button = BasicButton(x=800, y=630, text="Join random room", width=300)
         self.go_back_button = GoBackButton(10, 10)
 
         self.next_menu = None
@@ -87,9 +81,7 @@ class MultiplayerMenu(Menu):
         self.next_menu = menus.ShipPlacementMenu(self.player, room_id, opponent_name)
 
     def get_input_text(self):
-        return self.room_id_input + "-" * (
-            self.GAME_ROOM_ID_LENGTH - len(self.room_id_input)
-        )
+        return self.room_id_input + "-" * (self.GAME_ROOM_ID_LENGTH - len(self.room_id_input))
 
     def draw(self, screen):
         super().draw(screen)
@@ -101,7 +93,5 @@ class MultiplayerMenu(Menu):
         DrawUtils.draw_title(screen, "Battleships", 620, 200, 128, glow_size=7)
         DrawUtils.draw_title(screen, "Multiplayer", 620, 300, 64, glow_size=3)
 
-        DrawUtils.draw_label(
-            screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450
-        )
+        DrawUtils.draw_label(screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450)
         DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=500)

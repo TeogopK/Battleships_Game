@@ -38,9 +38,7 @@ class CommandHandler:
                 self.server.is_opponent_ready,
                 [],
             ),
-            command_literals.COMMAND_EXIT_ROOM: Command(
-                command_literals.COMMAND_EXIT_ROOM, self.server.exit_room, []
-            ),
+            command_literals.COMMAND_EXIT_ROOM: Command(command_literals.COMMAND_EXIT_ROOM, self.server.exit_room, []),
             command_literals.COMMAND_HAS_OPPONENT_JOINED: Command(
                 command_literals.COMMAND_HAS_OPPONENT_JOINED,
                 self.server.has_opponent_joined,
@@ -84,9 +82,7 @@ class CommandHandler:
 
             missing_args = [arg for arg in command.required_args if arg not in args]
             if missing_args:
-                return self.server.error_response(
-                    f"Missing arguments: {', '.join(missing_args)}"
-                )
+                return self.server.error_response(f"Missing arguments: {', '.join(missing_args)}")
 
             return command.handler(client, **args)
         except json.JSONDecodeError:

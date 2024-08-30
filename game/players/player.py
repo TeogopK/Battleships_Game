@@ -30,9 +30,7 @@ class Player:
         return response
 
     def create_room(self):
-        response = self.send_command(
-            command_literals.COMMAND_CREATE_ROOM, client_name=self.name
-        )
+        response = self.send_command(command_literals.COMMAND_CREATE_ROOM, client_name=self.name)
 
         return response
 
@@ -46,17 +44,13 @@ class Player:
         return response
 
     def join_random_room(self):
-        response = self.send_command(
-            command_literals.COMMAND_JOIN_RANDOM_ROOM, client_name=self.name
-        )
+        response = self.send_command(command_literals.COMMAND_JOIN_RANDOM_ROOM, client_name=self.name)
 
         return response
 
     def send_board(self):
         board_json = self.board.serialize_board()
-        response = self.send_command(
-            command_literals.COMMAND_SEND_BOARD, board_json=board_json
-        )
+        response = self.send_command(command_literals.COMMAND_SEND_BOARD, board_json=board_json)
 
         self.has_sent_board = response["status"]
         return response
@@ -96,9 +90,7 @@ class Player:
         return response
 
     def shot(self, row, col):
-        response = self.send_command(
-            command_literals.COMMAND_REGISTER_SHOT, row=row, col=col
-        )
+        response = self.send_command(command_literals.COMMAND_REGISTER_SHOT, row=row, col=col)
         response_args = response["args"]
 
         if response["status"] == "error":

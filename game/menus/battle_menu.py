@@ -24,16 +24,10 @@ class BattleMenu(menus.Menu):
         self.player.board.draw(screen)
         self.player.enemy_board_view.draw(screen)
 
-        DrawUtils.draw_title(
-            screen, "Battle phase", x=635, y=40, font_size=60, glow_size=3
-        )
+        DrawUtils.draw_title(screen, "Battle phase", x=635, y=40, font_size=60, glow_size=3)
 
-        DrawUtils.draw_title(
-            screen, self.player.name, x=110, y=650, font_size=42, glow_size=3
-        )
-        DrawUtils.draw_title(
-            screen, self.opponent_name, x=768, y=650, font_size=42, glow_size=3
-        )
+        DrawUtils.draw_title(screen, self.player.name, x=110, y=650, font_size=42, glow_size=3)
+        DrawUtils.draw_title(screen, self.opponent_name, x=768, y=650, font_size=42, glow_size=3)
         DrawUtils.draw_label(screen, text="Turn ends in:", x=430, y=650)
         DrawUtils.draw_label(screen, text="Turn ends in:", x=1050, y=650)
 
@@ -118,10 +112,7 @@ class BattleMenu(menus.Menu):
         """Set the current tile as hovered and clear the previous one if necessary."""
         new_hovered_tile = self.player.enemy_board_view.tiles[row][col]
 
-        if (
-            self.last_hovered_tile is not None
-            and self.last_hovered_tile != new_hovered_tile
-        ):
+        if self.last_hovered_tile is not None and self.last_hovered_tile != new_hovered_tile:
             self.last_hovered_tile.set_hover(False)
 
         new_hovered_tile.set_hover(True)
