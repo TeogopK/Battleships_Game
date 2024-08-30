@@ -60,9 +60,7 @@ class DrawUtils:
             size (int): The diameter of the circle's bounding box.
             color (tuple): The color of the circle in RGB format.
         """
-        pygame.draw.circle(
-            surface, color, (top_left_x + size // 2, top_left_y + size // 2), size // 4
-        )
+        pygame.draw.circle(surface, color, (top_left_x + size // 2, top_left_y + size // 2), size // 4)
 
     @staticmethod
     def draw_title(surface, text, x, y, font_size, glow_size):
@@ -212,9 +210,7 @@ class DrawUtils:
         """
         width, height = surface.get_size()
 
-        small_surface = pygame.transform.smoothscale(
-            surface, (int(width * scale_factor), int(height * scale_factor))
-        )
+        small_surface = pygame.transform.smoothscale(surface, (int(width * scale_factor), int(height * scale_factor)))
 
         blurred_surface = pygame.transform.smoothscale(small_surface, (width, height))
 
@@ -269,27 +265,17 @@ class DrawUtils:
 
         # Render text surfaces
         title_text_surface = font_title.render(title_text, True, text_color_title)
-        subtitle_text_surface = font_subtitle.render(
-            subtitle_text, True, text_color_subtitle
-        )
+        subtitle_text_surface = font_subtitle.render(subtitle_text, True, text_color_subtitle)
 
         # Calculate rectangle dimensions and position
-        text_width = max(
-            title_text_surface.get_width(), subtitle_text_surface.get_width()
-        )
+        text_width = max(title_text_surface.get_width(), subtitle_text_surface.get_width())
         rect_width = text_width + padding * 2
-        rect_height = (
-            title_text_surface.get_height()
-            + subtitle_text_surface.get_height()
-            + padding * 3
-        )
+        rect_height = title_text_surface.get_height() + subtitle_text_surface.get_height() + padding * 3
         rect_x = (surface.get_width() - rect_width) // 2
         rect_y = (surface.get_height() - rect_height) // 2
 
         # Create and draw on message surface
-        message_surface = pygame.Surface(
-            (surface.get_width(), surface.get_height()), pygame.SRCALPHA
-        )
+        message_surface = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
         pygame.draw.rect(
             message_surface,
             (*background_color, alpha),
@@ -306,9 +292,7 @@ class DrawUtils:
 
         # Draw text
         surface.blit(message_surface, (0, 0))
-        title_rect = title_text_surface.get_rect(
-            center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2)
-        )
+        title_rect = title_text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2))
         subtitle_rect = subtitle_text_surface.get_rect(
             center=(
                 rect_x + rect_width // 2,

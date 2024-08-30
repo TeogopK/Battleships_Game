@@ -89,20 +89,11 @@ class Button:
             mouse_over = self.button_rect.collidepoint(pos)
             bg_color = self.hover_color if mouse_over else self.bg_color
 
-        pygame.draw.rect(
-            surface, bg_color, self.button_rect, border_radius=self.border_radius
-        )
-        pygame.draw.rect(
-            surface, (0, 0, 0), self.button_rect, 2, border_radius=self.border_radius
-        )
+        pygame.draw.rect(surface, bg_color, self.button_rect, border_radius=self.border_radius)
+        pygame.draw.rect(surface, (0, 0, 0), self.button_rect, 2, border_radius=self.border_radius)
         self.image, _ = self._create_text_surface(self.text, self.text_color)
-        text_x = (
-            self.button_rect.x + (self.button_rect.width - self.image.get_width()) // 2
-        )
-        text_y = (
-            self.button_rect.y
-            + (self.button_rect.height - self.image.get_height()) // 2
-        )
+        text_x = self.button_rect.x + (self.button_rect.width - self.image.get_width()) // 2
+        text_y = self.button_rect.y + (self.button_rect.height - self.image.get_height()) // 2
         surface.blit(self.image, (text_x, text_y))
 
     def is_active(self):
