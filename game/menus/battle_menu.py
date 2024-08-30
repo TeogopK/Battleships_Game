@@ -1,14 +1,15 @@
 import time
 import pygame
-from game import menus
+from game.menus.menu import Menu
 from game.visuals.utils.draw_utils import DrawUtils
+from game.menus.battle_end_menu import BattleEndMenu
 
 
-class BattleMenu(menus.Menu):
+class BattleMenu(Menu):
     ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 5
 
-    def __init__(self, player, opponent_name):
-        super().__init__(message_x=137, message_y=690)
+    def __init__(self, first_menu_type, player, opponent_name):
+        super().__init__(first_menu_type, message_x=137, message_y=690)
         self.player = player
         self.opponent_name = opponent_name
 
@@ -54,7 +55,7 @@ class BattleMenu(menus.Menu):
         super().handle_event(event)
 
         if self.is_battle_over:
-            self.next_menu = menus.BattleEndMenu(self.player, self.opponent_name)
+            self.next_menu = BattleEndMenu(self.first_menu_type, self.player, self.opponent_name)
             return
 
         if event.type == pygame.MOUSEMOTION:

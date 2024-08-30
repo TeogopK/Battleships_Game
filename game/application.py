@@ -1,7 +1,7 @@
 import pygame
 from game.visuals.utils import constants
 
-from game import menus
+from game.menus.start_menu import StartMenu
 
 
 class Application:  # pylint: disable=R0903
@@ -16,7 +16,7 @@ class Application:  # pylint: disable=R0903
         self.screen = pygame.display.set_mode((width, height))
         self.fps = fps
         self.clock = pygame.time.Clock()
-        self.menu = menus.StartMenu()
+        self.menu = StartMenu()
 
         self.running = True
 

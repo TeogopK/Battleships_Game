@@ -1,16 +1,17 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton
-from game import menus
+from game.menus.menu import Menu
 from game.visuals.utils import colors
 from game.visuals.utils.draw_utils import DrawUtils
+from game.menus.battle_menu import BattleMenu
 
 
-class ShipPlacementMenu(menus.Menu):
+class ShipPlacementMenu(Menu):
     IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 1
     WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 2
 
-    def __init__(self, player, room_id, opponent_name):
-        super().__init__(message_x=697, message_y=538)
+    def __init__(self, first_menu_type, player, room_id, opponent_name):
+        super().__init__(first_menu_type, message_x=697, message_y=538)
         self.player = player
         self.room_id = room_id
         self.opponent_name = opponent_name
@@ -57,7 +58,7 @@ class ShipPlacementMenu(menus.Menu):
         response = self.player.is_opponent_ready()
 
         if response["status"] == "success":
-            self.next_menu = menus.BattleMenu(self.player, self.opponent_name)
+            self.next_menu = BattleMenu(self.first_menu_type, self.player, self.opponent_name)
 
     def handle_sending_board(self):
         response = self.player.send_board()

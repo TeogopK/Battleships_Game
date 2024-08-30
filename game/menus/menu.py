@@ -8,8 +8,16 @@ class Menu:
     CLEAR_MESSAGE_EVENT = pygame.USEREVENT + 9
     MESSAGE_DISPLAY_TIME = 3000
 
-    def __init__(self, message_x=620, message_y=600):
+    def __init__(
+        self,
+        first_menu_type=None,
+        previous_menu_type=None,
+        message_x=620,
+        message_y=600,
+    ):
         self.next_menu = None
+        self.first_menu_type = first_menu_type
+        self.previous_menu_type = previous_menu_type
 
         self.message = ""
         self.message_x = message_x

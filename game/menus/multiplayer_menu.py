@@ -1,15 +1,17 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton, GoBackButton
-from game import menus
+from game.menus.menu import Menu
 from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
+from game.menus.ship_placement_menu import ShipPlacementMenu
+from game.menus.room_menu import RoomMenu
 
 
-class MultiplayerMenu(menus.Menu):
+class MultiplayerMenu(Menu):
     GAME_ROOM_ID_LENGTH = 6
 
-    def __init__(self, client, player_name):
-        super().__init__()
+    def __init__(self, first_menu_type, previous_menu_type, client, player_name):
+        super().__init__(first_menu_type, previous_menu_type)
         self.player = Player(player_name, client)
 
         self.create_room_button = BasicButton(x=150, y=630, text="Create room", width=300)
@@ -38,7 +40,7 @@ class MultiplayerMenu(menus.Menu):
             self.handle_join_room_response(response)
 
         if self.go_back_button.is_active():
-            self.next_menu = menus.StartMenu(self.player.name)
+            self.next_menu = self.previous_menu_type(self.first_menu_type, self.player.name)
 
     def handle_keydown(self, event):
         if event.key == pygame.K_BACKSPACE:
@@ -65,7 +67,7 @@ class MultiplayerMenu(menus.Menu):
             return
 
         room_id = response["args"]["room_id"]
-        self.next_menu = menus.RoomMenu(self.player, room_id)
+        self.next_menu = RoomMenu(self.first_menu_type, type(self), self.player, room_id)
 
     def handle_join_room_response(self, response):
         """Handles the response for joining a room (either by ID or random)."""
@@ -75,7 +77,7 @@ class MultiplayerMenu(menus.Menu):
 
         room_id = response["args"]["room_id"]
         opponent_name = response["args"]["opponent_name"]
-        self.next_menu = menus.ShipPlacementMenu(self.player, room_id, opponent_name)
+        self.next_menu = ShipPlacementMenu(self.first_menu_type, self.player, room_id, opponent_name)
 
     def get_input_text(self):
         return self.room_id_input + "-" * (self.GAME_ROOM_ID_LENGTH - len(self.room_id_input))

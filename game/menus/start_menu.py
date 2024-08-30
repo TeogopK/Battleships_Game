@@ -2,16 +2,18 @@ import pygame
 from game.visuals.utils.buttons import BasicButton
 from game.server.network import MultiplayerNetwork, OfflineNetwork
 from game.server.game_server import SinglePlayerServer
-from game import menus
+from game.menus.menu import Menu
 from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
+from game.menus.ship_placement_menu import ShipPlacementMenu
+from game.menus.multiplayer_menu import MultiplayerMenu
 
 
-class StartMenu(menus.Menu):
+class StartMenu(Menu):
     MAX_PLAYER_NAME_LENGTH = 10
 
     def __init__(self, name_input=""):
-        super().__init__()
+        super().__init__(type(self))
         self.play_offline_button = BasicButton(x=250, y=630, text="Play offline")
         self.play_online_button = BasicButton(x=650, y=630, text="Play online")
         self.name_input = name_input
@@ -51,7 +53,7 @@ class StartMenu(menus.Menu):
 
         room_id = offline_server.set_up_game_room(player)
 
-        self.next_menu = menus.ShipPlacementMenu(player, room_id, offline_server.battle_bot.name)
+        self.next_menu = ShipPlacementMenu(self.first_menu_type, player, room_id, offline_server.battle_bot.name)
 
     def start_multiplayer_game(self):
         try:
@@ -60,7 +62,12 @@ class StartMenu(menus.Menu):
             self.show_message("Unable to connect to the server!")
             return
 
-        self.next_menu = menus.MultiplayerMenu(network_client, self.get_player_name_input())
+        self.next_menu = MultiplayerMenu(
+            self.first_menu_type,
+            type(self),
+            network_client,
+            self.get_player_name_input(),
+        )
 
     def draw(self, screen):
         super().draw(screen)

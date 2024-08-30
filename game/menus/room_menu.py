@@ -1,15 +1,16 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton
-from game import menus
+from game.menus.menu import Menu
 from game.visuals.utils.draw_utils import DrawUtils
+from game.menus.ship_placement_menu import ShipPlacementMenu
 
 
-class RoomMenu(menus.Menu):
+class RoomMenu(Menu):
     CHECK_OPPONENT_EVENT = pygame.USEREVENT + 3
     UPDATE_WAITING_MESSAGE_EVENT = pygame.USEREVENT + 4
 
-    def __init__(self, player, room_id):
-        super().__init__()
+    def __init__(self, first_menu_type, previous_menu_type, player, room_id):
+        super().__init__(first_menu_type, previous_menu_type)
         self.player = player
         self.room_id = room_id
         self.exit_room_button = BasicButton(x=250, y=630, text="Exit room", width=300)
@@ -41,7 +42,7 @@ class RoomMenu(menus.Menu):
     def exit_room(self):
         response = self.player.exit_room()
         if response.get("status") == "success":
-            self.next_menu = menus.MultiplayerMenu(self.player.network_client, self.player.name)
+            self.next_menu = self.previous_menu_type(self.first_menu_type, self.player.network_client, self.player.name)
 
     def change_room_publicity(self):
         response = self.player.change_room_publicity()
@@ -55,7 +56,7 @@ class RoomMenu(menus.Menu):
         response = self.player.has_opponent_joined()
         if response.get("status") == "success":
             opponent_name = response["args"]["opponent_name"]
-            self.next_menu = menus.ShipPlacementMenu(self.player, self.room_id, opponent_name)
+            self.next_menu = ShipPlacementMenu(self.first_menu_type, self.player, self.room_id, opponent_name)
 
     def update_waiting_dots(self):
         self.waiting_dots = (self.waiting_dots + 1) % 4
