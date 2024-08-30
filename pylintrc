@@ -14,10 +14,6 @@ unsafe-load-any-extension=no
 
 # Disable all to choose the Tests one by one
 # disable=all
-disable=
-    missing-docstring,
-    empty-docstring,
-    invalid-docstring,
 
 # Tests
 enable=bad-indentation,       # Used when an unexpected number of indentation’s tabulations or spaces has been found.
