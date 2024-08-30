@@ -293,9 +293,7 @@ class DrawUtils:
 
         # Draw text
         surface.blit(message_surface, (0, 0))
-        title_rect = title_text_surface.get_rect(
-            center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2)
-        )
+        title_rect = title_text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2))
         subtitle_rect = subtitle_text_surface.get_rect(
             center=(
                 rect_x + rect_width // 2,
