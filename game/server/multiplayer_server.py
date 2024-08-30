@@ -1,12 +1,26 @@
+"""Module that creates a server for managing multiplayer game sessions with network communication."""
+
 import socket
 from _thread import start_new_thread
 from game.server.game_server import GameServer
 
 
 class MultiplayerServer(GameServer):
+    """
+    A server for managing multiplayer game sessions with network communication.
+
+    Inherits from GameServer and provides networking capabilities for handling client connections
+    and communication using sockets.
+    """
+
     TIME_PER_TURN = 60
 
     def __init__(self):
+        """
+        Initializes the MultiplayerServer instance and sets up the server socket.
+
+        Configures the server to listen for incoming client connections on a specified address and port.
+        """
         super().__init__(self.TIME_PER_TURN)
         self.server = "localhost"
         self.port = 5555
@@ -14,6 +28,13 @@ class MultiplayerServer(GameServer):
         self.setup_server()
 
     def setup_server(self):
+        """
+        Configures the server socket to bind to the specified address and port,
+        and starts listening for incoming connections.
+
+        Raises:
+            Exception: If there is an error during socket setup, the socket is closed and the exception is raised.
+        """
         try:
             self.server_socket.bind((self.server, self.port))
             self.server_socket.listen(5)
@@ -24,6 +45,11 @@ class MultiplayerServer(GameServer):
             raise
 
     def run(self):
+        """
+        Main loop for accepting client connections and handling them in separate threads.
+
+        Continuously accepts new client connections and starts a new thread to handle each client.
+        """
         while True:
             try:
                 conn, addr = self.server_socket.accept()
@@ -33,6 +59,14 @@ class MultiplayerServer(GameServer):
                 print(f"Exception in accepting connections: {exception}")
 
     def _handle_client(self, conn):
+        """
+        Handles communication with a connected client.
+
+        Receives commands from the client, processes them using the command handler, and sends responses back.
+
+        Args:
+            conn (socket.socket): The socket object for the connected client.
+        """
         conn.send(str.encode("Connected"))
         while True:
             try:

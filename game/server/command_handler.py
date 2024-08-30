@@ -1,12 +1,25 @@
+"""Module that handles commands received from clients and executes appropriate server methods."""
+
 import json
 from collections import namedtuple
 from game.players import command_literals
 
+# Define a Command namedtuple to store command details
 Command = namedtuple("Command", ["name", "handler", "required_args"])
 
 
 class CommandHandler:
+    """
+    Handles commands received from clients and executes appropriate server methods.
+    """
+
     def __init__(self, server):
+        """
+        Initializes the CommandHandler with server instance and sets up commands.
+
+        Args:
+            server (Server): The server instance that will handle the commands.
+        """
         self.server = server
         self.commands = {
             command_literals.COMMAND_CREATE_ROOM: Command(
@@ -34,7 +47,11 @@ class CommandHandler:
                 self.server.is_opponent_ready,
                 [],
             ),
-            command_literals.COMMAND_EXIT_ROOM: Command(command_literals.COMMAND_EXIT_ROOM, self.server.exit_room, []),
+            command_literals.COMMAND_EXIT_ROOM: Command(
+                command_literals.COMMAND_EXIT_ROOM,
+                self.server.exit_room,
+                [],
+            ),
             command_literals.COMMAND_HAS_OPPONENT_JOINED: Command(
                 command_literals.COMMAND_HAS_OPPONENT_JOINED,
                 self.server.has_opponent_joined,
@@ -63,6 +80,16 @@ class CommandHandler:
         }
 
     def handle_command(self, json_command, client):
+        """
+        Handles the incoming command by parsing the JSON and invoking the corresponding server method.
+
+        Args:
+            json_command (str): The JSON string representing the command.
+            client (Client): The client instance sending the command.
+
+        Returns:
+            str: The JSON string representing the response.
+        """
         try:
             print(f"Received command: {json_command}")
             command_data = json.loads(json_command)
@@ -89,14 +116,45 @@ class CommandHandler:
 
     @staticmethod
     def format_response(status, message, **kwargs):
+        """
+        Formats the response as a JSON string.
+
+        Args:
+            status (str): The status of the response ("success" or "error").
+            message (str): The message to include in the response.
+            **kwargs: Additional arguments to include in the response.
+
+        Returns:
+            str: The JSON string representing the formatted response.
+        """
         response_data = {"status": status, "message": message, "args": kwargs}
         response_json = json.dumps(response_data)
         return response_json
 
     @staticmethod
     def success_response(message, **kwargs):
+        """
+        Creates a success response.
+
+        Args:
+            message (str): The success message.
+            **kwargs: Additional arguments to include in the response.
+
+        Returns:
+            str: The JSON string representing the success response.
+        """
         return CommandHandler.format_response("success", message, **kwargs)
 
     @staticmethod
     def error_response(message, **kwargs):
+        """
+        Creates an error response.
+
+        Args:
+            message (str): The error message.
+            **kwargs: Additional arguments to include in the response.
+
+        Returns:
+            str: The JSON string representing the error response.
+        """
         return CommandHandler.format_response("error", message, **kwargs)
