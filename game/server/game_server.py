@@ -9,10 +9,11 @@ import game.players.command_literals as command_literals
 
 
 class GameServer:
-    def __init__(self):
+    def __init__(self, time_per_turn=None):
         self.rooms = {}
         self.clients_to_rooms = {}
         self.command_handler = CommandHandler(self)
+        self.time_per_turn = time_per_turn
 
     def run(self):
         pass
@@ -28,7 +29,7 @@ class GameServer:
             return self.error_response("Client is already in a room!")
 
         room_id = self.generate_unique_room_id()
-        room = Room(room_id, client, client_name)
+        room = Room(room_id, client, client_name, self.time_per_turn)
         self.rooms[room_id] = room
         self.clients_to_rooms[client] = room_id
         return self.success_response(f"Room {room_id} created!", room_id=room_id)
@@ -37,7 +38,7 @@ class GameServer:
         if self.is_client_in_room(client):
             return self.error_response("Client is already in a room!")
 
-        if not self.is_room_exists(room_id):
+        if not self.does_room_exist(room_id):
             return self.error_response("Room ID not found!")
 
         room = self.rooms[room_id]
@@ -136,7 +137,17 @@ class GameServer:
         room.start_battle()
 
         return self.success_response(
-            "Starting game!", is_turn=room.is_client_turn(client)
+            "Starting game!",
+            is_turn=room.is_client_turn(client),
+            turn_end_time=room.turn_end_time,
+        )
+
+    def _send_end_battle_response(self, client, room):
+        return self.error_response(
+            "The battle has ended!",
+            has_battle_ended=room.has_battle_ended,
+            is_winner=room.is_client_winner(client),
+            is_timeout=room.is_timeout,
         )
 
     def register_shot(self, client, row, col):
@@ -146,18 +157,27 @@ class GameServer:
         room_id = self.clients_to_rooms.get(client)
         room = self.rooms[room_id]
 
+        if room.has_battle_ended:
+            return self._send_end_battle_response(client, room)
+
         if not room.is_client_turn(client):
             return self.error_response("Not player's turn!", is_player_turn=False)
 
-        if room.has_battle_ended:
-            return self.error_response("Battle has ended!")
+        if room.is_turn_late():
+            room.end_battle_due_to_timeout()
+            return self._send_end_battle_response(client, room)
 
         if not room.is_client_shot_valid(client, row, col):
             return self.error_response("Invalid shot!", is_shot_valid=False)
 
-        is_ship_hit, is_ship_sunk, ship, has_battle_ended, is_winner = (
-            room.register_shot_for_client(client, row, col)
-        )
+        (
+            is_ship_hit,
+            is_ship_sunk,
+            ship,
+            has_battle_ended,
+            is_winner,
+            self.turn_end_time,
+        ) = room.register_shot_for_client(client, row, col)
         is_turn = room.is_client_turn(client)
 
         return self.success_response(
@@ -166,9 +186,10 @@ class GameServer:
             has_sunk_ship=is_ship_sunk,
             sunk_ship=ship.serialize() if is_ship_sunk else None,
             is_turn=is_turn,
-            turn_end_time=0,
+            turn_end_time=room.turn_end_time,
             has_battle_ended=has_battle_ended,
             is_winner=is_winner,
+            is_timeout=room.is_timeout,
         )
 
     def send_opponents_shot(self, client):
@@ -178,20 +199,32 @@ class GameServer:
         room_id = self.clients_to_rooms.get(client)
         room = self.rooms[room_id]
 
+        if room.is_turn_late():
+            room.end_battle_due_to_timeout()
+            return self._send_end_battle_response(client, room)
+
         last_shot = room.give_shot_from_history(client)
         if last_shot == None:
             return self.error_response("Client has not made a shot yet!")
 
-        row, col, is_turn, has_battle_ended, is_winner = last_shot
+        (
+            row,
+            col,
+            is_turn,
+            has_battle_ended,
+            is_winner,
+            turn_end_time,
+        ) = last_shot
 
         return self.success_response(
             "Shot was made by the opponent!",
             row=row,
             col=col,
             is_turn=is_turn,
-            turn_end_time=0,
+            turn_end_time=turn_end_time,
             has_battle_ended=has_battle_ended,
             is_winner=is_winner,
+            is_timeout=room.is_timeout,
         )
 
     def send_enemy_board(self, client):
@@ -213,7 +246,7 @@ class GameServer:
     def is_client_in_room(self, client):
         return client in self.clients_to_rooms
 
-    def is_room_exists(self, room_id):
+    def does_room_exist(self, room_id):
         return room_id in self.rooms
 
     def format_response(self, status, message, **kwargs):
@@ -226,9 +259,6 @@ class GameServer:
 
     def error_response(self, message, **kwargs):
         return self.format_response("error", message, **kwargs)
-
-
-COMMAND_REGISTER_SHOT = "register_shot"
 
 
 class SinglePlayerServer(GameServer):

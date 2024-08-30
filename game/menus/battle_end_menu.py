@@ -15,7 +15,7 @@ class BattleEndMenu(menus.Menu):
 
         self.exit_room_button = BasicButton(x=490, y=630, text="Exit room")
         self.ending_message = self.get_ending_message()
-
+        print(self.ending_message)
         player.request_enemy_board()
 
     def draw(self, screen):
@@ -32,16 +32,28 @@ class BattleEndMenu(menus.Menu):
         )
         self.exit_room_button.draw(screen)
 
+    def _get_winning_description(self):
+        if self.player.is_timeout:
+            return f"{self.opponent_name} was too afraid to make a move and left the battle!"
+
+        return f"Congratulations {self.player.name} you destroyed your opponent {self.opponent_name}!"
+
+    def _get_losing_description(self):
+        if self.player.is_timeout:
+            return f"{self.player.name}, you were paralyzed in fear and abandoned the battle like a coward!"
+
+        return f"Better luck next time {self.player.name}, the win goes to {self.opponent_name}!"
+
     def get_ending_message(self):
         if self.player.is_winner:
             return (
                 "You are victorious!",
-                f"Congratulations {self.player.name} you destroyed your opponent {self.opponent_name}!",
+                self._get_winning_description(),
             )
 
         return (
             "Defeat!",
-            f"Better luck next time {self.player.name}, the win goes to {self.opponent_name}!",
+            self._get_losing_description(),
         )
 
     def handle_event(self, event):

@@ -3,13 +3,14 @@ import json
 import time
 import game.menus as menus
 from game.visuals.visual_board import VisualBoard
+from game.visuals.utils.draw_utils import DrawUtils
 
 
 class BattleMenu(menus.Menu):
     ASK_RECEIVE_SHOT_EVENT = pygame.USEREVENT + 5
 
     def __init__(self, player, opponent_name):
-        super().__init__(message_x=620, message_y=650)
+        super().__init__(message_x=137, message_y=690)
         self.player = player
         self.opponent_name = opponent_name
 
@@ -22,6 +23,40 @@ class BattleMenu(menus.Menu):
         super().draw(screen)
         self.player.board.draw(screen)
         self.player.enemy_board_view.draw(screen)
+
+        DrawUtils.draw_title(
+            screen, "Battle phase", x=635, y=40, font_size=60, glow_size=3
+        )
+
+        DrawUtils.draw_title(
+            screen, self.player.name, x=110, y=650, font_size=42, glow_size=3
+        )
+        DrawUtils.draw_title(
+            screen, self.opponent_name, x=768, y=650, font_size=42, glow_size=3
+        )
+        DrawUtils.draw_label(screen, text="Turn ends in:", x=430, y=650)
+        DrawUtils.draw_label(screen, text="Turn ends in:", x=1050, y=650)
+
+        self.draw_timer_based_on_turn(screen)
+
+    def draw_timer_based_on_turn(self, screen):
+        time_left = str(self.get_time_till_turn_end())
+        time_left_opponent = time_left_player = "-"
+
+        if self.player.is_turn:
+            time_left_player = time_left
+            turn_arrow = ">"
+        else:
+            time_left_opponent = time_left
+            turn_arrow = "<"
+
+        DrawUtils.draw_label(screen, text=turn_arrow, x=625, y=350, font_size=90)
+        DrawUtils.draw_input_text(screen, text=time_left_player, x=540, y=650)
+        DrawUtils.draw_input_text(screen, text=time_left_opponent, x=1160, y=650)
+
+    def get_time_till_turn_end(self):
+        left_time = int(self.player.turn_end_time - time.time())
+        return left_time if left_time >= 0 else 0
 
     def handle_event(self, event):
         super().handle_event(event)

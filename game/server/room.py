@@ -1,3 +1,5 @@
+from time import time
+
 from game.interface.base_board import BaseBoard
 
 
@@ -29,12 +31,16 @@ class RoomClient:
     def are_all_player_ships_sunk(self):
         return self.board.are_all_ships_sunk()
 
-    def add_shot_history_of_enemy(self, row, col, is_turn, has_battle_ended, is_winner):
-        self.shot_history.append((row, col, is_turn, has_battle_ended, is_winner))
+    def add_shot_history_of_enemy(
+        self, row, col, is_turn, has_battle_ended, is_winner, turn_end_time
+    ):
+        self.shot_history.append(
+            (row, col, is_turn, has_battle_ended, is_winner, turn_end_time)
+        )
 
 
 class Room:
-    def __init__(self, room_id, client, client_name):
+    def __init__(self, room_id, client, client_name, time_per_turn):
         self.room_id = room_id
         self.clients = {client: RoomClient(client, client_name)}
         self.max_players = 2
@@ -43,7 +49,11 @@ class Room:
 
         self.has_battle_started = False
         self.has_battle_ended = False
-        self.winner = None
+        self.loser = None
+
+        self.time_per_turn = time_per_turn
+        self.turn_end_time = None
+        self.is_timeout = False
 
     def change_publicity(self):
         self.is_private = not self.is_private
@@ -71,10 +81,12 @@ class Room:
     def give_client_turn(self, client):
         self.clients[client].is_turn = True
         self.get_opponent_client(client).is_turn = False
+        self.turn_end_time = self._get_end_of_turn()
 
     def take_client_turn(self, client):
         self.clients[client].is_turn = False
         self.get_opponent_client(client).is_turn = True
+        self.turn_end_time = self._get_end_of_turn()
 
     def is_client_shot_valid(self, client, row, col):
         target_client = self.get_opponent_client(client)
@@ -97,6 +109,7 @@ class Room:
             target_client.is_turn,
             self.has_battle_ended,
             self.is_client_winner(target_client.client),
+            self.turn_end_time,
         )
 
         return (
@@ -105,6 +118,7 @@ class Room:
             ship,
             self.has_battle_ended,
             self.is_client_winner(client),
+            self.turn_end_time,
         )
 
     def give_shot_from_history(self, client):
@@ -128,10 +142,30 @@ class Room:
         if self.has_battle_started:
             return
 
-        for client in self.clients.values():
-            client.is_turn = True
-            self.has_battle_started = True
+        self.has_battle_started = True
+        for client in self.clients:
+
+            self.give_client_turn(client)
             break
+
+    def is_turn_late(self):
+        if self.time_per_turn == None:
+            return False
+
+        self.is_timeout = self.turn_end_time - time() < 0
+        return self.is_timeout
+
+    def _get_end_of_turn(self):
+        if self.time_per_turn == None:
+            return time()
+        return time() + self.time_per_turn
+
+    def end_battle_due_to_timeout(self):
+        self.has_battle_ended = True
+
+        for client in self.clients:
+            if self.is_client_turn(client):
+                self.loser = client
 
     def check_has_battle_ended(self):
         for room_client in self.clients.values():

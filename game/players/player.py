@@ -20,6 +20,7 @@ class Player:
 
         self.is_in_finished_battle = False
         self.is_winner = False
+        self.is_timeout = False
 
     def send_command(self, command_type, **kwargs):
         command_data = {"command": command_type, "args": kwargs}
@@ -90,6 +91,7 @@ class Player:
 
         if response["status"] == "success":
             self.is_turn = response["args"]["is_turn"]
+            self.turn_end_time = response["args"]["turn_end_time"]
 
         return response
 
@@ -100,11 +102,15 @@ class Player:
         response_args = response["args"]
 
         if response["status"] == "error":
+            if response_args.get("is_timeout", False):
+                self._parse_battle_end(response_args)
+                return response
+
             if not response_args.get("is_player_turn", False):
-                return
+                return response
 
             if not response_args.get("is_shot_valid", False):
-                return
+                return response
 
         self.enemy_board_view.register_shot(row, col, response_args["has_hit_ship"])
 
@@ -115,23 +121,29 @@ class Player:
         self.is_turn = response_args["is_turn"]
         self.turn_end_time = response_args["turn_end_time"]
 
-        self.is_in_finished_battle = response_args["has_battle_ended"]
-        self.is_winner = response_args["is_winner"]
+        self._parse_battle_end(response_args)
 
         return response
 
     def ask_to_receive_shot(self):
         response = self.send_command(command_literals.COMMAND_ASK_TO_RECEIVE_SHOT)
 
-        if response["status"] == "error":
-            return
+        response_args = response.get("args", None)
 
-        response_args = response["args"]
+        if response["status"] == "error":
+            if response_args.get("is_timeout", False):
+                self._parse_battle_end(response_args)
+            return response
+
         row, col = response_args["row"], response_args["col"]
 
         self.board.register_shot(row, col)
         self.is_turn = response_args["is_turn"]
         self.turn_end_time = response_args["turn_end_time"]
 
+        self._parse_battle_end(response_args)
+
+    def _parse_battle_end(self, response_args):
         self.is_in_finished_battle = response_args["has_battle_ended"]
         self.is_winner = response_args["is_winner"]
+        self.is_timeout = response_args.get("is_timeout", False)

@@ -4,8 +4,10 @@ import socket
 
 
 class MultiplayerServer(GameServer):
+    TIME_PER_TURN = 60
+
     def __init__(self, server="localhost", port=5555):
-        super().__init__()
+        super().__init__(self.TIME_PER_TURN)
         self.server = server
         self.port = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
