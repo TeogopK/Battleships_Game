@@ -27,14 +27,12 @@ class AbstractNetwork(ABC):
         Returns:
             str: The response received after sending the data.
         """
-        pass
 
     @abstractmethod
     def close(self):
         """
         Closes the network connection.
         """
-        pass
 
 
 class OfflineNetwork(AbstractNetwork):
@@ -81,7 +79,6 @@ class OfflineNetwork(AbstractNetwork):
         """
         Offline mode does not require cleanup.
         """
-        pass
 
 
 class MultiplayerNetwork(AbstractNetwork):

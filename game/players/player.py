@@ -1,5 +1,5 @@
 """
-Module for managing the Player in the game, including communication with the server 
+Module for managing the Player in the game, including communication with the server
 and handling the game state related to the player's actions and board.
 """
 

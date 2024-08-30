@@ -206,7 +206,8 @@ class DrawUtils:
 
         Args:
             surface (pygame.Surface): The surface to which the blur effect will be applied.
-            scale_factor (float, optional): The factor by which the surface is scaled down before being scaled back up. Defaults to 0.1.
+            scale_factor (float, optional): The factor by which the surface is scaled down
+                before being scaled back up. Defaults to 0.1.
         """
         width, height = surface.get_size()
 
@@ -292,7 +293,9 @@ class DrawUtils:
 
         # Draw text
         surface.blit(message_surface, (0, 0))
-        title_rect = title_text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2))
+        title_rect = title_text_surface.get_rect(
+            center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2)
+        )
         subtitle_rect = subtitle_text_surface.get_rect(
             center=(
                 rect_x + rect_width // 2,

@@ -1,8 +1,10 @@
 """
-This module provides a Button class and its derivatives for creating and handling interactive buttons in a Pygame application.
-It includes features for rendering buttons with text, handling mouse interactions, and supporting different button states like hover and disabled.
+This module provides a Button class and its derivatives for creating
+    and handling interactive buttons in a Pygame application.
 
-The module also provides specialized button classes, such as `BasicButton` and `GoBackButton`, with pre-configured settings for common use cases.
+The module also provides specialized button classes,
+    such as `BasicButton` and `GoBackButton`,
+    with pre-configured settings for common use cases.
 """
 
 import pygame

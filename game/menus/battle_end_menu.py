@@ -1,5 +1,5 @@
 """
-Module for the battle end menu in the game. The `BattleEndMenu` class handles the end-of-battle screen, 
+Module for the battle end menu in the game. The `BattleEndMenu` class handles the end-of-battle screen,
 displaying the results of the game and providing an option to exit the room.
 """
 

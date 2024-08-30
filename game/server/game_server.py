@@ -40,7 +40,6 @@ class GameServer:
 
         This method is intended to be implemented in a subclass or extended to handle server execution.
         """
-        pass
 
     def generate_unique_room_id(self):
         """

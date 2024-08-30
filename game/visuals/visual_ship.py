@@ -1,6 +1,6 @@
 """
-This module defines the `VisualShip` class, which represents a ship on a graphical game board. 
-It extends both `pygame.sprite.Sprite` and a base `Ship` class, integrating the ship's logical properties 
+This module defines the `VisualShip` class, which represents a ship on a graphical game board.
+It extends both `pygame.sprite.Sprite` and a base `Ship` class, integrating the ship's logical properties
 with visual representation and rendering using Pygame.
 """
 
@@ -38,9 +38,11 @@ class VisualShip(Sprite, Ship):
             ship_length (int): The length of the ship.
             row (int, optional): The starting row of the ship on the board grid. Defaults to None.
             col (int, optional): The starting column of the ship on the board grid. Defaults to None.
-            is_horizontal (bool, optional): Orientation of the ship. True if horizontal, False if vertical. Defaults to True.
+            is_horizontal (bool, optional): Orientation of the ship. True if horizontal, False if vertical.
+                Defaults to True.
             is_alive (bool, optional): Whether the ship is still afloat. Defaults to True.
-            sunk_coordinates (list, optional): The coordinates of the parts of the ship that have been sunk. Defaults to None.
+            sunk_coordinates (list, optional): The coordinates of the parts of the ship that have been sunk.
+                Defaults to None.
             coordinate_size (int, optional): The size of a single grid coordinate in pixels. Defaults to None.
             x (int, optional): The x-coordinate for the ship's top-left corner on the screen. Defaults to None.
             y (int, optional): The y-coordinate for the ship's top-left corner on the screen. Defaults to None.
