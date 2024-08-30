@@ -1,3 +1,5 @@
+"""Contains literals for the commands that the players can send to the server."""
+
 COMMAND_CREATE_ROOM = "create_room"
 COMMAND_JOIN_ROOM_WITH_ID = "join_room_with_id"
 COMMAND_JOIN_RANDOM_ROOM = "join_random_room"
