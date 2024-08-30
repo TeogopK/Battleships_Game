@@ -1,3 +1,8 @@
+"""
+Module for the multiplayer menu in the game. The `MultiplayerMenu` class handles creating a room,
+joining a room by ID or randomly, and navigating to the appropriate next menu based on user actions.
+"""
+
 import pygame
 from game.visuals.utils.buttons import BasicButton, GoBackButton
 from game.menus.menu import Menu
@@ -8,9 +13,22 @@ from game.menus.room_menu import RoomMenu
 
 
 class MultiplayerMenu(Menu):
+    """
+    Multiplayer menu that allows the player to create a new game room, join an existing room by ID,
+    or join a random room. Also handles navigation to the appropriate menu based on user actions.
+    """
+
     GAME_ROOM_ID_LENGTH = 6
 
     def __init__(self, menus_evolution, client, player_name):
+        """
+        Initialize the MultiplayerMenu with buttons for room management and a player instance.
+
+        Args:
+            menus_evolution (list): List of menus in the evolution stack.
+            client (network.Client): The network client for multiplayer interactions.
+            player_name (str): The name of the player.
+        """
         super().__init__(menus_evolution)
         self.player = Player(player_name, client)
 
@@ -22,6 +40,12 @@ class MultiplayerMenu(Menu):
         self.room_id_input = ""
 
     def handle_event(self, event):
+        """
+        Handle user events including key presses and button clicks.
+
+        Args:
+            event (pygame.event.Event): The event to handle.
+        """
         super().handle_event(event)
 
         if event.type == pygame.KEYDOWN:
@@ -43,6 +67,12 @@ class MultiplayerMenu(Menu):
             self.next_menu = previous_menu_type(self.player.name)
 
     def handle_keydown(self, event):
+        """
+        Handle key press events for inputting a room ID.
+
+        Args:
+            event (pygame.event.Event): The key press event to handle.
+        """
         if event.key == pygame.K_BACKSPACE:
             self.room_id_input = self.room_id_input[:-1]
         elif event.key == pygame.K_RETURN:
@@ -52,6 +82,9 @@ class MultiplayerMenu(Menu):
                 self.room_id_input += str(event.key - pygame.K_0)
 
     def process_join_room_by_id(self):
+        """
+        Process joining a room by ID, validating the room ID length and sending the join request.
+        """
         if len(self.room_id_input) != self.GAME_ROOM_ID_LENGTH:
             self.show_message("Enter a valid Room ID using the keyboard!")
             return
@@ -61,7 +94,12 @@ class MultiplayerMenu(Menu):
         self.handle_join_room_response(response)
 
     def handle_create_room_response(self, response):
-        """Handles the response for creating a room."""
+        """
+        Handle the response for creating a room. Navigate to the RoomMenu if successful.
+
+        Args:
+            response (dict): The response from the server after attempting to create a room.
+        """
         if response.get("status") == "error":
             self.show_message(response["message"])
             return
@@ -70,7 +108,12 @@ class MultiplayerMenu(Menu):
         self.next_menu = RoomMenu(self.menus_evolution, self.player, room_id)
 
     def handle_join_room_response(self, response):
-        """Handles the response for joining a room (either by ID or random)."""
+        """
+        Handle the response for joining a room (by ID or randomly). Navigate to ShipPlacementMenu if successful.
+
+        Args:
+            response (dict): The response from the server after attempting to join a room.
+        """
         if response.get("status") == "error":
             self.show_message(response["message"])
             return
@@ -80,9 +123,21 @@ class MultiplayerMenu(Menu):
         self.next_menu = ShipPlacementMenu(self.menus_evolution, self.player, room_id, opponent_name)
 
     def get_input_text(self):
+        """
+        Get the formatted room ID input text for display.
+
+        Returns:
+            str: The room ID input text, padded with hyphens if necessary.
+        """
         return self.room_id_input + "-" * (self.GAME_ROOM_ID_LENGTH - len(self.room_id_input))
 
     def draw(self, screen):
+        """
+        Draw the multiplayer menu on the screen, including buttons, labels, and input text.
+
+        Args:
+            screen (pygame.Surface): The surface to draw on.
+        """
         super().draw(screen)
         self.create_room_button.draw(screen)
         self.join_room_with_id_button.draw(screen)

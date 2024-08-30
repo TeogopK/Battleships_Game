@@ -1,3 +1,9 @@
+"""
+Module for the ship placement menu in the game. The `ShipPlacementMenu` class allows players to place ships on
+their board, shuffle ship positions, and mark the board as ready for the next phase. It also handles
+dragging and dropping ships, as well as interactions with buttons.
+"""
+
 import pygame
 from game.visuals.utils.buttons import BasicButton
 from game.menus.menu import Menu
@@ -7,10 +13,25 @@ from game.menus.battle_menu import BattleMenu
 
 
 class ShipPlacementMenu(Menu):
+    """
+    Ship placement menu where players can place ships, shuffle their positions, and mark their board as ready.
+    Handles ship dragging, placement validation, and displays waiting messages.
+    """
+
     IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 1
     WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 2
 
     def __init__(self, menus_evolution, player, room_id, opponent_name):
+        """
+        Initialize the ShipPlacementMenu with buttons for shuffling ships, marking readiness, and handling
+        ship placement.
+
+        Args:
+            menus_evolution (list): List of menus in the evolution stack.
+            player (Player): The player instance managing ship placement.
+            room_id (str): The ID of the current room.
+            opponent_name (str): The name of the opponent.
+        """
         super().__init__(menus_evolution, message_x=697, message_y=538)
         self.add_self_to_evolution()
 
@@ -31,6 +52,12 @@ class ShipPlacementMenu(Menu):
         pygame.time.set_timer(self.WAITING_MESSAGE_UPDATE_EVENT, 500)
 
     def handle_event(self, event):
+        """
+        Handle user events including mouse interactions and button clicks.
+
+        Args:
+            event (pygame.event.Event): The event to handle.
+        """
         super().handle_event(event)
 
         if self.player.has_sent_board:
@@ -55,12 +82,18 @@ class ShipPlacementMenu(Menu):
                 self.handle_sending_board()
 
     def handle_is_opponent_ready(self):
+        """
+        Handle the event where the opponent is ready. Transitions to the BattleMenu if the opponent is ready.
+        """
         response = self.player.is_opponent_ready()
 
         if response["status"] == "success":
             self.next_menu = BattleMenu(self.menus_evolution, self.player, self.opponent_name)
 
     def handle_sending_board(self):
+        """
+        Handle sending the board to the opponent. Disables the buttons once the board is sent.
+        """
         response = self.player.send_board()
         if response["status"] == "error":
             self.show_message(response["message"])
@@ -71,12 +104,27 @@ class ShipPlacementMenu(Menu):
         print("Wait for opponent to send board!")
 
     def update_waiting_dots(self):
+        """
+        Update the waiting message dots to indicate the waiting status.
+        """
         self.waiting_dots = (self.waiting_dots + 1) % 4
 
     def get_waiting_message(self):
+        """
+        Get the message indicating that the player is waiting for the opponent to be ready.
+
+        Returns:
+            str: The waiting message with dynamic dots.
+        """
         return f"Waiting for opponent to be ready{'.' * self.waiting_dots}"
 
     def on_mouse_button_down(self, event):
+        """
+        Handle mouse button down events for dragging and flipping ships.
+
+        Args:
+            event (pygame.event.Event): The event to handle.
+        """
         pos = pygame.mouse.get_pos()
 
         if not self.player.board.is_position_in_board(pos):
@@ -95,6 +143,9 @@ class ShipPlacementMenu(Menu):
             self.player.board.flip_ship(ship)
 
     def on_mouse_motion(self):
+        """
+        Handle mouse motion events for dragging ships.
+        """
         if not self.dragging_ship:
             return
 
@@ -106,12 +157,24 @@ class ShipPlacementMenu(Menu):
         self.drag_ship(pos)
 
     def on_mouse_button_up(self, event):
+        """
+        Handle mouse button up events to release dragged ships.
+
+        Args:
+            event (pygame.event.Event): The event to handle.
+        """
         if not (event.button == 1 and self.dragging_ship):
             return
 
         self.release_ship()
 
     def drag_ship(self, pos):
+        """
+        Handle dragging a ship to a new position.
+
+        Args:
+            pos (tuple): The new mouse position.
+        """
         new_row, new_col = self.player.board.get_row_col_by_mouse(pos)
         self.dragging_ship.move(new_row, new_col, self.dragging_ship.is_horizontal)
 
@@ -124,6 +187,9 @@ class ShipPlacementMenu(Menu):
         self.dragging_ship.update_visual_position(*new_pos)
 
     def release_ship(self):
+        """
+        Handle releasing a dragged ship. Places it back to its original position if placement is invalid.
+        """
         if not self.player.board.is_ship_placement_valid(self.dragging_ship):
             self.dragging_ship.move(self.original_row, self.original_col, self.dragging_ship.is_horizontal)
             self.player.board.place_ship(self.dragging_ship)
@@ -135,9 +201,21 @@ class ShipPlacementMenu(Menu):
         self.dragging_ship = None
 
     def can_continue(self):
+        """
+        Check if the board setup is complete.
+
+        Returns:
+            bool: True if all ships are placed, False otherwise.
+        """
         return len(self.player.board.unplaced_ships) == 0
 
     def draw(self, screen):
+        """
+        Draw the ship placement menu on the screen, including the board, buttons, and instructions.
+
+        Args:
+            screen (pygame.Surface): The surface to draw on.
+        """
         super().draw(screen)
 
         self.player.board.draw(screen)
