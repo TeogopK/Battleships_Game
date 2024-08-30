@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "battleships_game"
+dynamic = ["version"]
+description = "Game package consisting of the game logic and the game interface including server and client."
+requires-python = ">=3.8"
+
+dependencies = [
+  "pygame"
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "game.__version__"}
+
+[tool.setuptools.package-data]
+'game' = ['*.yml']
