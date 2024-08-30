@@ -32,9 +32,7 @@ class BaseBoard:
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
         self.unplaced_ships = (
-            unplaced_ships
-            if unplaced_ships is not None
-            else BaseBoard._get_base_game_ships(ship_constructor)
+            unplaced_ships if unplaced_ships is not None else BaseBoard._get_base_game_ships(ship_constructor)
         )
 
         self.shot_coordinates = defaultdict(int)
@@ -104,9 +102,7 @@ class BaseBoard:
         """
         self._remove_all_ships()
 
-        for ship in sorted(
-            list(self.unplaced_ships), key=lambda ship: -ship.ship_length
-        ):
+        for ship in sorted(list(self.unplaced_ships), key=lambda ship: -ship.ship_length):
             placed = False
 
             while not placed:
@@ -142,9 +138,7 @@ class BaseBoard:
         Returns:
             bool: True if all coordinates of the ship are within the board, False otherwise.
         """
-        return all(
-            self.is_coordinate_in_board(row, col) for row, col in ship.coordinates
-        )
+        return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
 
     def place_ship(self, ship):
         """
@@ -210,9 +204,7 @@ class BaseBoard:
         Returns:
         - adjacent_coords: A list of adjacent coordinates to the ship's coordinates.
         """
-        adjacent_offsets = [
-            (delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)
-        ]
+        adjacent_offsets = [(delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)]
 
         adjacent_coords = []
         for coord in ship.coordinates:
@@ -286,11 +278,7 @@ class BaseBoard:
         Returns:
             bool: True if all ships are sunk, False otherwise.
         """
-        return all(
-            not ship.is_alive
-            for ship_list in self.ships_map.values()
-            for ship in ship_list
-        )
+        return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
 
     def is_coordinate_in_board(self, row, col):
         """

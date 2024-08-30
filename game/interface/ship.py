@@ -36,9 +36,7 @@ class Ship:
 
         self.move(row, col, is_horizontal)
 
-        self.sunk_coordinates = (
-            sunk_coordinates if sunk_coordinates is not None else set()
-        )
+        self.sunk_coordinates = sunk_coordinates if sunk_coordinates is not None else set()
 
     def sunk_coordinate(self, row, col):
         """
@@ -185,8 +183,6 @@ class Ship:
             col=ship_data["col"],
             is_horizontal=ship_data["is_horizontal"],
             is_alive=ship_data["is_alive"],
-            sunk_coordinates=set(
-                tuple(coord) for coord in ship_data["sunk_coordinates"]
-            ),
+            sunk_coordinates=set(tuple(coord) for coord in ship_data["sunk_coordinates"]),
         )
         return ship

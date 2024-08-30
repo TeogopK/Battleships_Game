@@ -1,3 +1,5 @@
+"""This module contains the color constants used in the game."""
+
 BACKGROUND_COLOR = (29, 53, 87)
 BOARD_BORDER_COLOR = (168, 218, 220)
 BOARD_NUMERATION_COLOR = (69, 123, 157)
