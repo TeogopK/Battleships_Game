@@ -20,7 +20,9 @@ class BaseBoard:
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
         self.unplaced_ships = (
-            unplaced_ships if unplaced_ships is not None else BaseBoard._get_base_game_ships(ship_constructor)
+            unplaced_ships
+            if unplaced_ships is not None
+            else BaseBoard._get_base_game_ships(ship_constructor)
         )
 
         self.shot_coordinates = defaultdict(int)
@@ -50,7 +52,9 @@ class BaseBoard:
     def random_shuffle_ships(self):
         self.remove_all_ships()
 
-        for ship in sorted(list(self.unplaced_ships), key=lambda ship: -ship.ship_length):
+        for ship in sorted(
+            list(self.unplaced_ships), key=lambda ship: -ship.ship_length
+        ):
             placed = False
 
             while not placed:
@@ -68,7 +72,9 @@ class BaseBoard:
         return self._is_ship_in_board(ship) and not self._does_ship_overlap(ship)
 
     def _is_ship_in_board(self, ship):
-        return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
+        return all(
+            self.is_coordinate_in_board(row, col) for row, col in ship.coordinates
+        )
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
@@ -99,7 +105,9 @@ class BaseBoard:
 
     def _get_adjacent_coordinates(self, ship):
         """Get all adjacent coordinates around a ship's position."""
-        adjacent_offsets = [(delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)]
+        adjacent_offsets = [
+            (delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)
+        ]
 
         adjacent_coords = []
         for coord in ship.coordinates:
@@ -135,7 +143,11 @@ class BaseBoard:
         return None
 
     def are_all_ships_sunk(self):
-        return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
+        return all(
+            not ship.is_alive
+            for ship_list in self.ships_map.values()
+            for ship in ship_list
+        )
 
     def is_coordinate_in_board(self, row, col):
         return 0 <= row < self.rows_count and 0 <= col < self.columns_count
@@ -248,6 +260,6 @@ class BaseBoardEnemyView(BaseBoard):
     def reveal_ships_from_board_data(self, board_data):
         board_json = json.loads(board_data)
 
-        for ship_data in board_json["ships"]:
-            ship = Ship.deserialize(ship_data)
+        for ship_json in board_json["ships"]:
+            ship = Ship.deserialize(ship_json)
             self.reveal_ship(ship)
