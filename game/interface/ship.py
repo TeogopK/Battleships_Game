@@ -6,6 +6,8 @@ import json
 
 
 class Ship:
+    """Class for managing the ship logic as an interface entity."""
+
     def __init__(
         self,
         ship_length,
