@@ -1,6 +1,6 @@
 import pygame
 import pygame.freetype
-import game.visuals.utils.colors as colors
+from game.visuals.utils import colors
 
 
 class Button:
@@ -10,35 +10,32 @@ class Button:
         y,
         text,
         font_size,
-        text_color,
-        bg_color,
-        hover_color,
         width,
         height,
         padding=10,
-        border_radius=5,
         disabled=False,
-    ):
+    ):  # pylint: disable=R0913
         self.font = pygame.freetype.SysFont("Arial", font_size)
         self.text = text
-        self.text_color = text_color
-        self.bg_color = bg_color
-        self.hover_color = hover_color
         self.width = width
         self.height = height
         self.padding = padding
-        self.border_radius = border_radius
+        self.border_radius = 10
         self.disabled = disabled
         self.clicked = False
 
-        self.image, self.rect = self.create_text_surface(text, text_color)
+        self.text_color = colors.BUTTON_TEXT_COLOR
+        self.bg_color = colors.BUTTON_BACKGROUND_COLOR
+        self.hover_color = colors.BUTTON_HOVER_COLOR
+
+        self.image, self.rect = self.create_text_surface(self.text, self.text_color)
         self.rect.topleft = (
-            x + (width - self.rect.width) // 2,
-            y + (height - self.rect.height) // 2,
+            x + (self.width - self.rect.width) // 2,
+            y + (self.height - self.rect.height) // 2,
         )
         self.rect.size = (self.rect.width, self.rect.height)
 
-        self.button_rect = pygame.Rect(x, y, width, height)
+        self.button_rect = pygame.Rect(x, y, self.width, self.height)
 
     def create_text_surface(self, text, color):
         text_surface, rect = self.font.render(text, color)
@@ -86,13 +83,9 @@ class BasicButton(Button):
             y,
             text=text,
             font_size=30,
-            text_color=colors.BUTTON_TEXT_COLOR,
-            bg_color=colors.BUTTON_BACKGROUND_COLOR,
-            hover_color=colors.BUTTON_HOVER_COLOR,
             width=width,
             height=50,
             padding=20,
-            border_radius=10,
         )
 
 
@@ -103,11 +96,7 @@ class GoBackButton(Button):
             y,
             text="Go back",
             font_size=22,
-            text_color=colors.BUTTON_TEXT_COLOR,
-            bg_color=colors.BUTTON_BACKGROUND_COLOR,
-            hover_color=colors.BUTTON_HOVER_COLOR,
             width=100,
             height=30,
             padding=10,
-            border_radius=10,
         )

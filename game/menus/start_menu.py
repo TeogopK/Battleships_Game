@@ -2,8 +2,7 @@ import pygame
 from game.visuals.utils.buttons import BasicButton
 from game.server.network import MultiplayerNetwork, OfflineNetwork
 from game.server.game_server import SinglePlayerServer
-import game.menus as menus
-import game.visuals.utils.colors as colors
+from game import menus
 from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
 
@@ -58,7 +57,6 @@ class StartMenu(menus.Menu):
         try:
             network_client = MultiplayerNetwork()
         except ConnectionError:
-            print("SErver")
             self.show_message("Unable to connect to the server!")
             return
 

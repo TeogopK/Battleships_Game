@@ -1,9 +1,8 @@
+import json
 from game.visuals.visual_board import VisualBoard, VisualBoardEnemyView
 from game.interface.ship import Ship
-from game.visuals.visual_ship import Visual_Ship
-import json
 
-import game.players.command_literals as command_literals
+from game.players import command_literals
 
 
 class Player:
@@ -104,7 +103,7 @@ class Player:
             if not response_args.get("is_shot_valid", False):
                 return response
 
-        self.enemy_board_view.register_shot(row, col, response_args["has_hit_ship"])
+        self.enemy_board_view.register_shot_on_view(row, col, response_args["has_hit_ship"])
 
         if response_args["has_sunk_ship"]:
             ship = Ship.deserialize(response_args["sunk_ship"])
@@ -134,6 +133,8 @@ class Player:
         self.turn_end_time = response_args["turn_end_time"]
 
         self._parse_battle_end(response_args)
+
+        return response
 
     def _parse_battle_end(self, response_args):
         self.is_in_finished_battle = response_args["has_battle_ended"]

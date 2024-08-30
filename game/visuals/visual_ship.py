@@ -1,13 +1,11 @@
 import pygame
 from pygame.sprite import Sprite
 
-from game.visuals.utils.constants import RESOLUTION
 from game.interface.base_board import Ship
-import game.visuals.utils.colors as colors
-import json
+from game.visuals.utils import colors
 
 
-class Visual_Ship(Sprite, Ship):
+class VisualShip(Sprite, Ship):
     def __init__(
         self,
         ship_length,
@@ -19,7 +17,7 @@ class Visual_Ship(Sprite, Ship):
         coordinate_size=None,
         x=None,
         y=None,
-    ):
+    ):  # pylint: disable=R0913
         Ship.__init__(self, ship_length, row, col, is_horizontal, is_alive, sunk_coordinates)
         Sprite.__init__(self)
         self.coordinate_size = coordinate_size

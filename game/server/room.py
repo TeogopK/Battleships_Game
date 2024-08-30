@@ -16,8 +16,8 @@ class RoomClient:
     def add_board(self, board_json):
         try:
             self.board = BaseBoard.deserialize_board(board_json)
-        except ValueError as e:
-            print(e)
+        except ValueError as exception:
+            print(exception)
             return False
 
         self.has_board = True
@@ -74,20 +74,20 @@ class Room:
 
     def give_client_turn(self, client):
         self.clients[client].is_turn = True
-        self.get_opponent_client(client).is_turn = False
+        self.get_opponent_room_client(client).is_turn = False
         self.turn_end_time = self._get_end_of_turn()
 
     def take_client_turn(self, client):
         self.clients[client].is_turn = False
-        self.get_opponent_client(client).is_turn = True
+        self.get_opponent_room_client(client).is_turn = True
         self.turn_end_time = self._get_end_of_turn()
 
     def is_client_shot_valid(self, client, row, col):
-        target_client = self.get_opponent_client(client)
+        target_client = self.get_opponent_room_client(client)
         return target_client.is_shot_valid(row, col)
 
     def register_shot_for_client(self, client, row, col):
-        target_client = self.get_opponent_client(client)
+        target_client = self.get_opponent_room_client(client)
         is_ship_hit, is_ship_sunk, ship = target_client.board.register_shot(row, col)
 
         if is_ship_hit:
@@ -123,14 +123,14 @@ class Room:
 
         return shot_history.pop(0)
 
-    def get_opponent_client(self, client):
-        for opponent_client in self.clients:
+    def get_opponent_room_client(self, client):
+        for opponent_client, opponent_room_client in self.clients.items():
             if opponent_client != client:
-                return self.clients[opponent_client]
+                return opponent_room_client
         return None
 
     def does_client_have_board(self, client):
-        return client.has_board
+        return self.clients[client].has_board
 
     def start_battle(self):
         if self.has_battle_started:
@@ -143,14 +143,14 @@ class Room:
             break
 
     def is_turn_late(self):
-        if self.time_per_turn == None:
+        if self.time_per_turn is None:
             return False
 
         self.is_timeout = self.turn_end_time - time() < 0
         return self.is_timeout
 
     def _get_end_of_turn(self):
-        if self.time_per_turn == None:
+        if self.time_per_turn is None:
             return time()
         return time() + self.time_per_turn
 
@@ -174,5 +174,5 @@ class Room:
         return self.check_has_battle_ended() and self.loser != client
 
     def get_enemy_board(self, client):
-        opponent = self.get_opponent_client(client)
+        opponent = self.get_opponent_room_client(client)
         return opponent.board.serialize_board()

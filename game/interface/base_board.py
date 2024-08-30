@@ -19,13 +19,15 @@ class BaseBoard:
         self.columns_count = columns_count
         self.taken_coordinates = defaultdict(int)
         self.ships_map = defaultdict(list)
-        self.unplaced_ships = unplaced_ships if unplaced_ships != None else BaseBoard.get_base_game_ships(ship_constructor)
+        self.unplaced_ships = (
+            unplaced_ships if unplaced_ships is not None else BaseBoard._get_base_game_ships(ship_constructor)
+        )
 
         self.shot_coordinates = defaultdict(int)
         self.all_hit_coordinates = set()
 
     @staticmethod
-    def get_base_game_ships(ship_constructor):
+    def _get_base_game_ships(ship_constructor):
         return {
             # ship_constructor(1),
             # ship_constructor(1),
@@ -39,8 +41,11 @@ class BaseBoard:
             ship_constructor(9),
         }
 
-    def get_random_start_for_ship(self, ship_length, is_horizontal, board_border):
-        return random.randint(0, board_border - 1 - is_horizontal * ship_length)
+    def _get_random_row_for_ship(self, ship_length, is_horizontal):
+        return random.randint(0, self.rows_count - (not is_horizontal) * ship_length)
+
+    def _get_random_col_for_ship(self, ship_length, is_horizontal):
+        return random.randint(0, self.columns_count - is_horizontal * ship_length)
 
     def random_shuffle_ships(self):
         self.remove_all_ships()
@@ -50,8 +55,8 @@ class BaseBoard:
 
             while not placed:
                 is_horizontal = random.choice([True, False])
-                row = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.rows_count)
-                col = self.get_random_start_for_ship(ship.ship_length, is_horizontal, self.columns_count)
+                row = self._get_random_row_for_ship(ship.ship_length, is_horizontal)
+                col = self._get_random_col_for_ship(ship.ship_length, is_horizontal)
 
                 ship.move(row, col, is_horizontal)
 
@@ -60,20 +65,20 @@ class BaseBoard:
                     self.place_ship(ship)
 
     def is_ship_placement_valid(self, ship):
-        return self.is_ship_in_board(ship) and not self.does_ship_overlap(ship)
+        return self._is_ship_in_board(ship) and not self._does_ship_overlap(ship)
 
-    def is_ship_in_board(self, ship):
+    def _is_ship_in_board(self, ship):
         return all(self.is_coordinate_in_board(row, col) for row, col in ship.coordinates)
 
     def place_ship(self, ship):
         self.ships_map[ship.row, ship.col].append(ship)
         self.unplaced_ships.discard(ship)
-        self.occupy_coordinates_from_placement(ship)
+        self._occupy_coordinates_from_placement(ship)
 
     def remove_ship(self, ship):
         self.ships_map[ship.row, ship.col].remove(ship)
         self.unplaced_ships.add(ship)
-        self.occupy_coordinates_from_placement(ship, True)
+        self._occupy_coordinates_from_placement(ship, True)
 
     def move_ship(self, ship, new_row, new_col, new_is_horizontal):
         old_row, old_col, old_is_horizontal = ship.row, ship.col, ship.is_horizontal
@@ -92,45 +97,34 @@ class BaseBoard:
     def flip_ship(self, ship):
         self.move_ship(ship, ship.row, ship.col, not ship.is_horizontal)
 
-    def is_coordinate_in_board(self, row, col):
-        return 0 <= row < self.rows_count and 0 <= col < self.columns_count
-
-    def get_adjacent_coordinates(self, ship):
+    def _get_adjacent_coordinates(self, ship):
         """Get all adjacent coordinates around a ship's position."""
-        adjacent_offsets = [(dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
+        adjacent_offsets = [(delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)]
 
         adjacent_coords = []
         for coord in ship.coordinates:
-            for dx, dy in adjacent_offsets:
-                adj_coord = (coord[0] + dx, coord[1] + dy)
+            for delta_x, delta_y in adjacent_offsets:
+                adj_coord = (coord[0] + delta_x, coord[1] + delta_y)
                 if self.is_coordinate_in_board(*adj_coord):
                     adjacent_coords.append(adj_coord)
 
         return adjacent_coords
 
-    def occupy_coordinates_from_placement(self, ship, reverse=False):
+    def _occupy_coordinates_from_placement(self, ship, reverse=False):
         """Mark or unmark coordinates as occupied based on ship placement."""
         counter = 1 if not reverse else -1
-        adjacent_coords = self.get_adjacent_coordinates(ship)
+        adjacent_coords = self._get_adjacent_coordinates(ship)
 
         for adj_coord in adjacent_coords:
             self.taken_coordinates[adj_coord] += counter
 
-    def does_ship_overlap(self, new_ship):
+    def _does_ship_overlap(self, new_ship):
         return any(self.taken_coordinates[coord] > 0 for coord in new_ship.coordinates)
 
     def remove_all_ships(self):
         for ship_list in self.ships_map.values():
             for ship in ship_list:
                 self.remove_ship(ship)
-
-    def is_there_a_ship_on_coord(self, row, col):
-        for ship_list in self.ships_map.values():
-            for ship in ship_list:
-                if ship.is_coordinate_part_of_ship(row, col):
-                    return True
-
-        return False
 
     def get_ship_on_coord(self, row, col):
         for ship_list in self.ships_map.values():
@@ -139,9 +133,6 @@ class BaseBoard:
                     return ship
 
         return None
-
-    def is_ship_sunk_on(self, row, col):
-        return not self.get_ship_on_coord(row, col).is_alive
 
     def are_all_ships_sunk(self):
         return all(not ship.is_alive for ship_list in self.ships_map.values() for ship in ship_list)
@@ -167,7 +158,7 @@ class BaseBoard:
 
         is_ship_sunk = not ship.is_alive
         if is_ship_sunk:
-            for adj_coordinate in self.get_adjacent_coordinates(ship):
+            for adj_coordinate in self._get_adjacent_coordinates(ship):
                 self.shot_coordinates[adj_coordinate] += 1
 
         return is_ship_hit, is_ship_sunk, ship
@@ -206,7 +197,7 @@ class BaseBoard:
         }
         return json.dumps(board_data)
 
-    def _place_ships_from_json(self, board_json):
+    def place_ships_from_json(self, board_json):
         for ship_json in board_json["ships"]:
             ship = Ship.deserialize(ship_json)
             if self.is_ship_placement_valid(ship):
@@ -223,7 +214,7 @@ class BaseBoard:
             columns_count=board_json["columns_count"],
         )
 
-        board._place_ships_from_json(board_json)
+        board.place_ships_from_json(board_json)
 
         return board
 
@@ -236,7 +227,7 @@ class BaseBoardEnemyView(BaseBoard):
     ):
         super().__init__(rows_count, columns_count, set())
 
-    def register_shot(self, row, col, is_hit):
+    def register_shot_on_view(self, row, col, is_hit):
         self.shot_coordinates[(row, col)] += 1
 
         if is_hit:
@@ -244,12 +235,12 @@ class BaseBoardEnemyView(BaseBoard):
 
     def reveal_ship(self, ship, reveal_adjacent=False):
         if not self.is_ship_placement_valid(ship):
-            return
+            return False
 
         self.place_ship(ship)
 
         if reveal_adjacent:
-            for adj_coordinate in self.get_adjacent_coordinates(ship):
+            for adj_coordinate in self._get_adjacent_coordinates(ship):
                 self.shot_coordinates[adj_coordinate] += 1
 
         return True

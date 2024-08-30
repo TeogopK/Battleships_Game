@@ -1,7 +1,7 @@
 import pygame
-import game.visuals.utils.colors as colors
+from game.visuals.utils import colors
 from game.visuals.utils.buttons import BasicButton
-import game.menus as menus
+from game import menus
 
 from game.visuals.utils.draw_utils import DrawUtils
 
@@ -25,7 +25,7 @@ class BattleEndMenu(menus.Menu):
         self.player.enemy_board_view.draw(screen)
         DrawUtils.apply_color_overlay(screen, color=colors.TILE_MAIN_COLOR)
 
-        DrawUtils.draw_centered_message_with_background(
+        DrawUtils.draw_popup_centered_message(
             screen,
             title_text=self.ending_message[0],
             subtitle_text=self.ending_message[1],
@@ -60,6 +60,5 @@ class BattleEndMenu(menus.Menu):
         super().handle_event(event)
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
             if self.exit_room_button.is_active():
                 self.next_menu = menus.StartMenu(self.player.name)

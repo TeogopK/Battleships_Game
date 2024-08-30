@@ -11,11 +11,15 @@ class Ship:
         is_alive=True,
         sunk_coordinates=None,
     ):
-        super().__init__()
         self.ship_length = ship_length
-        self.move(row, col, is_horizontal)
+        self.coordinates = None
+
+        self.is_horizontal = is_horizontal
         self.is_alive = is_alive
-        self.sunk_coordinates = sunk_coordinates if sunk_coordinates != None else set()
+
+        self.move(row, col, is_horizontal)
+
+        self.sunk_coordinates = sunk_coordinates if sunk_coordinates is not None else set()
 
     def sunk_coordinate(self, row, col):
         if (row, col) in self.coordinates:
@@ -36,7 +40,7 @@ class Ship:
         return (row, col) in self.coordinates
 
     def fill_coordinates(self):
-        if self.row == None and self.col == None:
+        if self.row is None and self.col is None:
             self.coordinates = []
             return
 
@@ -59,7 +63,12 @@ class Ship:
         self.fill_coordinates()
 
     def __repr__(self):
-        return f"<Ship with length {self.ship_length}, is horizontal {self.is_horizontal} at {self.coordinates} with sunk {self.sunk_coordinates}>"
+        return (
+            f"<Ship with length {self.ship_length}, "
+            f"is horizontal {self.is_horizontal}, "
+            f"at {self.coordinates}, "
+            f"with sunk {self.sunk_coordinates}>"
+        )
 
     def serialize(self):
         """Serialize the Ship object to a JSON string."""

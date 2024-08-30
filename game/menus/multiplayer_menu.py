@@ -1,14 +1,11 @@
 import pygame
-import json
 from game.visuals.utils.buttons import BasicButton, GoBackButton
-import game.menus as menus
-from game.menus.menu import Menu
+from game import menus
 from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
-import game.visuals.utils.colors as colors
 
 
-class MultiplayerMenu(Menu):
+class MultiplayerMenu(menus.Menu):
     GAME_ROOM_ID_LENGTH = 6
 
     def __init__(self, client, player_name):

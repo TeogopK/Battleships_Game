@@ -1,6 +1,4 @@
 import socket
-import json
-
 from abc import ABC, abstractmethod
 
 
@@ -17,6 +15,7 @@ class AbstractNetwork(ABC):
 class OfflineNetwork(AbstractNetwork):
     def __init__(self, is_player=True):
         self.is_player = is_player
+        self.server_instance = None
 
     def add_server_instance(self, server_instance):
         self.server_instance = server_instance
@@ -28,7 +27,6 @@ class OfflineNetwork(AbstractNetwork):
 
     def close(self):
         """Offline mode does not require cleanup."""
-        pass
 
 
 class MultiplayerNetwork(AbstractNetwork):
@@ -38,17 +36,17 @@ class MultiplayerNetwork(AbstractNetwork):
         self.port = 5555
         self.addr = (self.server, self.port)
         self.connect()
-        print(f"Connected to server!")
+        print("Connected to server!")
 
     def connect(self):
         try:
             self.client.connect(self.addr)
             self.client.settimeout(10)
             return self.client.recv(2048).decode()
-        except socket.timeout:
-            raise ConnectionError("Connection timed out while trying to receive initial data.")
-        except socket.error as e:
-            raise ConnectionError(f"Socket error: {e}")
+        except socket.timeout as exception:
+            raise ConnectionError("Connection timed out while trying to receive initial data.") from exception
+        except socket.error as exception:
+            raise ConnectionError(f"Socket error: {exception}") from exception
 
     def send(self, data):
         try:
@@ -59,12 +57,12 @@ class MultiplayerNetwork(AbstractNetwork):
             return response
         except socket.timeout:
             print("Socket timed out while waiting for a response.")
-        except socket.error as e:
-            print(f"Socket error: {e}")
+        except socket.error as exception:
+            print(f"Socket error: {exception}")
         return None
 
     def close(self):
         try:
             self.client.close()
-        except socket.error as e:
-            print(f"Socket error during close: {e}")
+        except socket.error as exception:
+            print(f"Socket error during close: {exception}")

@@ -1,12 +1,8 @@
 import json
-import game.players.command_literals as command_literals
+from collections import namedtuple
+from game.players import command_literals
 
-
-class Command:
-    def __init__(self, name, handler, required_args):
-        self.name = name
-        self.handler = handler
-        self.required_args = required_args
+Command = namedtuple("Command", ["name", "handler", "required_args"])
 
 
 class CommandHandler:
@@ -74,19 +70,33 @@ class CommandHandler:
             args = command_data.get("args", {})
 
             if cmd is None:
-                return self.server.error_response("Missing command")
+                return CommandHandler.success_response("Missing command")
 
             command = self.commands.get(cmd)
             if command is None:
-                return self.server.error_response("Unknown command")
+                return CommandHandler.success_response("Unknown command")
 
             missing_args = [arg for arg in command.required_args if arg not in args]
             if missing_args:
-                return self.server.error_response(f"Missing arguments: {', '.join(missing_args)}")
+                return CommandHandler.success_response(f"Missing arguments: {', '.join(missing_args)}")
 
             return command.handler(client, **args)
         except json.JSONDecodeError:
-            return self.server.error_response("Invalid JSON format")
-        except Exception as e:
-            print(e)
-            return self.server.error_response("Server error!")
+            return CommandHandler.success_response("Invalid JSON format")
+        except Exception as exception:  # pylint: disable=W0703
+            print(exception)
+            return CommandHandler.success_response("Server error!")
+
+    @staticmethod
+    def format_response(status, message, **kwargs):
+        response_data = {"status": status, "message": message, "args": kwargs}
+        response_json = json.dumps(response_data)
+        return response_json
+
+    @staticmethod
+    def success_response(message, **kwargs):
+        return CommandHandler.format_response("success", message, **kwargs)
+
+    @staticmethod
+    def error_response(message, **kwargs):
+        return CommandHandler.format_response("error", message, **kwargs)

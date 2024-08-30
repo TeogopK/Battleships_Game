@@ -1,7 +1,7 @@
 import pygame
 
 from game.visuals.utils.draw_utils import DrawUtils
-import game.visuals.utils.colors as colors
+from game.visuals.utils import colors
 
 
 class Menu:

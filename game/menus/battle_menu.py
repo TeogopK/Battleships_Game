@@ -1,8 +1,6 @@
-import pygame
-import json
 import time
-import game.menus as menus
-from game.visuals.visual_board import VisualBoard
+import pygame
+from game import menus
 from game.visuals.utils.draw_utils import DrawUtils
 
 

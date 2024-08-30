@@ -1,5 +1,5 @@
 import pygame
-import game.visuals.utils.colors as colors
+from game.visuals.utils import colors
 
 
 class DrawUtils:
@@ -112,73 +112,7 @@ class DrawUtils:
         DrawUtils.draw_text(surface, text, x, y, font_size, text_color, alignment)
 
     @staticmethod
-    def draw_centered_message_with_background(
-        surface,
-        title_text,
-        subtitle_text,
-        font_size_title=64,
-        font_size_subtitle=30,
-        background_color=colors.TEXTBOX_BACKGROUND_COLOR,
-        text_color_title=colors.TITLE_TEXT_COLOR,
-        text_color_subtitle=colors.TEXT_LABEL_COLOR,
-        padding=20,
-        border_color=colors.TEXTBOX_BORDER_COLOR,
-        border_width=2,
-        alpha=228,
-    ):
-        message_surface = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
-
-        # Calculate rectangle dimensions and position
-        font_title = pygame.font.SysFont(None, font_size_title)
-        font_subtitle = pygame.font.SysFont(None, font_size_subtitle)
-
-        title_text_surface = font_title.render(title_text, True, text_color_title)
-        subtitle_text_surface = font_subtitle.render(subtitle_text, True, text_color_subtitle)
-
-        rect_width = max(title_text_surface.get_width(), subtitle_text_surface.get_width()) + padding * 2
-        rect_height = title_text_surface.get_height() + subtitle_text_surface.get_height() + padding * 3
-        rect_x = (surface.get_width() - rect_width) // 2
-        rect_y = (surface.get_height() - rect_height) // 2
-
-        # Draw semi-transparent background rectangle on the message surface
-        pygame.draw.rect(
-            message_surface,
-            (background_color[0], background_color[1], background_color[2], alpha),
-            (rect_x, rect_y, rect_width, rect_height),
-            border_radius=15,
-        )
-
-        # Draw border around the rectangle
-        pygame.draw.rect(
-            message_surface,
-            border_color,
-            (rect_x, rect_y, rect_width, rect_height),
-            border_radius=15,
-            width=border_width,
-        )
-
-        # Draw text directly onto the main surface
-        surface.blit(message_surface, (0, 0))
-        surface.blit(
-            title_text_surface,
-            title_text_surface.get_rect(
-                center=(
-                    rect_x + rect_width // 2,
-                    rect_y + padding + font_size_title // 2,
-                )
-            ),
-        )
-        surface.blit(
-            subtitle_text_surface,
-            subtitle_text_surface.get_rect(
-                center=(
-                    rect_x + rect_width // 2,
-                    rect_y + rect_height - padding - font_size_subtitle // 2,
-                )
-            ),
-        )
-
-    def apply_blur(surface, scale_factor=0.1, blur_factor=2):
+    def apply_blur(surface, scale_factor=0.1):
         width, height = surface.get_size()
 
         small_surface = pygame.transform.smoothscale(surface, (int(width * scale_factor), int(height * scale_factor)))
@@ -187,6 +121,7 @@ class DrawUtils:
 
         surface.blit(blurred_surface, (0, 0))
 
+    @staticmethod
     def apply_color_overlay(screen, color=colors.BACKGROUND_COLOR, alpha=128):
         # Create an overlay surface with the same size as the screen
         overlay_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
@@ -196,3 +131,63 @@ class DrawUtils:
 
         # Blit the overlay surface on top of the screen
         screen.blit(overlay_surface, (0, 0))
+
+    @staticmethod
+    def draw_popup_centered_message(
+        surface,
+        title_text,
+        subtitle_text,
+        font_size_title=64,
+        font_size_subtitle=30,
+        alpha=228,
+    ):  # pylint: disable=R0914
+        # Define default values
+        background_color = colors.TEXTBOX_BACKGROUND_COLOR
+        text_color_title = colors.TITLE_TEXT_COLOR
+        text_color_subtitle = colors.TEXT_LABEL_COLOR
+        border_color = colors.TEXTBOX_BORDER_COLOR
+        padding = 20
+        border_width = 2
+
+        # Create text surfaces
+        font_title = pygame.font.SysFont(None, font_size_title)
+        font_subtitle = pygame.font.SysFont(None, font_size_subtitle)
+
+        # Render text surfaces
+        title_text_surface = font_title.render(title_text, True, text_color_title)
+        subtitle_text_surface = font_subtitle.render(subtitle_text, True, text_color_subtitle)
+
+        # Calculate rectangle dimensions and position
+        text_width = max(title_text_surface.get_width(), subtitle_text_surface.get_width())
+        rect_width = text_width + padding * 2
+        rect_height = title_text_surface.get_height() + subtitle_text_surface.get_height() + padding * 3
+        rect_x = (surface.get_width() - rect_width) // 2
+        rect_y = (surface.get_height() - rect_height) // 2
+
+        # Create and draw on message surface
+        message_surface = pygame.Surface((surface.get_width(), surface.get_height()), pygame.SRCALPHA)
+        pygame.draw.rect(
+            message_surface,
+            (*background_color, alpha),
+            (rect_x, rect_y, rect_width, rect_height),
+            border_radius=15,
+        )
+        pygame.draw.rect(
+            message_surface,
+            border_color,
+            (rect_x, rect_y, rect_width, rect_height),
+            border_radius=15,
+            width=border_width,
+        )
+
+        # Draw text
+        surface.blit(message_surface, (0, 0))
+        title_rect = title_text_surface.get_rect(center=(rect_x + rect_width // 2, rect_y + padding + font_size_title // 2))
+        subtitle_rect = subtitle_text_surface.get_rect(
+            center=(
+                rect_x + rect_width // 2,
+                rect_y + rect_height - padding - font_size_subtitle // 2,
+            )
+        )
+        surface.blit(title_text_surface, title_rect)
+        surface.blit(subtitle_text_surface, subtitle_rect)

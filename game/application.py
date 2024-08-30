@@ -1,10 +1,10 @@
 import pygame
-import game.visuals.utils.constants as constants
+from game.visuals.utils import constants
 
-import game.menus as menus
+from game import menus
 
 
-class Application:
+class Application:  # pylint: disable=R0903
     def __init__(
         self,
         width=constants.WINDOW_WIDTH,
@@ -18,23 +18,29 @@ class Application:
         self.clock = pygame.time.Clock()
         self.menu = menus.StartMenu()
 
+        self.running = True
+
     def run(self):
-        running = True
-        while running:
+        while self.running:
             self.clock.tick(self.fps)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-
-                self.menu.handle_event(event)
-
-                if self.menu.next_menu:
-                    self.menu = self.menu.next_menu
-
-            self.menu.draw(self.screen)
-            pygame.display.update()
+            self._handle_events()
+            self._draw_menu()
 
         pygame.quit()
+
+    def _handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+
+            self.menu.handle_event(event)
+
+            if self.menu.next_menu:
+                self.menu = self.menu.next_menu
+
+    def _draw_menu(self):
+        self.menu.draw(self.screen)
+        pygame.display.update()
 
 
 def main():

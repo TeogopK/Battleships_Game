@@ -1,12 +1,11 @@
 import pygame
 from game.visuals.utils.buttons import BasicButton
-from game.menus.battle_menu import BattleMenu
-from game.menus.menu import Menu
-import game.visuals.utils.colors as colors
+from game import menus
+from game.visuals.utils import colors
 from game.visuals.utils.draw_utils import DrawUtils
 
 
-class ShipPlacementMenu(Menu):
+class ShipPlacementMenu(menus.Menu):
     IS_OPPONENT_READY_EVENT = pygame.USEREVENT + 1
     WAITING_MESSAGE_UPDATE_EVENT = pygame.USEREVENT + 2
 
@@ -46,7 +45,7 @@ class ShipPlacementMenu(Menu):
             elif event.type == pygame.MOUSEBUTTONUP:
                 self.on_mouse_button_up(event)
             elif event.type == pygame.MOUSEMOTION:
-                self.on_mouse_motion(event)
+                self.on_mouse_motion()
 
             if self.shuffle_button.is_active():
                 self.player.board.random_shuffle_ships()
@@ -58,7 +57,7 @@ class ShipPlacementMenu(Menu):
         response = self.player.is_opponent_ready()
 
         if response["status"] == "success":
-            self.next_menu = BattleMenu(self.player, self.opponent_name)
+            self.next_menu = menus.BattleMenu(self.player, self.opponent_name)
 
     def handle_sending_board(self):
         response = self.player.send_board()
@@ -94,7 +93,7 @@ class ShipPlacementMenu(Menu):
         if ship and event.button == 3:  # Right mouse button
             self.player.board.flip_ship(ship)
 
-    def on_mouse_motion(self, event):
+    def on_mouse_motion(self):
         if not self.dragging_ship:
             return
 
@@ -148,7 +147,7 @@ class ShipPlacementMenu(Menu):
 
         DrawUtils.draw_message(
             screen,
-            f"Left click and hold a ship to move it!",
+            "Left click and hold a ship to move it!",
             x=600,
             y=200,
             font_size=34,
@@ -156,7 +155,7 @@ class ShipPlacementMenu(Menu):
         )
         DrawUtils.draw_message(
             screen,
-            f"Right click on a ship to flip it!",
+            "Right click on a ship to flip it!",
             x=600,
             y=250,
             font_size=34,
@@ -164,7 +163,7 @@ class ShipPlacementMenu(Menu):
         )
         DrawUtils.draw_message(
             screen,
-            f"Once the board is set up click the button 'Ready'.",
+            "Once the board is set up click the button 'Ready'.",
             x=600,
             y=300,
             font_size=34,

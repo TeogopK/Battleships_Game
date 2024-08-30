@@ -8,6 +8,13 @@ class BattleBot(Player):
         network_client,
     ):
         super().__init__("BattleBot", network_client)
+
+        self.shot_history = None
+        self.hit_stack = None
+        self.hunting_mode = False
+        self.last_hit = None
+        self.is_horizontal = None
+
         self._reset_hunting_strategy()
 
     def _reset_hunting_strategy(self):
@@ -63,14 +70,15 @@ class BattleBot(Player):
 
     def _update_hunting_strategy(self, row, col):
         if self.last_hit:
-            self._set_direction(row, col)
+            self._set_direction(row)
             positions = self._generate_line_positions(row, col)
         else:
-            positions = self._generate_adjacent_positions(row, col)
+            positions = BattleBot._generate_adjacent_positions(row, col)
         self._add_positions_to_stack(positions)
         self.last_hit = (row, col)
 
-    def _generate_adjacent_positions(self, row, col):
+    @staticmethod
+    def _generate_adjacent_positions(row, col):
         return [
             (row - 1, col),
             (row + 1, col),
@@ -78,8 +86,8 @@ class BattleBot(Player):
             (row, col + 1),
         ]
 
-    def _set_direction(self, row, col):
-        last_row, last_col = self.last_hit
+    def _set_direction(self, row):
+        last_row, _ = self.last_hit
         self.is_horizontal = row == last_row
 
     def _generate_line_positions(self, row, col):
