@@ -1,5 +1,9 @@
 # Battleships Game
 
+## Application interface
+
+![Battle phase of the game screenshot](./media/battle_phase.png)
+
 
 ## Main Functionalities
 
@@ -9,16 +13,12 @@
 
 - **Create & Join Rooms**: Set up a new room with a unique ID and choose between public or private. Join any room by ID or jump into a random public match.
 
-![Multiplayer menu including room creation and join options](media/multiplayer_menu.png)
-
 
 - **Manage Your Game**: Toggle room privacy, exit when needed, and watch the game start once both players are ready.
 
-![Room menu when the player is waiting an opponent to join](media/room_menu.png)
 
 - **Turn-Based Battles**: Engage in strategic, turn-based gameplay. The server ensures privacy settings and manages the turn-based gameplay including time per turn validation.
 
-![Battle phase of the game screenshot](./media/battle_phase.png)
 
 
 - **Endgame**: The game wraps up when one player's fleet is sunk, or when a player does not make his move in time.
