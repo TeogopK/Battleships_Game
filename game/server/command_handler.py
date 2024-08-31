@@ -97,22 +97,22 @@ class CommandHandler:
             args = command_data.get("args", {})
 
             if cmd is None:
-                return CommandHandler.success_response("Missing command")
+                return CommandHandler.error_response("Missing command")
 
             command = self.commands.get(cmd)
             if command is None:
-                return CommandHandler.success_response("Unknown command")
+                return CommandHandler.error_response("Unknown command")
 
             missing_args = [arg for arg in command.required_args if arg not in args]
             if missing_args:
-                return CommandHandler.success_response(f"Missing arguments: {', '.join(missing_args)}")
+                return CommandHandler.error_response(f"Missing arguments: {', '.join(missing_args)}")
 
             return command.handler(client, **args)
         except json.JSONDecodeError:
-            return CommandHandler.success_response("Invalid JSON format")
+            return CommandHandler.error_response("Invalid JSON format")
         except Exception as exception:  # pylint: disable=W0703
             print(exception)
-            return CommandHandler.success_response("Server error!")
+            return CommandHandler.error_response("Server error!")
 
     @staticmethod
     def format_response(status, message, **kwargs):

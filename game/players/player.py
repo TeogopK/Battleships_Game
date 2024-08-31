@@ -110,10 +110,11 @@ class Player:
         response = self.send_command(command_literals.COMMAND_REQUEST_ENEMY_BOARD)
 
         if response["status"] != "success":
-            return
+            return response
 
         board_data = response["args"]["enemy_board_data"]
         self.enemy_board_view.reveal_ships_from_board_data(board_data)
+        return response
 
     def exit_room(self):
         """

@@ -88,7 +88,7 @@ class VisualShip(Sprite, Ship):
         Returns:
             int: The y-coordinate of the ship's bottom border.
         """
-        return self.y + self.coordinate_size
+        return self.y + self.get_visual_width()
 
     def update_visual_position(self, x, y):
         """

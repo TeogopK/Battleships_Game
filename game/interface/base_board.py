@@ -206,12 +206,12 @@ class BaseBoard:
         """
         adjacent_offsets = [(delta_x, delta_y) for delta_x in (-1, 0, 1) for delta_y in (-1, 0, 1)]
 
-        adjacent_coords = []
+        adjacent_coords = set()
         for coord in ship.coordinates:
             for delta_x, delta_y in adjacent_offsets:
                 adj_coord = (coord[0] + delta_x, coord[1] + delta_y)
                 if self.is_coordinate_in_board(*adj_coord):
-                    adjacent_coords.append(adj_coord)
+                    adjacent_coords.add(adj_coord)
 
         return adjacent_coords
 

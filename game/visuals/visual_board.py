@@ -417,4 +417,4 @@ class VisualBoardEnemyView(VisualBoard, BaseBoardEnemyView):
             ship.sunk_coordinates,
             coordinate_size=self.get_tile_size(),
         )
-        BaseBoardEnemyView.reveal_ship(self, visual_ship, reveal_adjacent)
+        return BaseBoardEnemyView.reveal_ship(self, visual_ship, reveal_adjacent)
