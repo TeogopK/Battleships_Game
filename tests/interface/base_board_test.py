@@ -7,7 +7,7 @@ def test_baseboard_default_initialization():
     board = BaseBoard()
     assert board.rows_count == 10
     assert board.columns_count == 10
-    assert len(board.unplaced_ships) == 1
+    assert len(board.unplaced_ships) == 10
     assert len(board.ships_map) == 0
     assert len(board.taken_coordinates) == 0
     assert len(board.shot_coordinates) == 0
