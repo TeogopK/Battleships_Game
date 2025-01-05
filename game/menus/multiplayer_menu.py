@@ -4,7 +4,7 @@ joining a room by ID or randomly, and navigating to the appropriate next menu ba
 """
 
 import pygame
-from game.visuals.utils.buttons import BasicButton, GoBackButton
+from game.visuals.utils.buttons import BasicButton, SmallButton
 from game.menus.menu import Menu
 from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
@@ -35,7 +35,9 @@ class MultiplayerMenu(Menu):
         self.create_room_button = BasicButton(x=150, y=630, text="Create room", width=300)
         self.join_room_with_id_button = BasicButton(x=475, y=630, text="Join room by id", width=300)
         self.join_random_room_button = BasicButton(x=800, y=630, text="Join random room", width=300)
-        self.go_back_button = GoBackButton(10, 10)
+        self.go_back_button = SmallButton(x=10, y=10, text="Go back")
+        self.choose_team_button = SmallButton(x=700, y=485, text="-", font_size=25, width=120)
+        self.get_team_status_button = SmallButton(x=830, y=545, text="Get team status", font_size=25, width=200)
 
         self.room_id_input = ""
 
@@ -61,6 +63,10 @@ class MultiplayerMenu(Menu):
         if self.join_random_room_button.is_active():
             response = self.player.join_random_room()
             self.handle_join_room_response(response)
+
+        if self.choose_team_button.is_active():
+            self.player._choose_team()
+            self.choose_team_button.text = self.player.team
 
         if self.go_back_button.is_active():
             previous_menu_type = self.get_father_in_evolution()
@@ -143,9 +149,13 @@ class MultiplayerMenu(Menu):
         self.join_room_with_id_button.draw(screen)
         self.join_random_room_button.draw(screen)
         self.go_back_button.draw(screen)
+        self.choose_team_button.draw(screen)
+        self.get_team_status_button.draw(screen)
 
         DrawUtils.draw_title(screen, "Battleships", 620, 200, 128, glow_size=7)
         DrawUtils.draw_title(screen, "Multiplayer", 620, 300, 64, glow_size=3)
 
-        DrawUtils.draw_label(screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=450)
-        DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=500)
+        DrawUtils.draw_label(screen, "Enter 6-digit Room ID to join a specific room:", x=620, y=400)
+        DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=450)
+        DrawUtils.draw_label(screen, "Choose Your Team:", x=550, y=500)
+        DrawUtils.draw_label(screen, "Your team total points are:", x=520, y=560)

@@ -12,6 +12,9 @@ from game.players import command_literals
 class Player:
     """Class representing a player in the game."""
 
+    TEAM_ROME_CONSTANT = "Rome"
+    TEAM_CARTAGE_CONSTANT = "Cartage"
+
     def __init__(self, name, network_client):
         """
         Initializes a Player object.
@@ -33,6 +36,7 @@ class Player:
         self.is_in_finished_battle = False
         self.is_winner = False
         self.is_timeout = False
+        self.team = None
 
     def send_command(self, command_type, **kwargs):
         """
@@ -231,3 +235,6 @@ class Player:
         self.is_in_finished_battle = response_args["has_battle_ended"]
         self.is_winner = response_args["is_winner"]
         self.is_timeout = response_args.get("is_timeout", False)
+
+    def _choose_team(self):
+        self.team = self.TEAM_ROME_CONSTANT if self.team != self.TEAM_ROME_CONSTANT else self.TEAM_CARTAGE_CONSTANT

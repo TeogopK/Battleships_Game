@@ -3,7 +3,7 @@ This module provides a Button class and its derivatives for creating
     and handling interactive buttons in a Pygame application.
 
 The module also provides specialized button classes,
-    such as `BasicButton` and `GoBackButton`,
+    such as `BasicButton` and `SmallButton`,
     with pre-configured settings for common use cases.
 """
 
@@ -163,19 +163,14 @@ class BasicButton(Button):
         )
 
 
-class GoBackButton(Button):
+class SmallButton(Button):
     """
-    A specific button designed for "Go back" functionality.
-    Inherits from the Button class with a smaller size and pre-configured text.
-
-    Attributes:
-        x (int): The x-coordinate of the top-left corner of the button.
-        y (int): The y-coordinate of the top-left corner of the button.
+    Inherits from the Button class with a smaller size.
     """
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, text, font_size=22, width=100):
         """
-        Initializes a GoBackButton object with specified position and pre-configured settings.
+        Initializes a SmallButton object with specified position and pre-configured settings.
 
         Args:
             x (int): The x-coordinate of the top-left corner of the button.
@@ -184,9 +179,9 @@ class GoBackButton(Button):
         super().__init__(
             x,
             y,
-            text="Go back",
-            font_size=22,
-            width=100,
+            text=text,
+            font_size=font_size,
+            width=width,
             height=30,
             padding=10,
         )
