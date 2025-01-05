@@ -3,6 +3,9 @@
 import socket
 from _thread import start_new_thread
 from game.server.game_server import GameServer
+from game.libs.config_loader import load_config
+
+config = load_config()
 
 
 class MultiplayerServer(GameServer):
@@ -22,8 +25,8 @@ class MultiplayerServer(GameServer):
         Configures the server to listen for incoming client connections on a specified address and port.
         """
         super().__init__(self.TIME_PER_TURN)
-        self.server = "localhost"
-        self.port = 5555
+        self.server = config["server"]["host"]
+        self.port = config["server"]["port"]
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.setup_server()
 

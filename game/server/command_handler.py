@@ -77,6 +77,11 @@ class CommandHandler:
                 self.server.send_enemy_board,
                 [],
             ),
+            command_literals.COMMAND_REQUEST_TEAM_STATUS: Command(
+                command_literals.COMMAND_REQUEST_TEAM_STATUS,
+                self.server.get_team_status,
+                ["team_name"],
+            ),
         }
 
     def handle_command(self, json_command, client):

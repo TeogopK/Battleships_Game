@@ -10,6 +10,7 @@ from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
 from game.menus.ship_placement_menu import ShipPlacementMenu
 from game.menus.room_menu import RoomMenu
+from game.visuals.utils import colors
 
 
 class MultiplayerMenu(Menu):
@@ -40,6 +41,7 @@ class MultiplayerMenu(Menu):
         self.get_team_status_button = SmallButton(x=830, y=545, text="Get team status", font_size=25, width=200)
 
         self.room_id_input = ""
+        self.team_points = ""
 
     def handle_event(self, event):
         """
@@ -67,6 +69,10 @@ class MultiplayerMenu(Menu):
         if self.choose_team_button.is_active():
             self.player._choose_team()
             self.choose_team_button.text = self.player.team
+
+        if self.get_team_status_button.is_active():
+            response = self.player.get_team_status()
+            self.handle_get_team_status_response(response)
 
         if self.go_back_button.is_active():
             previous_menu_type = self.get_father_in_evolution()
@@ -137,6 +143,19 @@ class MultiplayerMenu(Menu):
         """
         return self.room_id_input + "-" * (self.GAME_ROOM_ID_LENGTH - len(self.room_id_input))
 
+    def handle_get_team_status_response(self, response):
+        """
+        Handle the response for getting the team status. Update the team points if successful.
+
+        Args:
+            response (dict): The response from the server after attempting to get the team status.
+        """
+        if response.get("status") == "error":
+            self.show_message(response["message"])
+            return
+
+        self.team_points = response["args"]["team_points"]
+
     def draw(self, screen):
         """
         Draw the multiplayer menu on the screen, including buttons, labels, and input text.
@@ -159,3 +178,4 @@ class MultiplayerMenu(Menu):
         DrawUtils.draw_input_text(screen, self.get_input_text(), x=620, y=450)
         DrawUtils.draw_label(screen, "Choose Your Team:", x=550, y=500)
         DrawUtils.draw_label(screen, "Your team total points are:", x=520, y=560)
+        DrawUtils.draw_input_text(screen, str(self.team_points), x=710, y=560)

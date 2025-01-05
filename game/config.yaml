@@ -1,0 +1,9 @@
+api:
+  base_url: "http://192.168.0.4:5099"
+  endpoint: "Management"
+  timeout: 10
+  team_0: "Rome"
+  team_1: "Carthage"
+server:
+  host: "localhost"
+  port: 5555

@@ -7,13 +7,16 @@ import json
 from game.visuals.visual_board import VisualBoard, VisualBoardEnemyView
 from game.interface.ship import Ship
 from game.players import command_literals
+from game.libs.config_loader import load_config
+
+config = load_config()
 
 
 class Player:
     """Class representing a player in the game."""
 
-    TEAM_ROME_CONSTANT = "Rome"
-    TEAM_CARTAGE_CONSTANT = "Cartage"
+    TEAM_0_CONSTANT = config["api"]["team_0"]
+    TEAM_1_CONSTANT = config["api"]["team_1"]
 
     def __init__(self, name, network_client):
         """
@@ -237,4 +240,14 @@ class Player:
         self.is_timeout = response_args.get("is_timeout", False)
 
     def _choose_team(self):
-        self.team = self.TEAM_ROME_CONSTANT if self.team != self.TEAM_ROME_CONSTANT else self.TEAM_CARTAGE_CONSTANT
+        self.team = self.TEAM_0_CONSTANT if self.team != self.TEAM_0_CONSTANT else self.TEAM_1_CONSTANT
+
+    def get_team_status(self):
+        """
+        Sends a command to request the team status of the player.
+
+        Returns:
+            dict: The server's response with the player's team status.
+        """
+        response = self.send_command(command_literals.COMMAND_REQUEST_TEAM_STATUS, team_name=self.team)
+        return response

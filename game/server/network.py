@@ -7,6 +7,9 @@ including offline simulation and real multiplayer networking.
 
 import socket
 from abc import ABC, abstractmethod
+from game.libs.config_loader import load_config
+
+config = load_config()
 
 
 class AbstractNetwork(ABC):
@@ -93,8 +96,8 @@ class MultiplayerNetwork(AbstractNetwork):
         Initializes a MultiplayerNetwork instance and connects to the server.
         """
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server = "localhost"
-        self.port = 5555
+        self.server = config["server"]["host"]
+        self.port = config["server"]["port"]
         self.addr = (self.server, self.port)
         self.connect()
         print("Connected to server!")

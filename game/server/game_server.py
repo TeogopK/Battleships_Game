@@ -13,6 +13,7 @@ from game.server.command_handler import CommandHandler
 from game.players.battle_bot import BattleBot
 from game.server.network import OfflineNetwork
 from game.players import command_literals
+from game.server.stats_api_client import StatsAPIClient
 
 
 class GameServer:
@@ -33,6 +34,7 @@ class GameServer:
         self.clients_to_rooms = {}
         self.command_handler = CommandHandler(self)
         self.time_per_turn = time_per_turn
+        self.stats_api_client = StatsAPIClient()
 
     def run(self):
         """
@@ -418,6 +420,17 @@ class GameServer:
             bool: True if the room exists, False otherwise.
         """
         return room_id in self.rooms
+
+    def get_team_status(self, client, team_name):
+        if team_name is None:
+            return CommandHandler.error_response("Error! No status for empty team!")
+
+        team_points = self.stats_api_client.get_team_points(team_name)
+
+        if not team_points:
+            return CommandHandler.error_response("Error fetching team points from API!")
+
+        return CommandHandler.success_response("Team points fetched successfully!", team_points=team_points)
 
 
 class SinglePlayerServer(GameServer):
