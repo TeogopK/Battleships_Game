@@ -45,11 +45,3 @@ class StatsAPIClient:
         except requests.exceptions.RequestException as e:
             print(f"Error during POST request: {e}")
             return None
-
-
-def main():
-    stats_api_client = StatsAPIClient()
-    print(stats_api_client.get_team_points(stats_api_client.team_0))
-
-
-main()
