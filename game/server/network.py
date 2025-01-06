@@ -99,8 +99,8 @@ class MultiplayerNetwork(AbstractNetwork):
         self.server = config["server"]["host"]
         self.port = config["server"]["port"]
         self.addr = (self.server, self.port)
-        self.connect()
-        print("Connected to server!")
+        data = self.connect()
+        print("Connected to server! Data received:", data)
 
     def connect(self):
         """

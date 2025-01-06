@@ -1,5 +1,6 @@
 """Module that creates a server for managing multiplayer game sessions with network communication."""
 
+import json
 import socket
 from _thread import start_new_thread
 from game.server.game_server import GameServer
@@ -25,7 +26,7 @@ class MultiplayerServer(GameServer):
         Configures the server to listen for incoming client connections on a specified address and port.
         """
         super().__init__(self.TIME_PER_TURN)
-        self.server = config["server"]["host"]
+        self.server = "0.0.0.0"
         self.port = config["server"]["port"]
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.setup_server()
@@ -61,6 +62,15 @@ class MultiplayerServer(GameServer):
             except Exception as exception:  # pylint: disable=W0703
                 print(f"Exception in accepting connections: {exception}")
 
+    def __send_greeting(self, conn):
+        """Send a greeting message to the connected client."""
+        try:
+            greeting = {"message": "Connected"}
+            conn.send(json.dumps(greeting).encode("utf-8"))
+            print(f"Sent greeting: {greeting}")
+        except Exception as e:
+            print(f"Error sending greeting: {e}")
+
     def _handle_client(self, conn):
         """
         Handles communication with a connected client.
@@ -70,7 +80,8 @@ class MultiplayerServer(GameServer):
         Args:
             conn (socket.socket): The socket object for the connected client.
         """
-        conn.send(str.encode("Connected"))
+
+        self.__send_greeting(conn)
         while True:
             try:
                 data = conn.recv(2048)

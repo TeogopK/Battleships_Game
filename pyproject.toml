@@ -9,11 +9,11 @@ description = "Game package consisting of the game logic and the game interface 
 requires-python = ">=3.8"
 
 dependencies = [
-  "pygame"
+  "pygame", "pyyaml", "requests"
 ]
 
 [tool.setuptools.dynamic]
 version = {attr = "game.__version__"}
 
 [tool.setuptools.package-data]
-'game' = ['*.yml']
+'game' = ['*.yaml']

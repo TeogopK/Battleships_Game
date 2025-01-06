@@ -1,0 +1,14 @@
+.pytest_cache/
+.vscode/
+battleships_game.egg-info/
+build/
+dist/
+env/
+tests/
+
+.gitignore
+pylintrc
+tox.ini
+endgame_screen.png
+modes.md
+ideas_short.py
