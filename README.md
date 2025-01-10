@@ -165,8 +165,9 @@ Show the logs of the local server:
 docker logs --tail 100 my-python-game-container
 ```
 
-Stop the docker simualting the server using:
+Stop and remove the container simualting the server using:
 
 ```bash
 docker stop my-python-game-container
+docker rm my-python-game-container
 ```
