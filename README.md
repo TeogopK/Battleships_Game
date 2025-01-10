@@ -128,3 +128,45 @@ tox
 ```
 
 This will perform linting with Pylint and check for code formatting issues.
+
+### 12. Create an executable to distribute the game
+
+From the project directory run the following script:
+
+```bash
+python -m PyInstaller --clean --onefile --noconsole --add-data "game;." game\application.py
+```
+
+The executable will be in `./dist/application.exe`.
+
+#### Docker
+
+To build the Docker image for the game, navigate to the project directory and run the following command:
+
+```bash
+docker build -t my-python-game .
+```
+
+After building the image, you can run the container using the following command. This requires adding `localhost` as the host in the yaml file:
+
+```bash
+docker run -d -p 5555:5555 --name my-python-game-container my-python-game
+```
+
+To see the list of running containers and confirm that your game container is running, use:
+
+```bash
+docker ps
+```
+
+Show the logs of the local server:
+
+```bash
+docker logs --tail 100 my-python-game-container
+```
+
+Stop the docker simualting the server using:
+
+```bash
+docker stop my-python-game-container
+```
