@@ -262,6 +262,7 @@ class GameServer:
         )
 
     def _update_team_points(self, client, room):
+        # fix other gameboard + add _update_team_points(client, room)
         is_client_winner = room.is_client_winner(client)
         print("client VARNA", client)
         if is_client_winner:
