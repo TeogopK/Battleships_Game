@@ -20,6 +20,10 @@ class StatsAPIClient:
         return response.get(team_name.lower(), None) if response is not None else None
 
     def increment_team_points(self, team_name):
+        if team_name is None:
+            print("No intial team for winner")
+            return 
+        
         team_boolean = 0 if team_name == self.team_0 else 1
         message = {"win": team_boolean}
         data_message = json.dumps(message)

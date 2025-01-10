@@ -9,16 +9,20 @@ class RoomClient:
     Represents a client in a room, including their game board and shot history.
     """
 
-    def __init__(self, client, client_name):
+    def __init__(self, client, client_name, client_team):
         """
         Initializes a RoomClient instance.
 
         Args:
             client (Client): The client associated with this RoomClient.
             client_name (str): The name of the client.
+            client_team (str): The name of the client team.
+
         """
         self.client = client
         self.client_name = client_name
+        self.client_team = client_team
+
         self.board = None
         self.shot_history = []
         self.has_board = False
@@ -85,7 +89,7 @@ class Room:
     Represents a room where a battle occurs between clients.
     """
 
-    def __init__(self, room_id, client, client_name, time_per_turn):
+    def __init__(self, room_id, client, client_name, client_team, time_per_turn):
         """
         Initializes a Room instance.
 
@@ -93,19 +97,24 @@ class Room:
             room_id (str): The unique identifier for the room.
             client (Client): The client creating or joining the room.
             client_name (str): The name of the client.
+            client_team (str): The name of the client team.
             time_per_turn (int): The time allowed per turn in seconds.
         """
         self.room_id = room_id
-        self.clients = {client: RoomClient(client, client_name)}
+        self.clients = {client: RoomClient(client, client_name, client_team)}
+
+        self.time_per_turn = time_per_turn
         self.max_players = 2
         self.is_private = False
         self.is_full = False
+
         self.has_battle_started = False
         self.has_battle_ended = False
-        self.loser = None
-        self.time_per_turn = time_per_turn
         self.turn_end_time = None
         self.is_timeout = False
+
+        self.winning_team = None
+        self.loser = None
 
     def change_publicity(self):
         """
@@ -130,13 +139,14 @@ class Room:
         """
         return self.clients[client].add_board(board_json)
 
-    def add_player(self, new_client, client_name):
+    def add_player(self, new_client, client_name, client_team):
         """
         Adds a new player to the room.
 
         Args:
             new_client (Client): The new client to add.
             client_name (str): The name of the new client.
+            client_team (str): The name of the client team.
 
         Returns:
             bool: True if the player was successfully added, False otherwise.
@@ -144,7 +154,7 @@ class Room:
         if len(self.clients) >= self.max_players or new_client in self.clients:
             return False
 
-        self.clients[new_client] = RoomClient(new_client, client_name)
+        self.clients[new_client] = RoomClient(new_client, client_name, client_team)
         self.is_full = len(self.clients) == self.max_players
         return True
 

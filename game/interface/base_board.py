@@ -51,16 +51,16 @@ class BaseBoard:
 
         """
         return {
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(1),
-            ship_constructor(2),
-            ship_constructor(2),
-            ship_constructor(2),
-            ship_constructor(3),
-            ship_constructor(3),
-            ship_constructor(4),
+            ship_constructor(10),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(1),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(2),
+            # ship_constructor(3),
+            # ship_constructor(3),
+            # ship_constructor(4),
         }
 
     def _get_random_row_for_ship(self, ship_length, is_horizontal):

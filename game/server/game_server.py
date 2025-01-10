@@ -55,13 +55,14 @@ class GameServer:
             if room_id not in self.rooms:
                 return room_id
 
-    def create_room(self, client, client_name):
+    def create_room(self, client, client_name, client_team):
         """
         Creates a new room and adds the client to it.
 
         Args:
             client (str): The client identifier.
             client_name (str): The name of the client.
+            client_team (str): The name of the client team.
 
         Returns:
             str: A JSON response indicating the success or failure of the operation.
@@ -70,12 +71,12 @@ class GameServer:
             return CommandHandler.error_response("Client is already in a room!")
 
         room_id = self.generate_unique_room_id()
-        room = Room(room_id, client, client_name, self.time_per_turn)
+        room = Room(room_id, client, client_name, client_team, self.time_per_turn)
         self.rooms[room_id] = room
         self.clients_to_rooms[client] = room_id
         return CommandHandler.success_response(f"Room {room_id} created!", room_id=room_id)
 
-    def join_room_with_id(self, client, room_id, client_name):
+    def join_room_with_id(self, client, room_id, client_name, client_team):
         """
         Allows a client to join an existing room.
 
@@ -83,6 +84,7 @@ class GameServer:
             client (str): The client identifier.
             room_id (str): The ID of the room to join.
             client_name (str): The name of the client.
+            client_team (str): The name of the client team.
 
         Returns:
             str: A JSON response indicating the success or failure of the operation.
@@ -94,7 +96,7 @@ class GameServer:
             return CommandHandler.error_response("Room ID not found!")
 
         room = self.rooms[room_id]
-        if not room.add_player(client, client_name):
+        if not room.add_player(client, client_name, client_team):
             return CommandHandler.error_response("Room is full or player is already in the room!")
 
         return self._finish_joining_room(client, room)
@@ -119,13 +121,14 @@ class GameServer:
             opponent_name=opponent_name,
         )
 
-    def join_random_room(self, client, client_name):
+    def join_random_room(self, client, client_name, client_team):
         """
         Allows a client to join a random available room.
 
         Args:
             client (str): The client identifier.
             client_name (str): The name of the client.
+            client_team (str): The name of the client team.
 
         Returns:
             str: A JSON response indicating the success or failure of the operation.
@@ -136,7 +139,7 @@ class GameServer:
         for room in self.rooms.values():
             if room.is_private:
                 continue
-            if room.add_player(client, client_name):
+            if room.add_player(client, client_name, client_team):
                 return self._finish_joining_room(client, room)
 
         return CommandHandler.error_response("No available rooms to join!")
@@ -258,8 +261,14 @@ class GameServer:
             turn_end_time=room.turn_end_time,
         )
 
-    @staticmethod
-    def _send_end_battle_response(client, room):
+    def _update_team_points(self, client, room):
+        is_client_winner = room.is_client_winner(client)
+        print("client VARNA", client)
+        if is_client_winner:
+            winning_team = room[client].client_team
+            self.stats_api_client.increment_team_points(winning_team)
+
+    def _send_end_battle_response(self, client, room):
         """
         Sends a response indicating the end of the battle due to timeout or completion.
 
@@ -273,7 +282,7 @@ class GameServer:
         return CommandHandler.error_response(
             "The battle has ended!",
             has_battle_ended=room.has_battle_ended,
-            is_winner=room.is_client_winner(client),
+            is_winner = room.is_client_winner(client),
             is_timeout=room.is_timeout,
         )
 
@@ -296,14 +305,14 @@ class GameServer:
         room = self.rooms[room_id]
 
         if room.has_battle_ended:
-            return GameServer._send_end_battle_response(client, room)
+            return self._send_end_battle_response(client, room)
 
         if not room.is_client_turn(client):
             return CommandHandler.error_response("Not player's turn!", is_player_turn=False)
 
         if room.is_turn_late():
             room.end_battle_due_to_timeout()
-            return GameServer._send_end_battle_response(client, room)
+            return self._send_end_battle_response(client, room)
 
         if not room.is_client_shot_valid(client, row, col):
             return CommandHandler.error_response("Invalid shot!", is_shot_valid=False)
@@ -348,7 +357,7 @@ class GameServer:
 
         if room.is_turn_late():
             room.end_battle_due_to_timeout()
-            return GameServer._send_end_battle_response(client, room)
+            return self._send_end_battle_response(client, room)
 
         last_shot = room.give_shot_from_history(client)
         if last_shot is None:

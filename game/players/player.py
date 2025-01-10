@@ -65,7 +65,7 @@ class Player:
         Returns:
             dict: The server's response indicating the result of the room creation.
         """
-        response = self.send_command(command_literals.COMMAND_CREATE_ROOM, client_name=self.name)
+        response = self.send_command(command_literals.COMMAND_CREATE_ROOM, client_name=self.name, client_team = self.team)
         return response
 
     def join_room_with_id(self, room_id):
@@ -82,6 +82,7 @@ class Player:
             command_literals.COMMAND_JOIN_ROOM_WITH_ID,
             room_id=room_id,
             client_name=self.name,
+            client_team=self.team
         )
         return response
 
@@ -92,7 +93,7 @@ class Player:
         Returns:
             dict: The server's response indicating the result of joining the random room.
         """
-        response = self.send_command(command_literals.COMMAND_JOIN_RANDOM_ROOM, client_name=self.name)
+        response = self.send_command(command_literals.COMMAND_JOIN_RANDOM_ROOM, client_name=self.name, client_team=self.team)
         return response
 
     def send_board(self):

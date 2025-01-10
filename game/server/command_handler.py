@@ -25,17 +25,17 @@ class CommandHandler:
             command_literals.COMMAND_CREATE_ROOM: Command(
                 command_literals.COMMAND_CREATE_ROOM,
                 self.server.create_room,
-                ["client_name"],
+                ["client_name", "client_team"],
             ),
             command_literals.COMMAND_JOIN_ROOM_WITH_ID: Command(
                 command_literals.COMMAND_JOIN_ROOM_WITH_ID,
                 self.server.join_room_with_id,
-                ["room_id", "client_name"],
+                ["room_id", "client_name", "client_team"],
             ),
             command_literals.COMMAND_JOIN_RANDOM_ROOM: Command(
                 command_literals.COMMAND_JOIN_RANDOM_ROOM,
                 self.server.join_random_room,
-                ["client_name"],
+                ["client_name", "client_team"],
             ),
             command_literals.COMMAND_SEND_BOARD: Command(
                 command_literals.COMMAND_SEND_BOARD,
