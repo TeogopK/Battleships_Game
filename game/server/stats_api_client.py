@@ -17,7 +17,7 @@ class StatsAPIClient:
 
     def get_team_points(self, team_name):
         response = self._get_all_team_points()
-        return response.get(team_name.lower(), None) if response else None
+        return response.get(team_name.lower(), None) if response is not None else None
 
     def increment_team_points(self, team_name):
         team_boolean = 0 if team_name == self.team_0 else 1

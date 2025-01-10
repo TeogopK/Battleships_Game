@@ -427,7 +427,7 @@ class GameServer:
 
         team_points = self.stats_api_client.get_team_points(team_name)
 
-        if not team_points:
+        if team_points is None:
             return CommandHandler.error_response("Error fetching team points from API!")
 
         return CommandHandler.success_response("Team points fetched successfully!", team_points=team_points)
