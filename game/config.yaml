@@ -1,6 +1,6 @@
 api:
-  base_url: "http://192.168.0.4:5099"
-  endpoint: "Management"
+  base_url: "https://dotnet-ship-hfdfcxh5etb8bgch.westeurope-01.azurewebsites.net"
+  endpoint: "management/stats"
   timeout: 10
   team_0: "Rome"
   team_1: "Carthage"
