@@ -2,7 +2,7 @@
 
 ## Application interface
 
-![Battle phase of the game screenshot](./media/battle_phase.png)
+![Battle phase of the game screenshot](./presentation/media/battle_phase.png)
 
 
 ## Main Functionalities
@@ -30,7 +30,11 @@
 - **Quick Setup**: Create a room and the AI bot will join to face you.
 - **Automated Challenge**: Enjoy a dynamic game as the bot makes strategic moves and keeps you on your toes.
 
-![Endgame screen showing an end of an epic battle](endgame_screen.png)
+![Endgame screen showing an end of an epic battle](./presentation/media/endgame_screen.png)
+
+## Architecture
+
+![Architecture of the system](./presentation/media/аrchitecture.png)
 
 
 ## Developer's Instructions
