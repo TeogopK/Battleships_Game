@@ -10,7 +10,6 @@ from game.players.player import Player
 from game.visuals.utils.draw_utils import DrawUtils
 from game.menus.ship_placement_menu import ShipPlacementMenu
 from game.menus.room_menu import RoomMenu
-from game.visuals.utils import colors
 
 
 class MultiplayerMenu(Menu):
@@ -67,7 +66,7 @@ class MultiplayerMenu(Menu):
             self.handle_join_room_response(response)
 
         if self.choose_team_button.is_active():
-            self.player._choose_team()
+            self.player.choose_team()
             self.choose_team_button.text = self.player.team
 
         if self.get_team_status_button.is_active():

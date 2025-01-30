@@ -62,14 +62,15 @@ class MultiplayerServer(GameServer):
             except Exception as exception:  # pylint: disable=W0703
                 print(f"Exception in accepting connections: {exception}")
 
-    def __send_greeting(self, conn):
+    @staticmethod
+    def __send_greeting(conn):
         """Send a greeting message to the connected client."""
         try:
             greeting = {"message": "Connected"}
             conn.send(json.dumps(greeting).encode("utf-8"))
             print(f"Sent greeting: {greeting}")
-        except Exception as e:
-            print(f"Error sending greeting: {e}")
+        except Exception as exception:  # pylint: disable=W0703
+            print(f"Error sending greeting: {exception}")
 
     def _handle_client(self, conn):
         """
@@ -81,7 +82,7 @@ class MultiplayerServer(GameServer):
             conn (socket.socket): The socket object for the connected client.
         """
 
-        self.__send_greeting(conn)
+        MultiplayerServer.__send_greeting(conn)
         while True:
             try:
                 data = conn.recv(2048)

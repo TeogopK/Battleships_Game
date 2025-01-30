@@ -65,7 +65,7 @@ class Player:
         Returns:
             dict: The server's response indicating the result of the room creation.
         """
-        response = self.send_command(command_literals.COMMAND_CREATE_ROOM, client_name=self.name, client_team = self.team)
+        response = self.send_command(command_literals.COMMAND_CREATE_ROOM, client_name=self.name, client_team=self.team)
         return response
 
     def join_room_with_id(self, room_id):
@@ -79,10 +79,7 @@ class Player:
             dict: The server's response indicating the result of joining the room.
         """
         response = self.send_command(
-            command_literals.COMMAND_JOIN_ROOM_WITH_ID,
-            room_id=room_id,
-            client_name=self.name,
-            client_team=self.team
+            command_literals.COMMAND_JOIN_ROOM_WITH_ID, room_id=room_id, client_name=self.name, client_team=self.team
         )
         return response
 
@@ -240,7 +237,10 @@ class Player:
         self.is_winner = response_args["is_winner"]
         self.is_timeout = response_args.get("is_timeout", False)
 
-    def _choose_team(self):
+    def choose_team(self):
+        """
+        Chooses a team for the player based on the binary teams provided as constatnts.
+        """
         self.team = self.TEAM_0_CONSTANT if self.team != self.TEAM_0_CONSTANT else self.TEAM_1_CONSTANT
 
     def get_team_status(self):

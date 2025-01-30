@@ -270,7 +270,8 @@ class GameServer:
             winning_team = room.get_client_team(client)
             self.stats_api_client.increment_team_points(winning_team)
 
-    def _send_end_battle_response(self, client, room):
+    @staticmethod
+    def _send_end_battle_response(client, room):
         """
         Sends a response indicating the end of the battle due to timeout or completion.
 
@@ -307,14 +308,14 @@ class GameServer:
         room = self.rooms[room_id]
 
         if room.has_battle_ended:
-            return self._send_end_battle_response(client, room)
+            return GameServer._send_end_battle_response(client, room)
 
         if not room.is_client_turn(client):
             return CommandHandler.error_response("Not player's turn!", is_player_turn=False)
 
         if room.is_turn_late():
             room.end_battle_due_to_timeout()
-            return self._send_end_battle_response(client, room)
+            return GameServer._send_end_battle_response(client, room)
 
         if not room.is_client_shot_valid(client, row, col):
             return CommandHandler.error_response("Invalid shot!", is_shot_valid=False)
@@ -363,7 +364,7 @@ class GameServer:
         if room.is_turn_late():
             room.end_battle_due_to_timeout()
             self._update_team_points(client, room)
-            return self._send_end_battle_response(client, room)
+            return GameServer._send_end_battle_response(client, room)
 
         last_shot = room.give_shot_from_history(client)
         if last_shot is None:
@@ -437,6 +438,11 @@ class GameServer:
         return room_id in self.rooms
 
     def get_team_status(self, client, team_name):
+        """
+        Retrieves the points for a given team from the stats API.
+        """
+        print(f"Client {client} requested team status for {team_name}")
+
         if team_name is None:
             return CommandHandler.error_response("Error! No status for empty team!")
 
