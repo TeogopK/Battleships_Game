@@ -113,7 +113,6 @@ class Room:
         self.turn_end_time = None
         self.is_timeout = False
 
-        self.winning_team = None
         self.loser = None
 
     def change_publicity(self):
@@ -374,3 +373,15 @@ class Room:
         """
         opponent = self.get_opponent_room_client(client)
         return opponent.board.serialize_board()
+
+    def get_client_team(self, client):
+        """
+        Gets the team of a specific client.
+
+        Args:
+            client (Client): The client whose team is being retrieved.
+
+        Returns:
+            str: The name of the client's team.
+        """
+        return self.clients[client].client_team

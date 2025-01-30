@@ -22,8 +22,8 @@ class StatsAPIClient:
     def increment_team_points(self, team_name):
         if team_name is None:
             print("No intial team for winner")
-            return 
-        
+            return
+
         team_boolean = 0 if team_name == self.team_0 else 1
         message = {"win": team_boolean}
         data_message = json.dumps(message)
@@ -43,7 +43,8 @@ class StatsAPIClient:
 
     def _post_increment_team_points(self, data):
         try:
-            response = requests.post(self.full_url, data=data, timeout=self.timeout)
+            headers = {"Content-Type": "application/json"}
+            response = requests.post(self.full_url, data=data, headers=headers, timeout=self.timeout)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:

@@ -262,11 +262,12 @@ class GameServer:
         )
 
     def _update_team_points(self, client, room):
-        # fix other gameboard + add _update_team_points(client, room)
+        """
+        Updates the team points based on the outcome of the battle.
+        """
         is_client_winner = room.is_client_winner(client)
-        print("client VARNA", client)
         if is_client_winner:
-            winning_team = room[client].client_team
+            winning_team = room.get_client_team(client)
             self.stats_api_client.increment_team_points(winning_team)
 
     def _send_end_battle_response(self, client, room):
@@ -283,7 +284,7 @@ class GameServer:
         return CommandHandler.error_response(
             "The battle has ended!",
             has_battle_ended=room.has_battle_ended,
-            is_winner = room.is_client_winner(client),
+            is_winner=room.is_client_winner(client),
             is_timeout=room.is_timeout,
         )
 
@@ -328,6 +329,9 @@ class GameServer:
         ) = room.register_shot_for_client(client, row, col)
         is_turn = room.is_client_turn(client)
 
+        if has_battle_ended:
+            self._update_team_points(client, room)
+
         return CommandHandler.success_response(
             "Shot registered!",
             has_hit_ship=is_ship_hit,
@@ -358,6 +362,7 @@ class GameServer:
 
         if room.is_turn_late():
             room.end_battle_due_to_timeout()
+            self._update_team_points(client, room)
             return self._send_end_battle_response(client, room)
 
         last_shot = room.give_shot_from_history(client)
